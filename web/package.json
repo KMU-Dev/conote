@@ -23,7 +23,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "autoprefixer": "9",
-    "postcss": "7",
+    "postcss": "^7.0.36",
     "react-scripts": "4.0.3",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "tailwindcss-cli": "^0.1.2",
