@@ -1,15 +1,45 @@
-import { Box, Button, Container, Typography, Link } from '@material-ui/core';
+import { Box, Button, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
 import { grey, common } from '@material-ui/core/colors';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import { ReactComponent as Google } from './google.svg';
+import LoginImage from './login_illustration.svg';
 
 const useStyles = makeStyles(theme =>
     createStyles({
+        root: {
+            height: '100%',
+            display: 'flex',
+        },
+        card: {
+            width: '100%',
+            maxWidth: '464px',
+            margin: theme.spacing(4, 0, 0, 4),
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            boxShadow: 'rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px',
+            borderRadius: theme.spacing(4),
+            overflow: 'none',
+        },
+        cardIconBox: {
+            padding: theme.spacing(0, 12),
+        },
+        cardTitle: {
+            margin: theme.spacing(30, 0),
+            padding: theme.spacing(0, 10),
+            fontSize: '1.875rem',
+        },
+        cardImage: {
+            padding: theme.spacing(0, 4),
+        },
         container: {
             height: '100%',
             padding: theme.spacing(4),
+            [theme.breakpoints.up('sm')]: {
+                padding: theme.spacing(6),
+            }
         },
         header: {
             padding: theme.spacing(2),
@@ -18,12 +48,9 @@ const useStyles = makeStyles(theme =>
         icon: {
             fontSize: '2.5rem',
         },
-        titleBox: {
-            marginBottom: theme.spacing(10),
-        },
         title: {
             marginBottom: theme.spacing(2),
-            fontSize: '1.25rem',
+            fontSize: '1.5rem',
             lineHeight: 1.5,
         },
         greyText: {
@@ -31,10 +58,12 @@ const useStyles = makeStyles(theme =>
         },
         loginBox: {
             display: 'flex',
-            // alignItems: 'center',
             flexDirection: 'column',
             justifyContent: 'center',
             height: '100%',
+        },
+        buttonBox: {
+            margin: theme.spacing(12, 0),
         },
         button: {
             backgroundColor: common.white,
@@ -55,7 +84,7 @@ const useStyles = makeStyles(theme =>
             fontWeight: 'bold',
         },
         terms: {
-            margin: theme.spacing(10, 0),
+            marginBottom: theme.spacing(10),
         },
     }),
 );
@@ -64,17 +93,28 @@ export default function Login() {
     const classes = useStyles();
 
     return (
-        <>
-            <Container maxWidth="sm" className={classes.container}>
-                <Box className={classes.loginBox}>
-                    <Box className={classes.header}>
+        <Box className={classes.root}>
+            <Hidden smDown>
+                <Card className={classes.card}>
+                    <Box className={classes.cardIconBox}>
                         <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
                     </Box>
-                    <Box className={classes.titleBox}>
+                    <Typography variant="h3" className={classes.cardTitle}>歡迎回來</Typography>
+                    <img src={LoginImage} alt="Login" className={classes.cardImage} />
+                </Card>
+            </Hidden>
+            <Container maxWidth="sm" className={classes.container}>
+                <Box className={classes.loginBox}>
+                    <Hidden smUp>
+                        <Box className={classes.header}>
+                            <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                        </Box>
+                    </Hidden>
+                    <Box>
                         <Typography variant="h4" className={classes.title}>登入</Typography>
                         <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
                     </Box>
-                    <Box>
+                    <Box className={classes.buttonBox}>
                         <Button
                             variant="contained"
                             size="large"
@@ -89,13 +129,13 @@ export default function Login() {
                         </Button>
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
-                        當您登入 Conote，即代表你同意遵守我們的條款，包含
+                        當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;
                         <Link to="/tos" color="primary" component={RouterLink}>使用者服務條款</Link>
-                        及
+                        &ensp;及&ensp;
                         <Link to="/privacy" color="primary" component={RouterLink}>隱私權政策</Link>
                     </Typography>
                 </Box>
             </Container>
-        </>
+        </Box>
     );
 }
