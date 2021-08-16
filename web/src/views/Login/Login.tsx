@@ -5,6 +5,7 @@ import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import { ReactComponent as Google } from './google.svg';
 import LoginImage from './login_illustration.svg';
+import routes from '../../constant/routes.json';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -97,7 +98,9 @@ export default function Login() {
             <Hidden smDown>
                 <Card className={classes.card}>
                     <Box className={classes.cardIconBox}>
-                        <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                        <RouterLink to={routes.HOME}>
+                            <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                        </RouterLink>
                     </Box>
                     <Typography variant="h3" className={classes.cardTitle}>歡迎回來</Typography>
                     <img src={LoginImage} alt="Login" className={classes.cardImage} />
@@ -107,7 +110,9 @@ export default function Login() {
                 <Box className={classes.loginBox}>
                     <Hidden smUp>
                         <Box className={classes.header}>
-                            <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                            <RouterLink to={routes.HOME}>
+                                <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                            </RouterLink>
                         </Box>
                     </Hidden>
                     <Box>
