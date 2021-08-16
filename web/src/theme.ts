@@ -15,6 +15,13 @@ const defaultTheme = createTheme({
         ].join(','),
     },
     spacing: factor => `${0.25 * factor}rem`,
+    overrides: {
+        MuiButton: {
+            root: {
+                textTransform: 'none',
+            }
+        }
+    }
 });
 
 export default defaultTheme;
