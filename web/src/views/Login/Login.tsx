@@ -108,7 +108,7 @@ export default function Login() {
             </Hidden>
             <Container maxWidth="sm" className={classes.container}>
                 <Box className={classes.loginBox}>
-                    <Hidden smUp>
+                    <Hidden mdUp>
                         <Box className={classes.header}>
                             <RouterLink to={routes.HOME}>
                                 <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
