@@ -5,6 +5,7 @@ import routes from './constant/routes.json';
 import defaultTheme from './theme';
 import ComingSoon from './views/ComingSoon/ComingSoon';
 import Login from './views/Login/Login';
+import NotFound from './views/NotFound/NotFound';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                             <Route exact path={routes.DASHBOARD}>
                                 <ComingSoon time={new Date(1632326400000)} />
                             </Route>
+                            <Route path="*" component={NotFound} />
                         </Switch>
                     </Header>
                 </Switch>
