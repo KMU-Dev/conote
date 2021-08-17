@@ -1,5 +1,4 @@
 import { Box, Button, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
-import { grey, common } from '@material-ui/core/colors';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
@@ -55,7 +54,7 @@ const useStyles = makeStyles(theme =>
             lineHeight: 1.5,
         },
         greyText: {
-            color: grey[600],
+            color: theme.palette.text.secondary,
         },
         loginBox: {
             display: 'flex',
@@ -67,8 +66,8 @@ const useStyles = makeStyles(theme =>
             margin: theme.spacing(12, 0),
         },
         button: {
-            backgroundColor: common.white,
-            color: grey[600],
+            backgroundColor: theme.palette.common.white,
+            color: theme.palette.text.secondary,
         },
         buttonLabel: {
             justifyContent: 'unset',
