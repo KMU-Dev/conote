@@ -1,5 +1,5 @@
 import { pink } from "@material-ui/core/colors";
-import { createTheme } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme as createTheme } from "@material-ui/core/styles";
 
 const defaultTheme = createTheme({
     palette: {
