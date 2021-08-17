@@ -27,6 +27,7 @@ html {
 	-moz-tab-size: 4; /* 3 */
 	tab-size: 4; /* 3 */
 	height: 100%;
+	min-height: 100%;
 }
 
 /*
@@ -52,6 +53,7 @@ body {
 		'Apple Color Emoji',
 		'Segoe UI Emoji'; /* 2 */
 	height: 100%;
+	min-height: 100%;
 }
 
 /*
@@ -288,4 +290,5 @@ summary {
 
 #root {
 	height: 100%;
+	min-height: 100%;
 }

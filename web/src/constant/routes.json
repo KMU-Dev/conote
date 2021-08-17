@@ -1,4 +1,6 @@
 {
     "HOME": "/",
-    "LOGIN": "/login"
+    "LOGIN": "/login",
+    "DASHBOARD": "/dashboard",
+    "VIDEOS": "/videos"
 }

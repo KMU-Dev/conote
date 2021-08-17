@@ -1,9 +1,10 @@
 import { Box, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, SwipeableDrawer } from "@material-ui/core";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import { Link, matchPath } from "react-router-dom";
+import { Link } from "react-router-dom";
 import clsx from 'clsx';
 import { DrawerMenuDefinition } from "./DrawerMenuDefinition";
 import { hexToRGBA } from "../../utils/colors";
+import { isMatch } from "../../utils/routes";
 
 
 const useStyles = makeStyles(theme =>
@@ -35,8 +36,6 @@ const useStyles = makeStyles(theme =>
 export default function Drawer(props: DrawerProps) {
     const { open, toggleDrawer, menu } = props;
     const classes = useStyles();
-
-    const isMatch = (path: string) => matchPath(window.location.pathname, { path: path, exact: true });
 
     const listItems = (menuDef: DrawerMenuDefinition[]) => menuDef.map((def) => (
         <ListItem

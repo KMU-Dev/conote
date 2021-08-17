@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Box, Hidden, IconButton, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
+import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import React, { ReactNode } from "react";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
@@ -11,20 +11,33 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import NotificationsOutlinedIcon from '@material-ui/icons/NotificationsOutlined';
 import { useState } from "react";
+import ListItemLink from '../ListItemLink/ListItemLink';
+import { isMatch, useRenderLink } from '../../utils/routes';
+import routes from '../../constant/routes.json';
 
 const headerDef: HeaderDefinition[] = [
-    { name: '總覽', href: '/', icon: <DashboardIcon />  },
-    { name: '影片', href: '/videos', icon: <VideocamIcon /> },
+    { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />  },
+    { name: '影片', href: routes.VIDEOS, icon: <VideocamIcon /> },
 ]
 
 const useStyles = makeStyles(theme =>
     createStyles({
+        root: {
+            minHeight: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+        },
         toolbar: {
             padding: theme.spacing(0, 4),
             justifyContent: 'space-between',
             [theme.breakpoints.up('sm')]: {
                 padding: theme.spacing(0, 6),
             }
+        },
+        main: {
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
         },
         leftBox: {
             height: theme.mixins.toolbar.minHeight,
@@ -42,20 +55,39 @@ const useStyles = makeStyles(theme =>
             flexDirection: 'row-reverse',
             alignItems: 'center',
         },
+        titleBox: {
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+        },
         title: {
             margin: theme.spacing(0, 2),
             fontSize: '1.25rem',
             fontWeight: 600,
         },
-        tabs: {
-            minHeight: '100%',
+        buttonList: {
+            height: '100%',
+            margin: theme.spacing(0, 4),
+            padding: theme.spacing(0),
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
         },
-        tabsFlexContainer: {
-            minHeight: '100%',
+        listLi: {
+            height: '100%',
+            margin: theme.spacing(0, 4),
         },
-        tab: {
-            minWidth: '72px',
-            margin: theme.spacing(0, 2),
+        listItem: {
+            height: '100%',
+            padding: theme.spacing(0, 2),
+            color: theme.palette.text.secondary,
+            '&:hover': {
+                color: theme.palette.text.primary,
+            }
+        },
+        listItemMatch: {
+            color: theme.palette.text.primary,
+            borderBottom: `2px solid ${theme.palette.primary.main}`,
         },
         iconButton: {
             padding: theme.spacing(0),
@@ -71,12 +103,20 @@ const useStyles = makeStyles(theme =>
 
 export default function Header(props: HeaderProps) {
     const classes = useStyles();
+    const renderLink = useRenderLink(routes.HOME);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const getTabs = (defs: HeaderDefinition[]) => defs.map((def) =>(
-        <Tab label={def.name} href={def.href} className={classes.tab} onClick={handleTabClick} />
-    ))
+    const listItems = (defs: HeaderDefinition[]) => defs.map((def) => (
+        <li key={def.name} className={clsx(classes.listLi)}>
+            <ListItemLink
+                to={def.href}
+                className={clsx(classes.listItem, isMatch(def.href) && classes.listItemMatch)}
+            >
+                <ListItemText primary={def.name} />
+            </ListItemLink>
+        </li>
+    ));
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
         if (event && event.type === 'keydown' && 
@@ -88,47 +128,46 @@ export default function Header(props: HeaderProps) {
         setDrawerOpen(open);
     }
 
-    const handleTabClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-    }
-
     return (
-        <>
+        <Box className={classes.root}>
             <Toolbar className={classes.toolbar}>
                 <Box className={classes.leftBox}>
-                    <LocalLibraryOutlinedIcon color="primary" />
-                    <Typography variant="h4" className={classes.title}>Conote</Typography>
-                    <Tabs
-                        value={0}
-                        indicatorColor="primary"
-                        aria-label="navigation tabs"
-                        classes={{flexContainer: classes.tabsFlexContainer}}
-                        className={classes.tabs}
-                    >
-                        {getTabs(headerDef)}
-                    </Tabs>
+                    <Box component={renderLink} className={classes.titleBox}>
+                        <LocalLibraryOutlinedIcon color="primary" />
+                        <Typography variant="h4" color="primary" className={classes.title}>CONOTE</Typography>
+                    </Box>
+                    <Hidden smDown>
+                        <List className={classes.buttonList}>
+                            {listItems(headerDef)}
+                        </List>
+                    </Hidden>
                 </Box>
                 <Box className={classes.rightBox}>
-                    <IconButton
-                        aria-label="menu"
-                        className={clsx(classes.iconButton, classes.iconButtonMargin)}
-                        onClick={toggleDrawer(!drawerOpen)}
-                    >
-                        <MenuIcon className={classes.iconButtonIcon} />
-                    </IconButton>
+                    <Hidden mdUp>
+                        <IconButton
+                            aria-label="menu"
+                            className={clsx(classes.iconButton, classes.iconButtonMargin)}
+                            onClick={toggleDrawer(!drawerOpen)}
+                        >
+                            <MenuIcon className={classes.iconButtonIcon} />
+                        </IconButton>
+                    </Hidden>
                     <IconButton aria-label="account" className={clsx(classes.iconButton, classes.iconButtonMargin)}>
                         <AccountCircleOutlinedIcon className={classes.iconButtonIcon} />
                     </IconButton>
-                    <Hidden xlDown>
+                    <Hidden smDown>
                         <IconButton aria-label="notification" className={classes.iconButton}>
                             <NotificationsOutlinedIcon className={classes.iconButtonIcon} />
                         </IconButton>
                     </Hidden>
                 </Box>
             </Toolbar>
-            {props.children}
+            <Divider />
+            <main className={classes.main}>
+                {props.children}
+            </main>
             <Drawer open={drawerOpen} toggleDrawer={toggleDrawer} menu={headerDef} />
-        </>
+        </Box>
     );
 }
 
