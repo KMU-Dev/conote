@@ -1,6 +1,7 @@
-import { Box, IconButton, Toolbar, Typography } from "@material-ui/core";
+import clsx from 'clsx';
+import { Box, Hidden, IconButton, Tab, Tabs, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
@@ -8,6 +9,7 @@ import { Drawer } from '../Drawer';
 import { HeaderDefinition } from "./HeaderDefinition";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import VideocamIcon from '@material-ui/icons/Videocam';
+import NotificationsOutlinedIcon from '@material-ui/icons/NotificationsOutlined';
 import { useState } from "react";
 
 const headerDef: HeaderDefinition[] = [
@@ -25,8 +27,15 @@ const useStyles = makeStyles(theme =>
             }
         },
         leftBox: {
+            height: theme.mixins.toolbar.minHeight,
             display: 'flex',
             alignItems: 'center',
+            [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
+                minHeight: 48,
+            },
+            [theme.breakpoints.up('sm')]: {
+                minHeight: 64,
+            }
         },
         rightBox: {
             display: 'flex',
@@ -38,11 +47,24 @@ const useStyles = makeStyles(theme =>
             fontSize: '1.25rem',
             fontWeight: 600,
         },
+        tabs: {
+            minHeight: '100%',
+        },
+        tabsFlexContainer: {
+            minHeight: '100%',
+        },
+        tab: {
+            minWidth: '72px',
+            margin: theme.spacing(0, 2),
+        },
         iconButton: {
             padding: theme.spacing(0),
         },
-        menuButton: {
-            marginLeft: theme.spacing(2),
+        iconButtonMargin: {
+            marginLeft: theme.spacing(4),
+        },
+        iconButtonIcon: {
+            fontSize: '1.625rem',
         },
     })
 );
@@ -51,6 +73,10 @@ export default function Header(props: HeaderProps) {
     const classes = useStyles();
 
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const getTabs = (defs: HeaderDefinition[]) => defs.map((def) =>(
+        <Tab label={def.name} href={def.href} className={classes.tab} onClick={handleTabClick} />
+    ))
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
         if (event && event.type === 'keydown' && 
@@ -62,24 +88,42 @@ export default function Header(props: HeaderProps) {
         setDrawerOpen(open);
     }
 
+    const handleTabClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+    }
+
     return (
         <>
             <Toolbar className={classes.toolbar}>
                 <Box className={classes.leftBox}>
                     <LocalLibraryOutlinedIcon color="primary" />
                     <Typography variant="h4" className={classes.title}>Conote</Typography>
+                    <Tabs
+                        value={0}
+                        indicatorColor="primary"
+                        aria-label="navigation tabs"
+                        classes={{flexContainer: classes.tabsFlexContainer}}
+                        className={classes.tabs}
+                    >
+                        {getTabs(headerDef)}
+                    </Tabs>
                 </Box>
                 <Box className={classes.rightBox}>
                     <IconButton
                         aria-label="menu"
-                        className={classes.iconButton + " " + classes.menuButton}
+                        className={clsx(classes.iconButton, classes.iconButtonMargin)}
                         onClick={toggleDrawer(!drawerOpen)}
                     >
-                        <MenuIcon />
+                        <MenuIcon className={classes.iconButtonIcon} />
                     </IconButton>
-                    <IconButton aria-label="account" className={classes.iconButton}>
-                        <AccountCircleOutlinedIcon />
+                    <IconButton aria-label="account" className={clsx(classes.iconButton, classes.iconButtonMargin)}>
+                        <AccountCircleOutlinedIcon className={classes.iconButtonIcon} />
                     </IconButton>
+                    <Hidden xlDown>
+                        <IconButton aria-label="notification" className={classes.iconButton}>
+                            <NotificationsOutlinedIcon className={classes.iconButtonIcon} />
+                        </IconButton>
+                    </Hidden>
                 </Box>
             </Toolbar>
             {props.children}
