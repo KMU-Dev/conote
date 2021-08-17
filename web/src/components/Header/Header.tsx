@@ -23,6 +23,7 @@ const headerDef: HeaderDefinition[] = [
 const useStyles = makeStyles(theme =>
     createStyles({
         root: {
+            height: '100%',
             minHeight: '100%',
             display: 'flex',
             flexDirection: 'column',
@@ -35,9 +36,10 @@ const useStyles = makeStyles(theme =>
             }
         },
         main: {
-            display: 'flex',
-            flexDirection: 'column',
+            // display: 'flex',
+            // flexDirection: 'column',
             flex: 1,
+            backgroundColor: theme.palette.background.default,
         },
         leftBox: {
             height: theme.mixins.toolbar.minHeight,
