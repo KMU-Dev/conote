@@ -1,0 +1,18 @@
+{
+    "home": {
+        "name": "首頁",
+        "route": "HOME",
+        "children": {
+            "videos": {
+                "name": "影片",
+                "route": "VIDEOS",
+                "children": {
+                    "upload": {
+                        "name": "上傳影片",
+                        "route": "VIDEO_UPLOAD"
+                    }
+                }
+            }
+        }
+    }
+}

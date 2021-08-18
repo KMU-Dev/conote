@@ -8,6 +8,7 @@ import defaultTheme from './theme';
 import ComingSoon from './views/ComingSoon/ComingSoon';
 import Login from './views/Login/Login';
 import NotFound from './views/NotFound/NotFound';
+import VideoUpload from './views/VideoUpload/VideoUpload';
 
 function App() {
     return (
@@ -24,6 +25,12 @@ function App() {
                                 <PageRoute exact path={routes.DASHBOARD} title="總覽">
                                     <ComingSoon time={new Date(1632326400000)} />
                                 </PageRoute>
+                                <PageRoute
+                                    exact
+                                    path={routes.VIDEO_UPLOAD}
+                                    component={VideoUpload}
+                                    title="上傳影片"
+                                />
                                 <Route path="*" component={NotFound} />
                             </Switch>
                         </Header>

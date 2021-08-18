@@ -2,5 +2,6 @@
     "HOME": "/",
     "LOGIN": "/login",
     "DASHBOARD": "/dashboard",
-    "VIDEOS": "/videos"
+    "VIDEOS": "/videos",
+    "VIDEO_UPLOAD": "/videos/upload"
 }

@@ -17,7 +17,7 @@ import routes from '../../constant/routes.json';
 
 const headerDef: HeaderDefinition[] = [
     { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />  },
-    { name: '影片', href: routes.VIDEOS, icon: <VideocamIcon /> },
+    { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon /> },
 ]
 
 const useStyles = makeStyles(theme =>
@@ -33,7 +33,10 @@ const useStyles = makeStyles(theme =>
             justifyContent: 'space-between',
             [theme.breakpoints.up('sm')]: {
                 padding: theme.spacing(0, 6),
-            }
+            },
+            [theme.breakpoints.up('lg')]: {
+                padding: theme.spacing(0, 8),
+            },
         },
         main: {
             // display: 'flex',
