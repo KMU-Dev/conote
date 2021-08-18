@@ -61,6 +61,10 @@ export default function FileInput(props: FileInputProps) {
     const handleClick = (_e: MouseEvent<HTMLElement>) => {
         if (input.current) input.current.click();
     }
+
+    const handleDragOver = (e: DragEvent<HTMLElement>) => {
+        e.preventDefault();
+    }
     
     const handleDragEnter = (e: DragEvent<HTMLElement>) => {
         e.preventDefault();
@@ -73,6 +77,7 @@ export default function FileInput(props: FileInputProps) {
     }
 
     const handleDrop = (e: DragEvent<HTMLElement>) => {
+        e.preventDefault();
         setDrag(0);
         if (input.current) input.current.files = e.dataTransfer.files;
     }
@@ -81,7 +86,7 @@ export default function FileInput(props: FileInputProps) {
         <Box className={className}>
             {label ?
                 <InputLabel
-                    htmlFor={id}
+                    /* htmlFor={id} */
                     color="primary"
                     required={required}
                     className={classes.label}
@@ -93,6 +98,7 @@ export default function FileInput(props: FileInputProps) {
                 className={clsx(classes.root, drag > 0 && classes.rootDrag)}
                 tabIndex={0}
                 onClick={handleClick}
+                onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}

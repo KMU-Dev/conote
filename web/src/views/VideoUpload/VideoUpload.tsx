@@ -86,7 +86,7 @@ export default function VideoUpload() {
                                         label="EverCam 錄影"
                                         required
                                         image={VideoFiles}
-                                        accept="image/*"
+                                        accept=".ecm"
                                     />
                                 </Grid>
                             </Grid>
