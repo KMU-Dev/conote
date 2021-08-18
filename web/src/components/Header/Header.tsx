@@ -16,8 +16,8 @@ import { isMatch, useRenderLink } from '../../utils/routes';
 import routes from '../../constant/routes.json';
 
 const headerDef: HeaderDefinition[] = [
-    { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />  },
-    { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon /> },
+    { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />, exact: true  },
+    { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon />, exact: false },
 ]
 
 const useStyles = makeStyles(theme =>
@@ -116,7 +116,7 @@ export default function Header(props: HeaderProps) {
         <li key={def.name} className={clsx(classes.listLi)}>
             <ListItemLink
                 to={def.href}
-                className={clsx(classes.listItem, isMatch(def.href) && classes.listItemMatch)}
+                className={clsx(classes.listItem, isMatch(def.href, def.exact) && classes.listItemMatch)}
             >
                 <ListItemText primary={def.name} />
             </ListItemLink>

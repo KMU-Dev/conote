@@ -43,7 +43,7 @@ export default function Drawer(props: DrawerProps) {
             key={def.name}
             to={def.href}
             component={Link}
-            className={clsx(classes.listItem, isMatch(def.href) && classes.listItemMatch)}
+            className={clsx(classes.listItem, isMatch(def.href, def.exact) && classes.listItemMatch)}
         >
             <ListItemIcon className={classes.listItemIcon}>{def.icon}</ListItemIcon>
             <ListItemText primary={def.name} />
