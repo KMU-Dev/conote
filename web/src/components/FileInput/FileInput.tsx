@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
-import { DragEvent, useState } from "react";
-import { MouseEvent } from "react";
-import { useRef } from "react";
+import { DragEvent, useState, MouseEvent, useRef } from "react";
+import { useNotification } from "../Notification";
+import { matchAccept } from "../../utils/file";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -57,6 +57,7 @@ export default function FileInput(props: FileInputProps) {
 
     const [drag, setDrag] = useState(0);
     const input = useRef<HTMLInputElement>(null);
+    const { enqueueNotification } = useNotification();
 
     const handleClick = (_e: MouseEvent<HTMLElement>) => {
         if (input.current) input.current.click();
@@ -79,14 +80,30 @@ export default function FileInput(props: FileInputProps) {
     const handleDrop = (e: DragEvent<HTMLElement>) => {
         e.preventDefault();
         setDrag(0);
-        if (input.current) input.current.files = e.dataTransfer.files;
+        if (input.current) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const firstDropedFile = files[0];
+                const accept = input.current.accept;
+
+                if (matchAccept(accept, firstDropedFile)) {
+                    input.current.files = files;
+                } else {
+                    enqueueNotification({
+                        variant: 'error',
+                        title: '檔案格式錯誤',
+                        content: `你只能拖曳符合 ${accept} 的檔案。`,
+                    })
+                }
+            }
+        }
     }
 
     return (
         <Box className={className}>
             {label ?
                 <InputLabel
-                    /* htmlFor={id} */
+                    htmlFor={id}
                     color="primary"
                     required={required}
                     className={classes.label}
