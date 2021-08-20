@@ -1,6 +1,6 @@
 import { ReactChild } from "react";
 
-export interface DrawerMenuDefinition {
+export interface MenuDefinition {
     name: string;
     href: string;
     icon: ReactChild;

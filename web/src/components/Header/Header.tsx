@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import React, { ReactNode } from "react";
+import React, { MouseEvent, ReactNode } from "react";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
@@ -14,11 +14,21 @@ import { useState } from "react";
 import ListItemLink from '../ListItemLink/ListItemLink';
 import { isMatch, useRenderLink } from '../../utils/routes';
 import routes from '../../constant/routes.json';
+import { useRef } from 'react';
+import AccountDropdown from './AccountDropdown';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import SettingsIcon from '@material-ui/icons/Settings';
 
-const headerDef: HeaderDefinition[] = [
-    { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />, exact: true  },
-    { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon />, exact: false },
-]
+const headerDef: HeaderDefinition = {
+    navigation: [
+        { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />, exact: true  },
+        { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon />, exact: false },
+    ],
+    account: [
+        { name: '總覽', href: '/account', icon: <PersonOutlineIcon />, exact: true },
+        { name: '系統設定', href: '/admin', icon: <SettingsIcon />, exact: true },
+    ],
+}
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -39,8 +49,6 @@ const useStyles = makeStyles(theme =>
             },
         },
         main: {
-            // display: 'flex',
-            // flexDirection: 'column',
             flex: 1,
             backgroundColor: theme.palette.background.default,
         },
@@ -111,8 +119,10 @@ export default function Header(props: HeaderProps) {
     const renderLink = useRenderLink(routes.HOME);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+    const accountDrowpdownId = useRef('account-dropdown');
 
-    const listItems = (defs: HeaderDefinition[]) => defs.map((def) => (
+    const listItems = (def: HeaderDefinition) => def.navigation.map((def) => (
         <li key={def.name} className={clsx(classes.listLi)}>
             <ListItemLink
                 to={def.href}
@@ -122,6 +132,14 @@ export default function Header(props: HeaderProps) {
             </ListItemLink>
         </li>
     ));
+
+    const handleAccountBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
+        setMenuAnchor(e.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchor(null);
+    };
 
     const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
         if (event && event.type === 'keydown' && 
@@ -157,7 +175,12 @@ export default function Header(props: HeaderProps) {
                             <MenuIcon className={classes.iconButtonIcon} />
                         </IconButton>
                     </Hidden>
-                    <IconButton aria-label="account" className={clsx(classes.iconButton, classes.iconButtonMargin)}>
+                    <IconButton
+                        id={accountDrowpdownId.current}
+                        aria-label="account"
+                        className={clsx(classes.iconButton, classes.iconButtonMargin)}
+                        onClick={handleAccountBtnClick}
+                    >
                         <AccountCircleOutlinedIcon className={classes.iconButtonIcon} />
                     </IconButton>
                     <Hidden smDown>
@@ -171,7 +194,16 @@ export default function Header(props: HeaderProps) {
             <main className={classes.main}>
                 {props.children}
             </main>
-            <Drawer open={drawerOpen} toggleDrawer={toggleDrawer} menu={headerDef} />
+            <AccountDropdown
+                id={accountDrowpdownId.current}
+                menuDefinitions={headerDef.account}
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                keepMounted
+                onClose={handleMenuClose}
+                onMenuItemClick={handleMenuClose}
+            />
+            <Drawer open={drawerOpen} toggleDrawer={toggleDrawer} menu={headerDef.navigation} />
         </Box>
     );
 }

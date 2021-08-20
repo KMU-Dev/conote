@@ -18,14 +18,14 @@ export default function CountDownTimer(props: CountDownTimerProps) {
     const { time } = props;
     const classes = useStyles();
 
-    const [timeDiff, setTimeDiff] = useState(getTimeDiff(time));
+    const [timeDiff, setTimeDiff] = useState(() => getTimeDiff(time));
 
     useEffect(() => {
         const id = setInterval(() => {
             setTimeDiff(getTimeDiff(time));
         }, 1000);
         return () => clearInterval(id);
-    }, [time, setTimeDiff]);
+    }, [time]);
 
     const timeUnits = (['Day', 'Hour', 'Minute', 'Second'] as DateUnit[]).map((unit) => (
         <CountDownUnit key={unit} timeDiff={timeDiff} unit={unit} />

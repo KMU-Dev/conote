@@ -1,3 +1,6 @@
-import { DrawerMenuDefinition } from "../Drawer";
+import { MenuDefinition } from "./MenuDefinition";
 
-export interface HeaderDefinition extends DrawerMenuDefinition {}
+export interface HeaderDefinition {
+    navigation: MenuDefinition[];
+    account: MenuDefinition[];
+}

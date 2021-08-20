@@ -2,7 +2,7 @@ import { Box, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyl
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link } from "react-router-dom";
 import clsx from 'clsx';
-import { DrawerMenuDefinition } from "./DrawerMenuDefinition";
+import { MenuDefinition } from "../Header/MenuDefinition";
 import { hexToRGBA } from "../../utils/colors";
 import { isMatch } from "../../utils/routes";
 
@@ -37,7 +37,7 @@ export default function Drawer(props: DrawerProps) {
     const { open, toggleDrawer, menu } = props;
     const classes = useStyles();
 
-    const listItems = (menuDef: DrawerMenuDefinition[]) => menuDef.map((def) => (
+    const listItems = (menuDef: MenuDefinition[]) => menuDef.map((def) => (
         <ListItem
             button
             key={def.name}
@@ -72,5 +72,5 @@ export default function Drawer(props: DrawerProps) {
 interface DrawerProps {
     open: boolean;
     toggleDrawer: (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => void;
-    menu: DrawerMenuDefinition[];
+    menu: MenuDefinition[];
 }
