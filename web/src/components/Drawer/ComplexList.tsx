@@ -1,9 +1,12 @@
 import { Collapse, createStyles, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, useTheme } from "@material-ui/core";
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+import clsx from "clsx";
 import { Fragment, useState } from "react";
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
+import { hexToRGBA } from "../../utils/colors";
+import { isMatch } from "../../utils/routes";
 import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header/MenuDefinition";
 
 const useStyles = makeStyles(theme =>
@@ -20,12 +23,18 @@ const useStyles = makeStyles(theme =>
         listItem: {
             padding: theme.spacing(3, 2, 3, 4),
         },
+        listItemMatch: {
+            backgroundColor: hexToRGBA(theme.palette.primary.main, 0.08),
+        },
         listItemIcon: {
             minWidth: 'unset',
             marginRight: theme.spacing(3),
         },
         listItemText: {
             color: theme.palette.grey[700],
+        },
+        listItemTextMatch: {
+            color: theme.palette.primary.main,
         },
         collapseListItem: {
             padding: theme.spacing(3, 2, 3, 13),
@@ -48,8 +57,16 @@ export default function ComplexList(props: ComplexListProps) {
     }, [collapseOpens]);
 
     const collapseListItems = useCallback((items: MenuCollapseItemDefinition[]) => items.map((item) => (
-        <ListItem key={item.name} button className={classes.collapseListItem} component={Link} to={item.href}>
-            <ListItemText primary={item.name} />
+        <ListItem
+            key={item.name}
+            button
+            className={clsx(classes.collapseListItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
+            component={Link}
+            to={item.href}>
+            <ListItemText
+                primary={item.name}
+                className={clsx(isMatch(item.href, item.exact) && classes.listItemTextMatch)}
+            />
         </ListItem>
     )), [classes]);
 
@@ -65,15 +82,22 @@ export default function ComplexList(props: ComplexListProps) {
                             <ExpandMore htmlColor={theme.palette.action.active} />
                         }
                     </ListItem>
-                    <Collapse key={`${item.name}-collapse`} in={collapseOpens[index]} timeout="auto" unmountOnExit>
+                    <Collapse in={collapseOpens[index]} timeout="auto" unmountOnExit>
                         <List disablePadding>
                             {collapseListItems(item.items)}
                         </List>
                     </Collapse>
                 </> :
-                <ListItem className={classes.listItem} component={Link} to={item.href}>
+                <ListItem
+                    className={clsx(classes.listItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
+                    component={Link}
+                    to={item.href}
+                >
                     {item.icon ? <ListItemIcon>{item.icon}</ListItemIcon> : ''}
-                    <ListItemText primary={item.name} />
+                    <ListItemText
+                        primary={item.name}
+                        className={clsx(isMatch(item.href, item.exact) && classes.listItemTextMatch)}
+                    />
                 </ListItem>
             }
         </Fragment>

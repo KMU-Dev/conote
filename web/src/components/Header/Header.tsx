@@ -19,6 +19,7 @@ import AccountDropdown from './AccountDropdown';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PeopleIcon from '@material-ui/icons/People';
+import ClassIcon from '@material-ui/icons/Class';
 
 const headerDef: HeaderDefinition = {
     navigation: [
@@ -43,6 +44,15 @@ const headerDef: HeaderDefinition = {
                         { name: '詳細資料', type: 'collapse_item', href: '/admin/users/{:id}', exact: true },
                     ],
                 },
+                {
+                    name: '班級',
+                    type: 'collapse',
+                    icon: <ClassIcon />,
+                    items: [
+                        { name: '清單', type: 'collapse_item', href: '/admin/class', exact: true },
+                        { name: '詳細資料', type: 'collapse_item', href: '/admin/class/{id}', exact: true },
+                    ],
+                }
             ],
         },
     ],
