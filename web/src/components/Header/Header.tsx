@@ -18,6 +18,7 @@ import { useRef } from 'react';
 import AccountDropdown from './AccountDropdown';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
+import PeopleIcon from '@material-ui/icons/People';
 
 const headerDef: HeaderDefinition = {
     navigation: [
@@ -27,6 +28,23 @@ const headerDef: HeaderDefinition = {
     account: [
         { name: '總覽', href: '/account', icon: <PersonOutlineIcon />, exact: true },
         { name: '系統設定', href: '/admin', icon: <SettingsIcon />, exact: true },
+    ],
+    admin: [
+        {
+            id: 'management',
+            name: '管理',
+            items: [
+                {
+                    name: '使用者',
+                    type: 'collapse',
+                    icon: <PeopleIcon />,
+                    items: [
+                        { name: '清單', type: 'collapse_item', href: '/admin/users', exact: true },
+                        { name: '詳細資料', type: 'collapse_item', href: '/admin/users/{:id}', exact: true },
+                    ],
+                },
+            ],
+        },
     ],
 }
 
@@ -141,16 +159,6 @@ export default function Header(props: HeaderProps) {
         setMenuAnchor(null);
     };
 
-    const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (event && event.type === 'keydown' && 
-            ((event as React.KeyboardEvent).key === 'Tab' ||
-            (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-            return;
-        }
-        setDrawerOpen(open);
-    }
-
     return (
         <Box className={classes.root}>
             <Toolbar className={classes.toolbar}>
@@ -170,7 +178,7 @@ export default function Header(props: HeaderProps) {
                         <IconButton
                             aria-label="menu"
                             className={clsx(classes.iconButton, classes.iconButtonMargin)}
-                            onClick={toggleDrawer(!drawerOpen)}
+                            onClick={() => setDrawerOpen(!drawerOpen)}
                         >
                             <MenuIcon className={classes.iconButtonIcon} />
                         </IconButton>
@@ -203,7 +211,7 @@ export default function Header(props: HeaderProps) {
                 onClose={handleMenuClose}
                 onMenuItemClick={handleMenuClose}
             />
-            <Drawer open={drawerOpen} toggleDrawer={toggleDrawer} menu={headerDef.navigation} />
+            <Drawer open={drawerOpen} toggleDrawer={setDrawerOpen} menu={headerDef} />
         </Box>
     );
 }
