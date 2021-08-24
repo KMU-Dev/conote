@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme =>
         },
         listItem: {
             padding: theme.spacing(3, 2, 3, 4),
+            borderRadius: '16px',
         },
         listItemMatch: {
             backgroundColor: hexToRGBA(theme.palette.primary.main, 0.08),
@@ -39,6 +40,7 @@ const useStyles = makeStyles(theme =>
         collapseListItem: {
             padding: theme.spacing(3, 2, 3, 13),
             color: theme.palette.grey[700],
+            borderRadius: '16px',
         },
     }),
 );
