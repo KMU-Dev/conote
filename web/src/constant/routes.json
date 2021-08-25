@@ -4,5 +4,6 @@
     "DASHBOARD": "/dashboard",
     "VIDEOS": "/videos",
     "VIDEO_UPLOAD": "/videos/upload",
-    "ADMIN_ROOT": "/admin"
+    "ADMIN_ROOT": "/admin",
+    "ADMIN_USER_LIST": "/admin/users"
 }
