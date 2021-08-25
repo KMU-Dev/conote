@@ -11,7 +11,7 @@ import DrawerInfoPanel from "./DrawerInfoPanel";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { HeaderDefinition } from "../Header/HeaderDefinition";
-import ComplexList from "./ComplexList";
+import NestedList from "../NestedList/NestedList";
 
 
 const useStyles = makeStyles(theme =>
@@ -93,7 +93,7 @@ export default function Drawer(props: DrawerProps) {
             >
                 <DrawerInfoPanel ref={goBackLink} variant={variant} onGoBackClick={handleGoBackClick} />
                 {variant === 'admin' ?
-                    <ComplexList sections={menu.admin} /> :
+                    <NestedList sections={menu.admin} /> :
                     <List>{listItems(menu.navigation)}</List>
                 }
             </Box>

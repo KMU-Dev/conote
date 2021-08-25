@@ -3,5 +3,6 @@
     "LOGIN": "/login",
     "DASHBOARD": "/dashboard",
     "VIDEOS": "/videos",
-    "VIDEO_UPLOAD": "/videos/upload"
+    "VIDEO_UPLOAD": "/videos/upload",
+    "ADMIN_ROOT": "/admin"
 }

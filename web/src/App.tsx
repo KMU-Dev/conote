@@ -1,9 +1,10 @@
 import { useTheme, useMediaQuery } from '@material-ui/core';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Header from './components/Header/Header';
+import { Header } from './components/Header';
 import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
+import Admin from './views/admin/Admin';
 import ComingSoon from './views/ComingSoon/ComingSoon';
 import Login from './views/Login/Login';
 import NotFound from './views/NotFound/NotFound';
@@ -40,6 +41,7 @@ function App() {
                                 component={VideoUpload}
                                 title="上傳影片"
                             />
+                            <Route path={routes.ADMIN_ROOT} component={Admin} />
                             <Route path="*" component={NotFound} />
                         </Switch>
                     </Header>
