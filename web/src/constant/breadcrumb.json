@@ -1,0 +1,28 @@
+{
+    "home": {
+        "name": "首頁",
+        "route": "HOME",
+        "children": {
+            "videos": {
+                "name": "影片",
+                "route": "VIDEOS",
+                "children": {
+                    "upload": {
+                        "name": "上傳影片",
+                        "route": "VIDEO_UPLOAD"
+                    }
+                }
+            },
+            "admin": {
+                "name": "系統設定",
+                "route": "ADMIN_ROOT",
+                "children": {
+                    "users": {
+                        "name": "使用者",
+                        "route": "ADMIN_USER_LIST"
+                    }
+                }
+            }
+        }
+    }
+}
