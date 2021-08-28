@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { decode } from 'jsonwebtoken';
 import { GoogleOAuth2Service } from '../google/oauth2.service';
 
 @Injectable()
@@ -9,7 +10,9 @@ export class AuthService {
 
     async login(code: string) {
         const token = await this.oauth2Service.getToken(code);
-        this.logger.debug(token);
+        const decoded = decode(token.id_token);
+        this.logger.debug(decoded);
+        this.logger.debug(token.expiry_date);
         return false;
     }
 }
