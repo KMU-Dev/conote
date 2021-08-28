@@ -11,7 +11,7 @@ export class GoogleOAuth2Config {
     clientSecret: string;
 
     @IsUrl({ require_tld: false })
-    redirectUrl: string;
+    redirectUri: string;
 }
 
 export class OAuth2Config {
