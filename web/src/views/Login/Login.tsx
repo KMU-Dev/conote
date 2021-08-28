@@ -2,9 +2,11 @@ import { Box, Button, Container, Typography, Link, Hidden, Card } from '@materia
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
+import { useGoogleLogin, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
 import { ReactComponent as Google } from './google.svg';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
+import { useCallback } from 'react';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -92,6 +94,24 @@ const useStyles = makeStyles(theme =>
 export default function Login() {
     const classes = useStyles();
 
+    const handleLoginSuccess = useCallback((response: GoogleLoginResponse | GoogleLoginResponseOffline) => {
+        console.log(response);
+    }, []);
+
+    const handleLoginFailure = (err: any) => {
+        console.error(err);
+    };
+
+    const { signIn } = useGoogleLogin({
+        clientId: '992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com',
+        onSuccess: handleLoginSuccess,
+        onFailure: handleLoginFailure,
+        hostedDomain: 'gap.kmu.edu.tw',
+        responseType: 'code',
+        accessType: 'offline',
+        prompt: 'consent',
+    });
+
     return (
         <Box className={classes.root}>
             <Hidden smDown>
@@ -128,6 +148,7 @@ export default function Login() {
                                 label: classes.buttonLabel,
                             }}
                             className={classes.button}
+                            onClick={signIn}
                         >
                             <span className={classes.flexGrow}>以 @gap.kmu.edu.tw 登入</span>
                         </Button>
