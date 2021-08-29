@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { OAuth2Client, Credentials } from 'google-auth-library';
 import { google } from 'googleapis';
 import { decode } from 'jsonwebtoken';
+import { GaxiosError } from 'gaxios';
 import { IdTokenNotFoundError, InvalidClaimError, MissingClaimError } from './errors/id-token.error';
 import { GoogleUserEmailNotVarifiedError } from './errors/user.error';
 import { GoogleIdToken } from './interfaces/id-token.interface';
 import { OAuth2UserModel } from './models/oauth2-user.model';
+import { MalformedAuthCodeError } from './errors/malformed-auth-code.error';
 
 @Injectable()
 export class GoogleOAuth2Service {
@@ -21,8 +23,16 @@ export class GoogleOAuth2Service {
     }
 
     async getToken(code: string) {
-        const response = await this.oauth2Client.getToken(code);
-        return response.tokens;
+        try {
+            const response = await this.oauth2Client.getToken(code);
+            return response.tokens;
+        } catch (e) {
+            if (e instanceof GaxiosError && e.response) {
+                const data = e.response.data;
+                if (data.error && data.error === 'invalid_grant') throw new MalformedAuthCodeError(code);
+            }
+            throw e;
+        }
     }
 
     decodeIdToken(tokens: Credentials) {
