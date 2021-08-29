@@ -35,3 +35,7 @@ lerna-debug.log*
 
 # dotenv
 .env
+
+# config
+/config/*.yaml
+!/config/default.yaml

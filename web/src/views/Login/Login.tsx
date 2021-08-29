@@ -5,6 +5,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ReactComponent as Google } from './google.svg';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
+import { useCallback } from 'react';
+import { generateAuthUrl } from '../../utils/oauth2/google';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -92,6 +94,20 @@ const useStyles = makeStyles(theme =>
 export default function Login() {
     const classes = useStyles();
 
+    const handleLoginClick = useCallback(() => {
+        const url = generateAuthUrl({
+            access_type: 'offline',
+            hd: 'gap.kmu.edu.tw',
+            response_type: 'code',
+            client_id: '992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com',
+            redirect_uri: window.location.href,
+            scope: ['openid', 'email', 'profile'],
+            prompt: 'consent',
+        });
+        // window.location.href = 'https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=email%20profile%20openid&openid.realm&client_id=992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com&ss_domain=http%3A%2F%2Flocalhost%3A3000&prompt=consent&fetch_basic_profile=true&hd=gap.kmu.edu.tw&gsiwebsdk=2&flowName=GeneralOAuthFlow';
+        window.location.href = url;
+    }, []);
+
     return (
         <Box className={classes.root}>
             <Hidden smDown>
@@ -128,6 +144,7 @@ export default function Login() {
                                 label: classes.buttonLabel,
                             }}
                             className={classes.button}
+                            onClick={handleLoginClick}
                         >
                             <span className={classes.flexGrow}>以 @gap.kmu.edu.tw 登入</span>
                         </Button>
