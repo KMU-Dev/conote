@@ -4,8 +4,12 @@ import { OAuth2UserModel } from '../google/models/oauth2-user.model';
 import { InitService } from './init.service';
 import { CreateUserInput } from '../user/models/create-user.model';
 import { UserModel } from '../user/models/user.model';
+import { UseGuards } from '@nestjs/common';
+import { InitGuard } from './init.guard';
+import { DefaultValidationPipe } from '../utils/pipes/default-validation.pipe';
 
 @Resolver()
+@UseGuards(InitGuard)
 export class InitResolver {
     constructor(private readonly initService: InitService) {}
 
@@ -15,7 +19,9 @@ export class InitResolver {
     }
 
     @Mutation(() => UserModel)
-    async initialCreateAdmin(@Args('createUserInput') input: CreateUserInput) {
+    async initialCreateAdmin(
+        @Args('createUserInput', new DefaultValidationPipe({ groups: ['initial', undefined] })) input: CreateUserInput,
+    ) {
         return this.initService.createAdminUser(input);
     }
 }
