@@ -6,6 +6,6 @@ import { AuthService } from './auth.service';
 @Module({
     imports: [GoogleModule],
     providers: [AuthResolver, AuthService],
-    exports: [AuthResolver],
+    exports: [AuthService],
 })
 export class AuthModule {}
