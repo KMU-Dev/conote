@@ -6,6 +6,7 @@ import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
 import Admin from './views/admin/Admin';
 import ComingSoon from './views/ComingSoon/ComingSoon';
+import InitialSetup from './views/InitialSetup/InitialSetup';
 import Login from './views/Login/Login';
 import NotFound from './views/NotFound/NotFound';
 import VideoUpload from './views/VideoUpload/VideoUpload';
@@ -25,7 +26,8 @@ function App() {
     return (
         <SnackbarProvider {...snackbarConfig}>
             <BrowserRouter>
-                <Switch>    
+                <Switch>
+                    <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />
                     <PageRoute exact path={routes.LOGIN} component={Login} title="登入" />
                     <Header>
                         <Switch>

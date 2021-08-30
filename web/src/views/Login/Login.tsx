@@ -1,12 +1,10 @@
-import { Box, Button, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
+import { Box, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
-import { ReactComponent as Google } from './google.svg';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
-import { useCallback } from 'react';
-import { generateAuthUrl } from '../../utils/oauth2/google';
+import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -67,21 +65,6 @@ const useStyles = makeStyles(theme =>
         buttonBox: {
             margin: theme.spacing(12, 0),
         },
-        button: {
-            backgroundColor: theme.palette.common.white,
-            color: theme.palette.text.secondary,
-        },
-        buttonLabel: {
-            justifyContent: 'unset',
-        },
-        google: {
-            width: '18px',
-            height: '18px',
-            marginRight: theme.spacing(6),
-        },
-        flexGrow: {
-            flexGrow: 2,
-        },
         bold: {
             fontWeight: 'bold',
         },
@@ -93,20 +76,6 @@ const useStyles = makeStyles(theme =>
 
 export default function Login() {
     const classes = useStyles();
-
-    const handleLoginClick = useCallback(() => {
-        const url = generateAuthUrl({
-            access_type: 'offline',
-            hd: 'gap.kmu.edu.tw',
-            response_type: 'code',
-            client_id: '992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com',
-            redirect_uri: window.location.href,
-            scope: ['openid', 'email', 'profile'],
-            prompt: 'consent',
-        });
-        // window.location.href = 'https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=email%20profile%20openid&openid.realm&client_id=992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com&ss_domain=http%3A%2F%2Flocalhost%3A3000&prompt=consent&fetch_basic_profile=true&hd=gap.kmu.edu.tw&gsiwebsdk=2&flowName=GeneralOAuthFlow';
-        window.location.href = url;
-    }, []);
 
     return (
         <Box className={classes.root}>
@@ -135,19 +104,7 @@ export default function Login() {
                         <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
                     </Box>
                     <Box className={classes.buttonBox}>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            fullWidth={true}
-                            startIcon={<Google className={classes.google} />}
-                            classes={{
-                                label: classes.buttonLabel,
-                            }}
-                            className={classes.button}
-                            onClick={handleLoginClick}
-                        >
-                            <span className={classes.flexGrow}>以 @gap.kmu.edu.tw 登入</span>
-                        </Button>
+                        <GoogleLoginButton />
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;
