@@ -77,6 +77,10 @@ const useStyles = makeStyles(theme =>
 export default function Login() {
     const classes = useStyles();
 
+    const handleCodeRetrieve = (code: string) => {
+
+    }
+
     return (
         <Box className={classes.root}>
             <Hidden smDown>
@@ -104,7 +108,7 @@ export default function Login() {
                         <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
                     </Box>
                     <Box className={classes.buttonBox}>
-                        <GoogleLoginButton />
+                        <GoogleLoginButton onCodeRetrieve={handleCodeRetrieve} />
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;

@@ -1,8 +1,8 @@
 import { ComponentType } from "react";
 import { StepContentProps } from "./StepContentProps";
 
-export interface StepDefinition {
+export interface StepDefinition<T extends StepContentProps> {
     title: string;
-    content: ComponentType<StepContentProps>;
+    content: ComponentType<T>;
     nextButton?: string;
 }

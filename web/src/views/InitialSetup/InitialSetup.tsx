@@ -1,12 +1,15 @@
-import { useTheme, useMediaQuery, makeStyles, createStyles, Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@material-ui/core";
+import { makeStyles, createStyles, Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@material-ui/core";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { createElement, useCallback, useMemo } from "react";
 import { useState } from "react";
 import { StepDefinition } from "./StepDefinition";
 import Introduction from "./Introduction";
-import LinkGoogle from "./LinkGoogle";
+import LinkGoogle, { LinkGoogleProps } from "./LinkGoogle";
 import CreateUser from "./CreateUser";
 import Finish from "./Finish";
+import { useHistory } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { OAuth2User } from "../../graphql/type/OAuth2User";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -41,14 +44,13 @@ export default function InitialSetup() {
 
     const [activeStep, setActiveStep] = useState(0);
     const [nextClicked, setNextClicked] = useState(-1);
-    const theme = useTheme();
-    const smUp = useMediaQuery(theme.breakpoints.up('sm'));
+    const history = useHistory();
 
-    const triggerNext = useCallback(() => {
-        setActiveStep(activeStep + 1);
-    }, [activeStep]);
+    useLayoutEffect(() => {
+        if (history.location.search) setActiveStep(1);
+    }, [history]);
     
-    const steps = useMemo((): StepDefinition[] => [
+    const steps = useMemo((): StepDefinition<LinkGoogleProps>[] => [
         { title: '介紹', nextButton: '繼續', content: Introduction },
         { title: '綁定 Google 帳號', content: LinkGoogle },
         { title: '建立使用者', content: CreateUser },
@@ -57,9 +59,17 @@ export default function InitialSetup() {
 
     const nextButton = useMemo(() => steps[activeStep].nextButton, [steps, activeStep]);
 
+    const triggerNext = useCallback(() => {
+        setActiveStep(activeStep + 1);
+    }, [activeStep]);
+
     const handleNextClick = useCallback(() => {
         setNextClicked(activeStep);
     }, [activeStep]);
+
+    const handleOAuthUserRetrieve = (user: OAuth2User) => {
+        console.log(user);
+    }
 
     return (
         <Container maxWidth="sm" className={classes.root}>
@@ -75,7 +85,11 @@ export default function InitialSetup() {
             <Box className={classes.contentBox}>
                 {createElement(
                         steps[activeStep].content,
-                        { nextClicked: nextClicked === activeStep, triggerNext: triggerNext }
+                        {
+                            nextClicked: nextClicked === activeStep,
+                            triggerNext: triggerNext,
+                            onOAuthUserRetrieve: handleOAuthUserRetrieve
+                        }
                 )}
             </Box>
             {

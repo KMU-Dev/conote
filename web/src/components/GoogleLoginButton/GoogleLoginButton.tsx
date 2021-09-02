@@ -1,8 +1,11 @@
 import { Button, ButtonProps, createStyles, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
+import { useEffect } from "react";
 import { useCallback } from "react";
+import { useHistory } from "react-router-dom";
 import { generateAuthUrl } from "../../utils/oauth2/google";
 import { ReactComponent as Google } from './google.svg';
+import oauth2 from "../../constant/oauth2.json";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -25,17 +28,34 @@ const useStyles = makeStyles(theme =>
 );
 
 export default function GoogleLoginButton(props: LoginButtonProps) {
-    const { className, ...restProps } = props;
+    const { onCodeRetrieve, onError, className, ...restProps } = props;
     const classes = useStyles();
+
+    const history = useHistory();
+
+    useEffect(() => {
+        if (history.location.search) {
+            const params = new URLSearchParams(history.location.search);
+            const hd = params.get('hd');
+            const code = params.get('code');
+
+            history.replace(history.location.pathname);
+            if (hd === oauth2.google.hd && code) {
+                onCodeRetrieve(code);
+            } else {
+                if (onError) onError();
+            }
+        }
+    }, [history, onCodeRetrieve, onError])
 
     const handleLoginClick = useCallback(() => {
         const url = generateAuthUrl({
             access_type: 'offline',
-            hd: 'gap.kmu.edu.tw',
+            hd: oauth2.google.hd,
             response_type: 'code',
-            client_id: '992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com',
+            client_id: oauth2.google.clientId,
             redirect_uri: window.location.href,
-            scope: ['openid', 'email', 'profile'],
+            scope: oauth2.google.scopes,
             prompt: 'consent',
         });
         window.location.href = url;
@@ -59,4 +79,7 @@ export default function GoogleLoginButton(props: LoginButtonProps) {
     );
 }
 
-interface LoginButtonProps extends ButtonProps {}
+interface LoginButtonProps extends ButtonProps {
+    onCodeRetrieve: (code: string) => void;
+    onError?: () => void;
+}

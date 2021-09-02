@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export class GoogleOAuth2Config {
     @IsNotEmpty()
@@ -12,6 +12,10 @@ export class GoogleOAuth2Config {
 
     @IsUrl({ require_tld: false })
     redirectUri: string;
+
+    @IsOptional()
+    @IsUrl({ require_tld: false })
+    initialSetupRedirectUri: string;
 }
 
 export class OAuth2Config {

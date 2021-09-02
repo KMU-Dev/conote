@@ -2,6 +2,7 @@ import { useTheme, useMediaQuery } from '@material-ui/core';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Header } from './components/Header';
+import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
 import Admin from './views/admin/Admin';
@@ -25,6 +26,7 @@ function App() {
 
     return (
         <SnackbarProvider {...snackbarConfig}>
+            <NotificationConfigurator />
             <BrowserRouter>
                 <Switch>
                     <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />

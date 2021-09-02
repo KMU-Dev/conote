@@ -22,9 +22,9 @@ export class GoogleOAuth2Service {
         });
     }
 
-    async getToken(code: string) {
+    async getToken(code: string, redirectUri?: string) {
         try {
-            const response = await this.oauth2Client.getToken(code);
+            const response = await this.oauth2Client.getToken({ code, redirect_uri: redirectUri });
             return response.tokens;
         } catch (e) {
             if (e instanceof GaxiosError && e.response) {
