@@ -5,7 +5,7 @@ import { useState } from "react";
 import { StepDefinition } from "./StepDefinition";
 import Introduction from "./Introduction";
 import LinkGoogle, { LinkGoogleProps } from "./LinkGoogle";
-import CreateUser from "./CreateUser";
+import CreateUser, { CreateUserProps } from "./CreateUser";
 import Finish from "./Finish";
 import { useHistory } from "react-router-dom";
 import { useLayoutEffect } from "react";
@@ -44,13 +44,14 @@ export default function InitialSetup() {
 
     const [activeStep, setActiveStep] = useState(0);
     const [nextClicked, setNextClicked] = useState(-1);
+    const [oauthUser, setOauthUser] = useState<OAuth2User | null>(null);
     const history = useHistory();
 
     useLayoutEffect(() => {
         if (history.location.search) setActiveStep(1);
     }, [history]);
     
-    const steps = useMemo((): StepDefinition<LinkGoogleProps>[] => [
+    const steps = useMemo((): StepDefinition<LinkGoogleProps & CreateUserProps>[] => [
         { title: '介紹', nextButton: '繼續', content: Introduction },
         { title: '綁定 Google 帳號', content: LinkGoogle },
         { title: '建立使用者', content: CreateUser },
@@ -68,7 +69,7 @@ export default function InitialSetup() {
     }, [activeStep]);
 
     const handleOAuthUserRetrieve = (user: OAuth2User) => {
-        console.log(user);
+        setOauthUser(user);
     }
 
     return (
@@ -88,7 +89,8 @@ export default function InitialSetup() {
                         {
                             nextClicked: nextClicked === activeStep,
                             triggerNext: triggerNext,
-                            onOAuthUserRetrieve: handleOAuthUserRetrieve
+                            onOAuthUserRetrieve: handleOAuthUserRetrieve,
+                            user: oauthUser,
                         }
                 )}
             </Box>
