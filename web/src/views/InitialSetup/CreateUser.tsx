@@ -1,11 +1,10 @@
 import { Avatar, Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { useCallback, useEffect } from "react";
-import { Controller, FieldError, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { StepContentProps } from "./StepContentProps";
-import TailwindInput from "../../components/TailwindInput/TailwindInput";
 import { useMutation } from "@apollo/client";
 import { InitialCreateAdminDto, INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
 import { UserRole } from "../../graphql/type/user";
