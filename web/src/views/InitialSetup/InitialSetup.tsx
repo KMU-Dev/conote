@@ -54,8 +54,8 @@ export default function InitialSetup() {
     const steps = useMemo((): StepDefinition<LinkGoogleProps & CreateUserProps>[] => [
         { title: '介紹', nextButton: '繼續', content: Introduction },
         { title: '綁定 Google 帳號', content: LinkGoogle },
-        { title: '建立使用者', content: CreateUser },
-        { title: '完成', content: Finish },
+        { title: '建立使用者', content: CreateUser, nextButton: '建立' },
+        { title: '完成', content: Finish, nextButton: '完成' },
     ], []);
 
     const nextButton = useMemo(() => steps[activeStep].nextButton, [steps, activeStep]);
@@ -97,7 +97,11 @@ export default function InitialSetup() {
             {
                 nextButton ?
                     <Box className={classes.buttonBox}>
-                        <Button variant="contained" color="primary" onClick={handleNextClick}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleNextClick}
+                        >
                             {nextButton}
                         </Button>
                     </Box> : ''

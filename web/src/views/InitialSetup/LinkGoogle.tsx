@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
 import { Box, CircularProgress, createStyles, makeStyles, Typography } from "@material-ui/core";
 import GoogleLoginButton from "../../components/GoogleLoginButton/GoogleLoginButton";
 import { useNotification } from "../../components/Notification";
@@ -55,7 +55,7 @@ export default function LinkGoogle(props: LinkGoogleProps) {
             }
             else enqueueUnknownErrorNotification();
         } catch (e) {
-            enqueueUnknownErrorNotification();
+            if (e instanceof ApolloError && !e.networkError) enqueueUnknownErrorNotification();
         }
     }
 
