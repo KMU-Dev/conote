@@ -25,9 +25,28 @@ export class OAuth2Config {
     google: GoogleOAuth2Config;
 }
 
+export class JWTConfig {
+    @IsNotEmpty()
+    publicKey: string;
+
+    @IsNotEmpty()
+    privateKey: string;
+
+    @IsNotEmpty()
+    passphrase: string;
+
+    @IsUrl()
+    issuer: string;
+}
+
 export class AppConfig {
     @ValidateNested()
     @IsDefined()
     @Type(() => OAuth2Config)
     oauth2: OAuth2Config;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => JWTConfig)
+    jwt: JWTConfig;
 }
