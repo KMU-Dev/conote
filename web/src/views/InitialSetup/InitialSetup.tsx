@@ -66,6 +66,9 @@ export default function InitialSetup() {
 
     const handleNextClick = useCallback(() => {
         setNextClicked(activeStep);
+        setInterval(() => {
+            setNextClicked(-1);
+        });
     }, [activeStep]);
 
     const handleOAuthUserRetrieve = (user: OAuth2User) => {

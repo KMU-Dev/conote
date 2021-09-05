@@ -9,6 +9,7 @@ import TailwindInput from "../../components/TailwindInput/TailwindInput";
 import { useMutation } from "@apollo/client";
 import { InitialCreateAdminDto, INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
 import { UserRole } from "../../graphql/type/user";
+import { TailwindController } from "../../components/TailwindInput";
 
 class CreateUserForm {
     @IsNotEmpty({ message: '姓名為必填欄位' })
@@ -84,54 +85,36 @@ export default function CreateUser(props: CreateUserProps) {
                     <InputLabel color="primary" className={classes.inputLabel}>頭像</InputLabel>
                     <Avatar alt={user.name} src={user.picture} className={classes.avatar} />
                 </Box>
-                <Controller
+                <TailwindController
                     name="name"
                     control={control}
                     defaultValue={user.name}
-                    render={({ field: { ref, ...fields }}) =>
-                        <TailwindInput
-                            {...fields}
-                            inputRef={ref}
-                            label="姓名"
-                            required={true}
-                            fullWidth={true}
-                            error={errors.name && (errors.name as FieldError).message}
-                            className={classes.textField}
-                        />
-                    }
+                    label="姓名"
+                    required={true}
+                    fullWidth={true}
+                    errors={errors}
+                    className={classes.textField}
                 />
-                <Controller
+                <TailwindController
                     name="email"
                     control={control}
                     defaultValue={user.email}
-                    render={({ field: { ref, ...fields } }) =>
-                        <TailwindInput
-                            {...fields}
-                            innerRef={ref}
-                            label="Email"
-                            type="email"
-                            required={true}
-                            fullWidth={true}
-                            error={errors.email && (errors.email as FieldError).message}
-                            className={classes.textField}
-                        />
-                    }
+                    label="Email"
+                    type="email"
+                    required={true}
+                    fullWidth={true}
+                    errors={errors}
+                    className={classes.textField}
                 />
-                <Controller
+                <TailwindController
                     name="studentId"
                     control={control}
                     defaultValue={user.studentId}
-                    render={({ field: { ref, ...fields } }) =>
-                        <TailwindInput
-                            {...fields}
-                            inputRef={ref}
-                            label="學號"
-                            required={true}
-                            fullWidth={true}
-                            error={errors.studentId && (errors.studentId as FieldError).message}
-                            className={classes.textField}
-                        />
-                    }
+                    label="學號"
+                    required={true}
+                    fullWidth={true}
+                    errors={errors}
+                    className={classes.textField}
                 />
             </form>
         </Box>
