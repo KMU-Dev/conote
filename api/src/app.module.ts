@@ -18,6 +18,7 @@ import configuration from './config/configuration';
             buildSchemaOptions: {
                 dateScalarMode: 'timestamp',
             },
+            context: ({ req, res }) => ({ req, res }),
         }),
         PrismaModule,
         AuthModule,

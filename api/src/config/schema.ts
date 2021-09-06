@@ -37,6 +37,26 @@ export class JWTConfig {
 
     @IsUrl()
     issuer: string;
+
+    @IsNotEmpty()
+    expiresIn: string;
+}
+
+export class RefreshTokenConfig {
+    @IsNotEmpty()
+    expiresIn: string;
+}
+
+export class AuthConfig {
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => JWTConfig)
+    jwt: JWTConfig;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => RefreshTokenConfig)
+    refreshToken: RefreshTokenConfig;
 }
 
 export class AppConfig {
@@ -47,6 +67,6 @@ export class AppConfig {
 
     @ValidateNested()
     @IsDefined()
-    @Type(() => JWTConfig)
-    jwt: JWTConfig;
+    @Type(() => AuthConfig)
+    auth: AuthConfig;
 }

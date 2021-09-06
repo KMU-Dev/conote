@@ -1,4 +1,6 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Cookies } from '../utils/decorators/cookies.decorator';
+import { GraphQLContext } from '../utils/graphql/type';
 import { AuthService } from './auth.service';
 import { AuthPayload } from './models/auth-payload.model';
 import { LoginInput } from './models/login-input.model';
@@ -15,7 +17,12 @@ export class AuthResolver {
     @Mutation(() => AuthPayload, {
         description: "Exchange Google OAuth2 authorization code to conote's jwt token",
     })
-    async login(@Args('loginInput') loignInput: LoginInput) {
-        return this.authService.login(loignInput.code);
+    async login(@Args('loginInput') loignInput: LoginInput, @Context() context: GraphQLContext) {
+        return this.authService.login(loignInput.code, context);
+    }
+
+    @Mutation(() => AuthPayload)
+    async refreshToken(@Cookies('rt') refreshToken: string) {
+        return this.authService.refreshToken(refreshToken);
     }
 }

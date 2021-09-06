@@ -10,15 +10,15 @@ import { AuthService } from './auth.service';
         GoogleModule,
         JwtModule.registerAsync({
             useFactory: async (configService: ConfigService) => ({
-                publicKey: configService.get('jwt.publicKey'),
+                publicKey: configService.get('auth.jwt.publicKey'),
                 privateKey: {
-                    key: configService.get('jwt.privateKey'),
-                    passphrase: configService.get('jwt.passphrase'),
+                    key: configService.get('auth.jwt.privateKey'),
+                    passphrase: configService.get('auth.jwt.passphrase'),
                 },
                 signOptions: {
                     algorithm: 'RS256',
-                    expiresIn: '2h',
-                    issuer: configService.get('jwt.issuer'),
+                    expiresIn: configService.get('auth.jwt.expiresIn'),
+                    issuer: configService.get('auth.jwt.issuer'),
                 },
             }),
             inject: [ConfigService],

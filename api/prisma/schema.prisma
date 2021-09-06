@@ -11,16 +11,17 @@ generator client {
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  name      String
-  email     String?     @unique
-  studentId String      @unique
-  picture   String?
-  role      UserRole
-  status    UserStatus
-  oauth     OAuth[]
-  createdAt DateTime
-  updatedAt DateTime    @updatedAt
+  id              Int         @id @default(autoincrement())
+  name            String
+  email           String?     @unique
+  studentId       String      @unique
+  picture         String?
+  role            UserRole
+  status          UserStatus
+  oauth           OAuth[]
+  refreshTokens   RefreshToken[]
+  createdAt       DateTime
+  updatedAt       DateTime    @updatedAt
 }
 
 enum UserRole {
@@ -44,4 +45,12 @@ model OAuth {
 
 enum OAuthProvider {
   Google
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references:[id])
+  userId      Int
+  expire      DateTime
+  updatedAt   DateTime  @updatedAt
 }
