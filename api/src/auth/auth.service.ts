@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuthProvider, Prisma } from '@prisma/client';
 import ms from 'ms';
-import { AppConfig } from '../config/schema';
 import { MalformedAuthCodeError } from '../google/errors/malformed-auth-code.error';
 import { GoogleOAuth2Service } from '../google/oauth2.service';
 import { PrismaService } from '../prisma/prisma.service';
