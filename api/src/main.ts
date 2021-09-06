@@ -6,9 +6,12 @@ import { DefaultValidationPipe } from './utils/pipes/default-validation.pipe';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+
+    // setup middlewares
     app.use(cookieParser());
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalPipes(new DefaultValidationPipe());
+
     await app.listen(8080);
 }
 bootstrap();

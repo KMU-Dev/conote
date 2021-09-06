@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDefined, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export class GoogleOAuth2Config {
     @IsNotEmpty()
@@ -45,6 +45,9 @@ export class JWTConfig {
 export class RefreshTokenConfig {
     @IsNotEmpty()
     expiresIn: string;
+
+    @IsBoolean()
+    secure: boolean;
 }
 
 export class AuthConfig {

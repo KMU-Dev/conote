@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuthProvider, Prisma } from '@prisma/client';
 import ms from 'ms';
+import { AppConfig } from '../config/schema';
 import { MalformedAuthCodeError } from '../google/errors/malformed-auth-code.error';
 import { GoogleOAuth2Service } from '../google/oauth2.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,6 +15,7 @@ export class AuthService {
     private readonly logger = new Logger(AuthService.name);
 
     private readonly refreshTokenExpiresIn: number;
+    private readonly refreshTokenSecure: boolean;
 
     constructor(
         private readonly prisma: PrismaService,
@@ -22,6 +24,7 @@ export class AuthService {
         readonly configService: ConfigService,
     ) {
         this.refreshTokenExpiresIn = ms(configService.get<string>('auth.refreshToken.expiresIn'));
+        this.refreshTokenSecure = configService.get('auth.refreshToken.secure');
     }
 
     async login(code: string, context: GraphQLContext) {
@@ -38,6 +41,7 @@ export class AuthService {
                     expires: refreshToken.expire,
                     httpOnly: true,
                     sameSite: 'strict',
+                    secure: this.refreshTokenSecure,
                 });
 
                 return await this.createAuthPayload(user.id);
