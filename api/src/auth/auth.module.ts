@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { GoogleModule } from '../google/google.module';
+import { UserModule } from '../user/user.module';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './guards/jwt.strategy';
 
 @Module({
     imports: [
@@ -23,8 +26,10 @@ import { AuthService } from './auth.service';
             }),
             inject: [ConfigService],
         }),
+        PassportModule,
+        UserModule,
     ],
-    providers: [AuthResolver, AuthService],
+    providers: [AuthResolver, AuthService, JwtStrategy],
     exports: [AuthService],
 })
 export class AuthModule {}
