@@ -29,7 +29,7 @@ export default function Finish(props: StepContentProps) {
     const history = useHistory();
 
     useEffect(() => {
-        if (nextClicked) history.replace(routes.HOME);
+        if (nextClicked) history.replace(routes.LOGIN);
     }, [nextClicked, history]);
 
     return (

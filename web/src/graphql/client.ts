@@ -10,6 +10,9 @@ export const client = new ApolloClient({
             AuthPayload: {
                 keyFields: [],
             },
+            UIStatus: {
+                keyFields: [],
+            }
         },
     }),
 });

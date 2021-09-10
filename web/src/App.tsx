@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client';
 import { useTheme, useMediaQuery } from '@material-ui/core';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { Router, Route, Switch } from 'react-router-dom';
@@ -5,6 +6,10 @@ import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
+import { UI_STATUS } from './graphql/queries/uiStatus';
+import { GraphqlDto } from './graphql/type/type';
+import { UIStatus } from './graphql/type/UIStatus';
+import { getAccessTokenFromCahce } from './utils/auth';
 import { history } from './utils/history';
 import Admin from './views/admin/Admin';
 import ComingSoon from './views/ComingSoon/ComingSoon';
@@ -16,6 +21,17 @@ import VideoUpload from './views/VideoUpload/VideoUpload';
 function App() {
     const theme = useTheme();
     const matchXsDown = useMediaQuery(theme.breakpoints.down('xs'));
+
+    const onUIStatusFetched = (data: GraphqlDto<'uiStatus', UIStatus>) => {
+        const uiStatus = data.uiStatus;
+        if (uiStatus.initialSetup) {
+            if (history.location.pathname !== routes.INITIAL_SETUP) history.push(routes.INITIAL_SETUP);
+        } else if (!uiStatus.user) {
+            if (!getAccessTokenFromCahce()) history.push(routes.LOGIN);
+        }
+    }
+
+    useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { onCompleted: onUIStatusFetched });
 
     const snackbarConfig: Partial<SnackbarProviderProps> = {
         anchorOrigin: {

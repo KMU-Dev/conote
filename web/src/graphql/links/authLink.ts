@@ -1,26 +1,18 @@
-import { ApolloLink, gql } from "@apollo/client";
+import { ApolloLink } from "@apollo/client";
 import { history } from "../../utils/history";
-import { client } from "../client";
-import { AuthPaylaod } from "../type/AuthPayload";
 import routes from '../../constant/routes.json';
+import { getAccessTokenFromCahce } from "../../utils/auth";
 
 let accessToken: string;
-const excludedOperation = ['Login'];
+const excludedOperation = ['Login', 'UIStatus', 'InitialGoogleLink', 'InitialCreateAdmin'];
 
 export const authLink = new ApolloLink((operation, forward) => {
     if (excludedOperation.includes(operation.operationName)) return forward(operation);
 
     if (!accessToken) {
         // get accessToken from cache
-        const cache = client.readFragment<AuthPaylaod>({
-            id: 'AuthPayload:{}',
-            fragment: gql`
-                fragment CurrentAuthPayload on AuthPayload {
-                    accessToken
-                }
-            `
-        });
-        if (cache) accessToken = cache.accessToken;
+        const cahceAccessToken = getAccessTokenFromCahce();
+        if (cahceAccessToken) accessToken = cahceAccessToken;
         else history.push(routes.LOGIN);
     }
 

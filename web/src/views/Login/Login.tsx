@@ -1,7 +1,7 @@
 import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
@@ -84,6 +84,7 @@ const useStyles = makeStyles(theme =>
 export default function Login() {
     const classes = useStyles();
 
+    const history = useHistory();
     const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
         update: (cache, { data: { login }}) => {
             cache.writeFragment({
@@ -100,9 +101,7 @@ export default function Login() {
     const handleCodeRetrieve = async (code: string) => {
         try {
             const response = await login({ variables: { input: { code } } });
-            if (response.data) {
-                console.log(response.data.login);
-            }
+            if (response.data) history.push(routes.HOME);
         } catch (e) {
             console.error(e);
         }
