@@ -1,10 +1,14 @@
-import { Box, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
+import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
+import { useMutation, gql } from '@apollo/client';
+import { AuthPaylaod } from '../../graphql/type/AuthPayload';
+import { LOGIN } from '../../graphql/mutations/login';
+import { GraphqlDto } from '../../graphql/type/type';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -64,6 +68,9 @@ const useStyles = makeStyles(theme =>
         },
         buttonBox: {
             margin: theme.spacing(12, 0),
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         bold: {
             fontWeight: 'bold',
@@ -77,8 +84,28 @@ const useStyles = makeStyles(theme =>
 export default function Login() {
     const classes = useStyles();
 
-    const handleCodeRetrieve = (code: string) => {
+    const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
+        update: (cache, { data: { login }}) => {
+            cache.writeFragment({
+                fragment: gql`
+                    fragment CurrentAuthPayload on AuthPayload {
+                        accessToken
+                    }
+                `,
+                data: login,
+            })
+        }
+    });
 
+    const handleCodeRetrieve = async (code: string) => {
+        try {
+            const response = await login({ variables: { input: { code } } });
+            if (response.data) {
+                console.log(response.data.login);
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     return (
@@ -108,7 +135,10 @@ export default function Login() {
                         <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
                     </Box>
                     <Box className={classes.buttonBox}>
-                        <GoogleLoginButton onCodeRetrieve={handleCodeRetrieve} />
+                        {loading ?
+                            <CircularProgress /> :
+                            <GoogleLoginButton onCodeRetrieve={handleCodeRetrieve} />
+                        }
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;

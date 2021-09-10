@@ -6,9 +6,10 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { StepContentProps } from "./StepContentProps";
 import { useMutation } from "@apollo/client";
-import { InitialCreateAdminDto, INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
-import { UserRole } from "../../graphql/type/user";
+import { INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
+import { User, UserRole } from "../../graphql/type/user";
 import { TailwindController } from "../../components/TailwindInput";
+import { GraphqlDto } from "../../graphql/type/type";
 
 class CreateUserForm {
     @IsNotEmpty({ message: '姓名為必填欄位' })
@@ -59,7 +60,7 @@ export default function CreateUser(props: CreateUserProps) {
     const { control, handleSubmit, formState: { errors } } = useForm<CreateUserForm>({
         resolver: classValidatorResolver(CreateUserForm)
     });
-    const [initialCreateAdmin] = useMutation<InitialCreateAdminDto>(INITIAL_CREATE_ADMIN);
+    const [initialCreateAdmin] = useMutation<GraphqlDto<'initialCreateAdmin', User>>(INITIAL_CREATE_ADMIN);
 
     const onSubmit = useCallback<SubmitHandler<CreateUserForm>>(async (data) => {
         await initialCreateAdmin({

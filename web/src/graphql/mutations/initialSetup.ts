@@ -1,7 +1,4 @@
 import { gql } from "@apollo/client";
-import { OAuth2User } from "../type/OAuth2User";
-import { User } from "../type/user";
-import { GraqhqlDto } from "./type";
 
 export const INITIAL_GOOGLE_LINK = gql`
     mutation InitialGoogleLink($input: InitialGoogleLinkInput!) {
@@ -13,10 +10,6 @@ export const INITIAL_GOOGLE_LINK = gql`
         }
     }
 `;
-
-export interface InitialGoogleLinkDto extends GraqhqlDto {
-    initialGoogleLink: OAuth2User;
-}
 
 export const INITIAL_CREATE_ADMIN = gql`
     mutation InitialCreateAdmin($input: CreateUserInput!) {
@@ -33,7 +26,3 @@ export const INITIAL_CREATE_ADMIN = gql`
         }
     }
 `;
-
-export interface InitialCreateAdminDto extends GraqhqlDto {
-    initialCreateAdmin: User;
-}

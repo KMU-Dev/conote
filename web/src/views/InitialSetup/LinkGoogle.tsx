@@ -2,8 +2,9 @@ import { ApolloError, useMutation } from "@apollo/client";
 import { Box, CircularProgress, createStyles, makeStyles, Typography } from "@material-ui/core";
 import GoogleLoginButton from "../../components/GoogleLoginButton/GoogleLoginButton";
 import { useNotification } from "../../components/Notification";
-import { InitialGoogleLinkDto, INITIAL_GOOGLE_LINK } from "../../graphql/mutations/initialSetup";
+import { INITIAL_GOOGLE_LINK } from "../../graphql/mutations/initialSetup";
 import { OAuth2User } from "../../graphql/type/OAuth2User";
+import { GraphqlDto } from "../../graphql/type/type";
 import { StepContentProps } from "./StepContentProps";
 
 const useStyles = makeStyles(theme =>
@@ -43,7 +44,9 @@ export default function LinkGoogle(props: LinkGoogleProps) {
     const { onOAuthUserRetrieve, triggerNext } = props;
     const classes = useStyles();
 
-    const [initialGoogleLink, { loading }] = useMutation<InitialGoogleLinkDto>(INITIAL_GOOGLE_LINK);
+    const [initialGoogleLink, { loading }] = useMutation<
+        GraphqlDto<'initialGoogleLink', OAuth2User>
+    >(INITIAL_GOOGLE_LINK);
     const { enqueueUnknownErrorNotification } = useNotification();
 
     const handleCodeRetrieve = async (code: string) => {
