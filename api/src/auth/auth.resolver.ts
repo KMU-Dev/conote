@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { Cookies } from '../utils/decorators/cookies.decorator';
 import { GraphQLContext } from '../utils/graphql/type';
 import { AuthService } from './auth.service';
@@ -8,11 +8,6 @@ import { LoginInput } from './models/login-input.model';
 @Resolver()
 export class AuthResolver {
     constructor(private authService: AuthService) {}
-
-    @Query(() => String)
-    async foo() {
-        // stubs here
-    }
 
     @Mutation(() => AuthPayload, {
         description: "Exchange Google OAuth2 authorization code to conote's jwt token",
