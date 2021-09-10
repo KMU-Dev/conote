@@ -25,4 +25,9 @@ export class AuthResolver {
     async refreshToken(@Cookies('rt') refreshToken: string) {
         return this.authService.refreshToken(refreshToken);
     }
+
+    @Mutation(() => Boolean)
+    async logout(@Cookies('rt') refreshToken?: string) {
+        return this.authService.logout(refreshToken);
+    }
 }

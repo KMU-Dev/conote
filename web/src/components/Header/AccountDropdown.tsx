@@ -2,6 +2,7 @@ import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, makeStyles, crea
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { PartialBy } from '../../utils/types';
 import { MenuDefinition } from './MenuDefinition';
 
 
@@ -33,11 +34,11 @@ const useStyles = makeStyles(theme =>
 );
 
 const getMenuItems = (
-    menuDefs: MenuDefinition[],
+    menuDefs: AccountMenuDefinition[],
     classes: ReturnType<typeof useStyles>,
     onMenuItemClick?: MenuItemClickCallback
-) => menuDefs.map((def) => (
-    <MenuItem key={def.name} className={classes.listItem} component={Link} to={def.href} onClick={onMenuItemClick}>
+) => menuDefs.map((def, index) => (
+    <MenuItem key={def.name} className={classes.listItem} component={def.href && Link} to={def.href} onClick={() => onMenuItemClick(index)}>
         <ListItemIcon>
             {def.icon}
         </ListItemIcon>
@@ -73,10 +74,12 @@ export default function AccountDropdown(props: AccountDropdownProps) {
     )
 }
 
+export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href' | 'exact'> {}
+
 export interface AccountDropdownProps extends MenuProps {
     id: string;
-    menuDefinitions: MenuDefinition[];
+    menuDefinitions: AccountMenuDefinition[];
     onMenuItemClick?: MenuItemClickCallback;
 }
 
-type MenuItemClickCallback = () => void;
+type MenuItemClickCallback = (index: number) => void;

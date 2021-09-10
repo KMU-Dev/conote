@@ -59,7 +59,7 @@ export class AuthService {
             where: { id: refreshToken },
         });
 
-        if (savedToken && savedToken.expire.getTime() > Date.now()) {
+        if (savedToken && savedToken.valid && savedToken.expire.getTime() > Date.now()) {
             return await this.createAuthPayload(savedToken.userId);
         }
         throw new UnauthorizedException();
@@ -75,6 +75,20 @@ export class AuthService {
                 },
             },
         });
+    }
+
+    async logout(refreshToken?: string) {
+        if (!refreshToken) return false;
+        try {
+            await this.prisma.refreshToken.update({
+                where: { id: refreshToken },
+                data: { valid: false },
+            });
+            return true;
+        } catch (e) {
+            this.logger.error(e);
+        }
+        return false;
     }
 
     private async getUserByOAuth(provider: OAuthProvider, sub: string) {

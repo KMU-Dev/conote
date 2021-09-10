@@ -5,10 +5,12 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, gql, useQuery } from '@apollo/client';
 import { AuthPaylaod } from '../../graphql/type/AuthPayload';
-import { LOGIN } from '../../graphql/mutations/login';
+import { LOGIN } from '../../graphql/mutations/auth';
 import { GraphqlDto } from '../../graphql/type/type';
+import { UIStatus } from '../../graphql/type/UIStatus';
+import { UI_STATUS } from '../../graphql/queries/uiStatus';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -85,6 +87,8 @@ export default function Login() {
     const classes = useStyles();
 
     const history = useHistory();
+
+    const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
     const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
         update: (cache, { data: { login }}) => {
             cache.writeFragment({
@@ -97,6 +101,8 @@ export default function Login() {
             })
         }
     });
+
+    if (data && data.uiStatus.user) history.push(routes.HOME);
 
     const handleCodeRetrieve = async (code: string) => {
         try {

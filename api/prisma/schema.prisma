@@ -52,5 +52,6 @@ model RefreshToken {
   user        User      @relation(fields: [userId], references:[id])
   userId      Int
   expire      DateTime
+  valid       Boolean   @default(true)
   updatedAt   DateTime  @updatedAt
 }

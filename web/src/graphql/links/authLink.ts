@@ -4,12 +4,12 @@ import { getAccessTokenFromCahce } from "../../utils/auth";
 import { gql } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { client } from "../client";
-import { REFRESH_TOKEN } from "../mutations/refreshToken";
+import { REFRESH_TOKEN } from "../mutations/auth";
 import { GraphqlDto } from "../type/type";
 import { AuthPaylaod } from "../type/AuthPayload";
 
 let accessToken: string;
-const excludedOperations = ['Login', 'RefreshToken', 'InitialGoogleLink', 'InitialCreateAdmin'];
+const excludedOperations = ['Login', 'Logout', 'RefreshToken', 'InitialGoogleLink', 'InitialCreateAdmin'];
 
 export const authLink = setContext(async (operation) => {
     if (excludedOperations.includes(operation.operationName)) return;
@@ -38,6 +38,10 @@ export const authLink = setContext(async (operation) => {
         }
     };
 });
+
+export function resetAccessToken() {
+    accessToken = undefined;
+}
 
 async function refreshAccessToken() {
     const result = await client.mutate<GraphqlDto<'refreshToken', AuthPaylaod>>({

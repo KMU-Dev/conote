@@ -1,11 +1,13 @@
 import { useQuery } from '@apollo/client';
 import { useTheme, useMediaQuery } from '@material-ui/core';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
+import { useEffect } from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
 import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
+import { client } from './graphql/client';
 import { UI_STATUS } from './graphql/queries/uiStatus';
 import { GraphqlDto } from './graphql/type/type';
 import { UIStatus } from './graphql/type/UIStatus';
@@ -22,6 +24,7 @@ function App() {
     const theme = useTheme();
     const matchXsDown = useMediaQuery(theme.breakpoints.down('xs'));
 
+    // handle UI status
     const onUIStatusFetched = (data: GraphqlDto<'uiStatus', UIStatus>) => {
         const uiStatus = data.uiStatus;
         if (uiStatus.initialSetup) {
@@ -32,6 +35,16 @@ function App() {
     }
 
     useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { onCompleted: onUIStatusFetched });
+
+    // sync logout
+    useEffect(() => {
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'logout') {
+                client.resetStore();
+                history.push(routes.LOGIN);
+            }
+        })
+    }, []);
 
     const snackbarConfig: Partial<SnackbarProviderProps> = {
         anchorOrigin: {

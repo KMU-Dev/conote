@@ -1,5 +1,5 @@
 import { ApolloClient, from, InMemoryCache } from "@apollo/client";
-import { authLink } from "./links/authLink";
+import { resetAccessToken, authLink } from "./links/authLink";
 import { errorLink } from "./links/ErrorLink";
 import { httpLink } from "./links/HttpLink";
 
@@ -15,4 +15,8 @@ export const client = new ApolloClient({
             }
         },
     }),
+});
+
+client.onResetStore(async () => {
+    resetAccessToken();
 });
