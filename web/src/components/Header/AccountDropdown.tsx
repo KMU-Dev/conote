@@ -1,7 +1,11 @@
+import { useQuery } from '@apollo/client';
 import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, makeStyles, createStyles, Box, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { UI_STATUS } from '../../graphql/queries/uiStatus';
+import { GraphqlDto } from '../../graphql/type/type';
+import { UIStatus } from '../../graphql/type/UIStatus';
 import { PartialBy } from '../../utils/types';
 import { MenuDefinition } from './MenuDefinition';
 
@@ -50,6 +54,9 @@ export default function AccountDropdown(props: AccountDropdownProps) {
     const { menuDefinitions, onMenuItemClick, ...menuProps } = props;
     const classes = useStyles();
 
+    const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
+    const user = data && data.uiStatus.user;
+
     const menuItems = useMemo(() =>
         getMenuItems(menuDefinitions, classes, onMenuItemClick),
         [menuDefinitions, classes, onMenuItemClick]
@@ -64,9 +71,9 @@ export default function AccountDropdown(props: AccountDropdownProps) {
             className={clsx(classes.root, props.className)}
         >
             <Box className={classes.accountInfo}>
-                <Typography variant="h6">趙子賢</Typography>
+                <Typography variant="h6">{user && user.name}</Typography>
                 <Typography variant="body2" color="textSecondary">
-                    u108001058
+                    {user && user.studentId}
                 </Typography>
             </Box>
             {menuItems}

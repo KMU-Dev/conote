@@ -138,7 +138,7 @@ export default function Header(props: HeaderProps) {
                 const result = await logout();
                 if (result.data.logout) {
                     window.localStorage.setItem('logout', `${Date.now()}`);
-                    client.resetStore();
+                    await client.resetStore();
                     history.push(routes.LOGIN);
                 } else {
                     enqueueNotification({
@@ -148,8 +148,7 @@ export default function Header(props: HeaderProps) {
                     });
                 }
             } catch (e) {}
-        }
-        setMenuAnchor(null);
+        } else setMenuAnchor(null);
     };
 
     return (

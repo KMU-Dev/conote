@@ -39,8 +39,8 @@ export const authLink = setContext(async (operation) => {
     };
 });
 
-export function resetAccessToken() {
-    accessToken = undefined;
+export function setAccessToken(token?: string) {
+    accessToken = token;
 }
 
 async function refreshAccessToken() {
