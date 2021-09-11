@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDefined, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export class GoogleOAuth2Config {
     @IsNotEmpty()
@@ -12,6 +12,10 @@ export class GoogleOAuth2Config {
 
     @IsUrl({ require_tld: false })
     redirectUri: string;
+
+    @IsOptional()
+    @IsUrl({ require_tld: false })
+    initialSetupRedirectUri: string;
 }
 
 export class OAuth2Config {
@@ -21,9 +25,51 @@ export class OAuth2Config {
     google: GoogleOAuth2Config;
 }
 
+export class JWTConfig {
+    @IsNotEmpty()
+    publicKey: string;
+
+    @IsNotEmpty()
+    privateKey: string;
+
+    @IsNotEmpty()
+    passphrase: string;
+
+    @IsUrl()
+    issuer: string;
+
+    @IsNotEmpty()
+    expiresIn: string;
+}
+
+export class RefreshTokenConfig {
+    @IsNotEmpty()
+    expiresIn: string;
+
+    @IsBoolean()
+    secure: boolean;
+}
+
+export class AuthConfig {
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => JWTConfig)
+    jwt: JWTConfig;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => RefreshTokenConfig)
+    refreshToken: RefreshTokenConfig;
+}
+
 export class AppConfig {
     @ValidateNested()
     @IsDefined()
     @Type(() => OAuth2Config)
     oauth2: OAuth2Config;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => AuthConfig)
+    auth: AuthConfig;
 }

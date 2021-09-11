@@ -5,11 +5,13 @@ import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PeopleIcon from '@material-ui/icons/People';
 import ClassIcon from '@material-ui/icons/Class';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import routes from '../../constant/routes.json';
+import { AccountMenuDefinition } from "./AccountDropdown";
 
 export interface HeaderDefinition {
     navigation: MenuDefinition[];
-    account: MenuDefinition[];
+    account: AccountMenuDefinition[];
     admin: MenuSection[];
 }
 
@@ -21,6 +23,7 @@ export const headerDef: HeaderDefinition = {
     account: [
         { name: '總覽', href: '/account', icon: <PersonOutlineIcon />, exact: true },
         { name: '系統設定', href: '/admin', icon: <SettingsIcon />, exact: true },
+        { name: '登出', icon: <ExitToAppIcon /> },
     ],
     admin: [
         {

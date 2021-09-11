@@ -1,11 +1,21 @@
+import { useQuery } from '@apollo/client';
 import { useTheme, useMediaQuery } from '@material-ui/core';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Router, Route, Switch } from 'react-router-dom';
 import { Header } from './components/Header';
+import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
 import routes from './constant/routes.json';
+import { client } from './graphql/client';
+import { UI_STATUS } from './graphql/queries/uiStatus';
+import { GraphqlDto } from './graphql/type/type';
+import { UIStatus } from './graphql/type/UIStatus';
+import { getAccessTokenFromCahce } from './utils/auth';
+import { history } from './utils/history';
 import Admin from './views/admin/Admin';
 import ComingSoon from './views/ComingSoon/ComingSoon';
+import InitialSetup from './views/InitialSetup/InitialSetup';
 import Login from './views/Login/Login';
 import NotFound from './views/NotFound/NotFound';
 import VideoUpload from './views/VideoUpload/VideoUpload';
@@ -13,6 +23,28 @@ import VideoUpload from './views/VideoUpload/VideoUpload';
 function App() {
     const theme = useTheme();
     const matchXsDown = useMediaQuery(theme.breakpoints.down('xs'));
+
+    // handle UI status
+    const onUIStatusFetched = (data: GraphqlDto<'uiStatus', UIStatus>) => {
+        const uiStatus = data.uiStatus;
+        if (uiStatus.initialSetup) {
+            if (history.location.pathname !== routes.INITIAL_SETUP) history.push(routes.INITIAL_SETUP);
+        } else if (!uiStatus.user) {
+            if (!getAccessTokenFromCahce()) history.push(routes.LOGIN);
+        }
+    }
+
+    useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { onCompleted: onUIStatusFetched });
+
+    // sync logout
+    useEffect(() => {
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'logout') {
+                client.resetStore();
+                history.push(routes.LOGIN);
+            }
+        })
+    }, []);
 
     const snackbarConfig: Partial<SnackbarProviderProps> = {
         anchorOrigin: {
@@ -24,8 +56,10 @@ function App() {
 
     return (
         <SnackbarProvider {...snackbarConfig}>
-            <BrowserRouter>
-                <Switch>    
+            <NotificationConfigurator />
+            <Router history={history}>
+                <Switch>
+                    <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />
                     <PageRoute exact path={routes.LOGIN} component={Login} title="登入" />
                     <Header>
                         <Switch>
@@ -46,7 +80,7 @@ function App() {
                         </Switch>
                     </Header>
                 </Switch>
-            </BrowserRouter>
+            </Router>
         </SnackbarProvider>
     );
 }

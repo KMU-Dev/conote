@@ -1,7 +1,12 @@
+import { useQuery } from '@apollo/client';
 import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, makeStyles, createStyles, Box, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { UI_STATUS } from '../../graphql/queries/uiStatus';
+import { GraphqlDto } from '../../graphql/type/type';
+import { UIStatus } from '../../graphql/type/UIStatus';
+import { PartialBy } from '../../utils/types';
 import { MenuDefinition } from './MenuDefinition';
 
 
@@ -33,11 +38,11 @@ const useStyles = makeStyles(theme =>
 );
 
 const getMenuItems = (
-    menuDefs: MenuDefinition[],
+    menuDefs: AccountMenuDefinition[],
     classes: ReturnType<typeof useStyles>,
     onMenuItemClick?: MenuItemClickCallback
-) => menuDefs.map((def) => (
-    <MenuItem key={def.name} className={classes.listItem} component={Link} to={def.href} onClick={onMenuItemClick}>
+) => menuDefs.map((def, index) => (
+    <MenuItem key={def.name} className={classes.listItem} component={def.href && Link} to={def.href} onClick={() => onMenuItemClick(index)}>
         <ListItemIcon>
             {def.icon}
         </ListItemIcon>
@@ -48,6 +53,9 @@ const getMenuItems = (
 export default function AccountDropdown(props: AccountDropdownProps) {
     const { menuDefinitions, onMenuItemClick, ...menuProps } = props;
     const classes = useStyles();
+
+    const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
+    const user = data && data.uiStatus.user;
 
     const menuItems = useMemo(() =>
         getMenuItems(menuDefinitions, classes, onMenuItemClick),
@@ -63,9 +71,9 @@ export default function AccountDropdown(props: AccountDropdownProps) {
             className={clsx(classes.root, props.className)}
         >
             <Box className={classes.accountInfo}>
-                <Typography variant="h6">趙子賢</Typography>
+                <Typography variant="h6">{user && user.name}</Typography>
                 <Typography variant="body2" color="textSecondary">
-                    u108001058
+                    {user && user.studentId}
                 </Typography>
             </Box>
             {menuItems}
@@ -73,10 +81,12 @@ export default function AccountDropdown(props: AccountDropdownProps) {
     )
 }
 
+export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href' | 'exact'> {}
+
 export interface AccountDropdownProps extends MenuProps {
     id: string;
-    menuDefinitions: MenuDefinition[];
+    menuDefinitions: AccountMenuDefinition[];
     onMenuItemClick?: MenuItemClickCallback;
 }
 
-type MenuItemClickCallback = () => void;
+type MenuItemClickCallback = (index: number) => void;

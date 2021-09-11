@@ -1,0 +1,7 @@
+{
+    "google": {
+        "clientId": "992166578720-rr81tqe327rlsje0ua8so557142stnco.apps.googleusercontent.com",
+        "scopes": ["openid", "email", "profile"],
+        "hd": "gap.kmu.edu.tw"
+    }
+}

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import React, { MouseEvent, ReactNode } from "react";
+import { MouseEvent, ReactNode } from "react";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
@@ -14,6 +14,12 @@ import { isMatch, useRenderLink } from '../../utils/routes';
 import routes from '../../constant/routes.json';
 import { useRef } from 'react';
 import AccountDropdown from './AccountDropdown';
+import { useMutation } from '@apollo/client';
+import { LOGOUT } from '../../graphql/mutations/auth';
+import { GraphqlDto } from '../../graphql/type/type';
+import { useNotification } from '../Notification';
+import { history } from '../../utils/history';
+import { client } from '../../graphql/client';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -106,6 +112,9 @@ export default function Header(props: HeaderProps) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
     const accountDrowpdownId = useRef('account-dropdown');
+    const { enqueueNotification } = useNotification();
+
+    const [logout] = useMutation<GraphqlDto<'logout', boolean>>(LOGOUT);
 
     const listItems = (def: HeaderDefinition) => def.navigation.map((def) => (
         <li key={def.name} className={clsx(classes.listLi)}>
@@ -122,8 +131,24 @@ export default function Header(props: HeaderProps) {
         setMenuAnchor(e.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setMenuAnchor(null);
+    const handleAccountMenuClick = async (index: number) => {
+        if (index === 2) {
+            // logout
+            try {
+                const result = await logout();
+                if (result.data.logout) {
+                    window.localStorage.setItem('logout', `${Date.now()}`);
+                    await client.resetStore();
+                    history.push(routes.LOGIN);
+                } else {
+                    enqueueNotification({
+                        title: '無法登出',
+                        content: '如果錯誤持續發生，請聯絡系統管理員',
+                        variant: 'error'
+                    });
+                }
+            } catch (e) {}
+        } else setMenuAnchor(null);
     };
 
     return (
@@ -175,8 +200,8 @@ export default function Header(props: HeaderProps) {
                 anchorEl={menuAnchor}
                 open={Boolean(menuAnchor)}
                 keepMounted
-                onClose={handleMenuClose}
-                onMenuItemClick={handleMenuClose}
+                onClose={handleAccountMenuClick}
+                onMenuItemClick={handleAccountMenuClick}
             />
             <Drawer open={drawerOpen} toggleDrawer={setDrawerOpen} menu={headerDef} />
         </Box>

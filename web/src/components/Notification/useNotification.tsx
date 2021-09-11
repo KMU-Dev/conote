@@ -12,7 +12,15 @@ export default function useNotification() {
         })
     ), [enqueueSnackbar]);
 
-    return { enqueueNotification };
+    const enqueueUnknownErrorNotification = useCallback(() =>
+        enqueueNotification({
+            title: '未知錯誤',
+            content: '如果錯誤持續發生，請聯絡系統管理員',
+            variant: 'error',
+        })
+    , [enqueueNotification]);
+
+    return { enqueueNotification, enqueueUnknownErrorNotification };
 }
 
 type NotificationOption = Omit<NotificationProps, 'snackbarKey'>;
