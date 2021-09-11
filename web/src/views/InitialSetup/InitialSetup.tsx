@@ -1,6 +1,6 @@
 import { makeStyles, createStyles, Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@material-ui/core";
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import { createElement, useCallback, useMemo } from "react";
+import { createElement, useCallback, useEffect, useMemo } from "react";
 import { useState } from "react";
 import { StepDefinition } from "./StepDefinition";
 import Introduction from "./Introduction";
@@ -10,6 +10,11 @@ import Finish from "./Finish";
 import { useHistory } from "react-router-dom";
 import { useLayoutEffect } from "react";
 import { OAuth2User } from "../../graphql/type/OAuth2User";
+import { useQuery } from "@apollo/client";
+import { UI_STATUS } from "../../graphql/queries/uiStatus";
+import { GraphqlDto } from "../../graphql/type/type";
+import { UIStatus } from "../../graphql/type/UIStatus";
+import routes from '../../constant/routes.json';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -47,9 +52,15 @@ export default function InitialSetup() {
     const [oauthUser, setOauthUser] = useState<OAuth2User | null>(null);
     const history = useHistory();
 
+    const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
+
     useLayoutEffect(() => {
         if (history.location.search) setActiveStep(1);
     }, [history]);
+
+    useEffect(() => {
+        if (data && !data.uiStatus.initialSetup) history.push(routes.HOME);
+    }, [history, data]);
     
     const steps = useMemo((): StepDefinition<LinkGoogleProps & CreateUserProps>[] => [
         { title: '介紹', nextButton: '繼續', content: Introduction },

@@ -56,7 +56,6 @@ export default function LinkGoogle(props: LinkGoogleProps) {
                 onOAuthUserRetrieve(response.data.initialGoogleLink);
                 triggerNext();
             }
-            else enqueueUnknownErrorNotification();
         } catch (e) {
             if (e instanceof ApolloError && !e.networkError) enqueueUnknownErrorNotification();
         }
