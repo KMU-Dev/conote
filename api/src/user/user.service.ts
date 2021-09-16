@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaConnectionService } from '../utils/graphql/crud/abstract-prisma-connection.service';
+import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';
 import { UserModel } from './models/user.model';
 import { UserTypeMap } from './type';
@@ -23,8 +24,21 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
             ...userInput,
             ...{ status: 'UNVERIFIED', createdAt: new Date() },
         };
+
         return await this.prisma.user.create({
             data: user,
+        });
+    }
+
+    async createMultipleUsers(userInputs: CreateMultipleUsersInput) {
+        const users: Prisma.UserCreateManyInput[] = userInputs.items.map((userInput) => ({
+            ...userInput,
+            ...{ status: 'UNVERIFIED', createdAt: new Date() },
+        }));
+
+        return await this.prisma.user.createMany({
+            data: users,
+            skipDuplicates: true,
         });
     }
 
