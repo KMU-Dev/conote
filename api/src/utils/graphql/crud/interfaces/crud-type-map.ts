@@ -1,0 +1,31 @@
+import { Prisma, PrismaPromise } from '.prisma/client';
+
+type OptionObject = Record<string, unknown> | null;
+
+export interface BaseFindManyArgs {
+    select?: OptionObject;
+    include?: OptionObject;
+    where?: Record<string, unknown>;
+    orderBy?: Prisma.Enumerable<Record<string, unknown>>;
+    cursor?: Record<string, unknown>;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.Enumerable<unknown>;
+}
+
+export interface CrudTypeMap<Entity> {
+    client: PrismaPromise<Entity | null>;
+    findUnique: unknown;
+    findFirst: unknown;
+    findMany: BaseFindManyArgs;
+    create: unknown;
+    createMany: unknown;
+    delete: unknown;
+    update: unknown;
+    deleteMany: unknown;
+    updateMany: unknown;
+    upsert: unknown;
+    count: unknown;
+    aggreate: unknown;
+    groupBy: unknown;
+}
