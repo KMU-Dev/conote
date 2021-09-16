@@ -5,6 +5,7 @@ import { IsEmail, IsEnum, IsIn, IsNotEmpty, IsOptional, IsUrl, MaxLength } from 
 @ObjectType('User')
 export class UserModel {
     @Field(() => ID)
+    @IsNotEmpty({ always: true })
     id: number;
 
     @IsNotEmpty({ always: true })

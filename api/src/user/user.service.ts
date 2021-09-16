@@ -4,6 +4,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PrismaConnectionService } from '../utils/graphql/crud/abstract-prisma-connection.service';
 import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';
+import { DeleteUserInput } from './models/delete-user.model';
+import { UpdateUserInput } from './models/upadte-user.model';
 import { UserModel } from './models/user.model';
 import { UserTypeMap } from './type';
 
@@ -39,6 +41,22 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
         return await this.prisma.user.createMany({
             data: users,
             skipDuplicates: true,
+        });
+    }
+
+    async updateUser(updateUserInput: UpdateUserInput) {
+        const { id, ...user } = updateUserInput;
+
+        return await this.prisma.user.update({
+            where: { id: +id },
+            data: user,
+        });
+    }
+
+    async deleteUser(deleteUserInput: DeleteUserInput) {
+        return await this.prisma.user.delete({
+            where: { id: +deleteUserInput.id },
+            include: { oauth: true, refreshTokens: true },
         });
     }
 
