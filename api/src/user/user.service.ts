@@ -1,25 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { AbstractPrismaConnectionService } from '../utils/graphql/crud/abstract-prisma-connection.service';
+import { PrismaConnectionService } from '../utils/graphql/crud/abstract-prisma-connection.service';
 import { CreateUserInput } from './models/create-user.model';
 import { UserModel } from './models/user.model';
 import { UserTypeMap } from './type';
 
 @Injectable()
-export class UserService extends AbstractPrismaConnectionService<UserModel, User, UserTypeMap> {
+export class UserService extends PrismaConnectionService<UserModel, User, UserTypeMap>('user', 'id') {
     private readonly logger = new Logger(UserService.name);
 
-    constructor(prisma: PrismaService) {
-        super(prisma);
-    }
-
-    protected getEntityName(): keyof PrismaService {
-        return 'user';
-    }
-
-    protected getCursorField(): keyof Prisma.UserWhereUniqueInput {
-        return 'id';
+    constructor(private readonly prisma: PrismaService) {
+        super();
     }
 
     protected parseCursor(beforeOrAfter: string): string | number {

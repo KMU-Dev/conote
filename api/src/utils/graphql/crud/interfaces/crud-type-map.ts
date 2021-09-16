@@ -13,12 +13,18 @@ export interface BaseFindManyArgs {
     distinct?: Prisma.Enumerable<unknown>;
 }
 
+export interface BaseCreateArgs {
+    select?: OptionObject;
+    include?: OptionObject;
+    data: Record<string, unknown>;
+}
+
 export interface CrudTypeMap<Entity> {
     client: PrismaPromise<Entity | null>;
     findUnique: unknown;
     findFirst: unknown;
     findMany: BaseFindManyArgs;
-    create: unknown;
+    create: BaseCreateArgs;
     createMany: unknown;
     delete: unknown;
     update: unknown;
