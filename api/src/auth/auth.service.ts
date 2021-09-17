@@ -2,6 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuthProvider, Prisma, User } from '@prisma/client';
+import { ApolloError } from 'apollo-server-errors';
 import ms from 'ms';
 import { MalformedAuthCodeError } from '../google/errors/malformed-auth-code.error';
 import { GoogleIdToken } from '../google/interfaces/id-token.interface';
@@ -9,6 +10,8 @@ import { GoogleOAuth2Service } from '../google/oauth2.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import { GraphQLContext } from '../utils/graphql/type';
+import { BannedError } from './errors/banned.error';
+import { UnknownUserError } from './errors/unknown-user.error';
 import { AuthPayload } from './models/auth-payload.model';
 
 @Injectable()
@@ -41,11 +44,14 @@ export class AuthService {
                 if (idToken.email) {
                     const studentId = idToken.email.split('@')[0];
                     user = await this.userService.getUserByStudenId(studentId);
-                    if (user) user = await this.firstOAuthLink(user, idToken);
+                    if (!user) throw new UnknownUserError();
+                    user = await this.firstOAuthLink(user, idToken);
                 }
             }
 
             if (user) {
+                if (user.status === 'BANNED') throw new BannedError();
+
                 // set refresh token cookie
                 const refreshToken = await this.createRefreshToken(user.id, this.refreshTokenExpiresIn);
                 context.res.cookie('rt', refreshToken.id, {
@@ -58,6 +64,7 @@ export class AuthService {
                 return await this.createAuthPayload(user.id);
             }
         } catch (e) {
+            if (e instanceof ApolloError) throw e;
             if (!(e instanceof MalformedAuthCodeError)) this.logger.error(e);
         }
 
