@@ -5,5 +5,5 @@ import { UserModel } from './user.model';
 @InputType()
 export class UpdateUserInput extends IntersectionType(
     PickType(UserModel, ['id'] as const, InputType),
-    PartialType(CreateUserInput),
+    PartialType(IntersectionType(CreateUserInput, PickType(UserModel, ['status'] as const, InputType))),
 ) {}
