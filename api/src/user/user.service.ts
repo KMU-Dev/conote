@@ -66,6 +66,12 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
         });
     }
 
+    async getUserByStudenId(studentId: string) {
+        return await this.prisma.user.findUnique({
+            where: { studentId },
+        });
+    }
+
     async getUserCount() {
         return await this.prisma.user.count();
     }

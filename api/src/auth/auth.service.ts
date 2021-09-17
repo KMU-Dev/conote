@@ -1,11 +1,13 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { OAuthProvider, Prisma } from '@prisma/client';
+import { OAuthProvider, Prisma, User } from '@prisma/client';
 import ms from 'ms';
 import { MalformedAuthCodeError } from '../google/errors/malformed-auth-code.error';
+import { GoogleIdToken } from '../google/interfaces/id-token.interface';
 import { GoogleOAuth2Service } from '../google/oauth2.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
 import { GraphQLContext } from '../utils/graphql/type';
 import { AuthPayload } from './models/auth-payload.model';
 
@@ -20,6 +22,7 @@ export class AuthService {
         private readonly prisma: PrismaService,
         private readonly oauth2Service: GoogleOAuth2Service,
         private readonly jwtService: JwtService,
+        private readonly userService: UserService,
         readonly configService: ConfigService,
     ) {
         this.refreshTokenExpiresIn = ms(configService.get<string>('auth.refreshToken.expiresIn'));
@@ -31,7 +34,16 @@ export class AuthService {
             const tokens = await this.oauth2Service.getToken(code);
             const idToken = this.oauth2Service.decodeIdToken(tokens);
 
-            const user = await this.getUserByOAuth('Google', idToken.sub);
+            let user = await this.getUserByOAuth('Google', idToken.sub);
+
+            if (!user) {
+                // If user is in database, link user with OAuth provider
+                if (idToken.email) {
+                    const studentId = idToken.email.split('@')[0];
+                    user = await this.userService.getUserByStudenId(studentId);
+                    if (user) user = await this.firstOAuthLink(user, idToken);
+                }
+            }
 
             if (user) {
                 // set refresh token cookie
@@ -89,6 +101,12 @@ export class AuthService {
             this.logger.error(e);
         }
         return false;
+    }
+
+    private async firstOAuthLink(user: User, idToken: GoogleIdToken) {
+        const oAuth2User = this.oauth2Service.getOAuth2User(idToken);
+        user = await this.userService.updateUser({ id: user.id, ...oAuth2User });
+        return await this.linkUser(user.id, { provider: 'Google', sub: idToken.sub });
     }
 
     private async getUserByOAuth(provider: OAuthProvider, sub: string) {
