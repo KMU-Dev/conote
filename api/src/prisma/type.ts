@@ -1,3 +1,4 @@
 export interface PrismaClientKnownRequestErrorMeta {
-    target: string[];
+    target?: string[];
+    cause?: string;
 }
