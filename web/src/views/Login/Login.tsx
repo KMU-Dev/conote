@@ -5,7 +5,7 @@ import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
-import { useMutation, gql, useQuery } from '@apollo/client';
+import { useMutation, gql, useQuery, ApolloError } from '@apollo/client';
 import { AuthPaylaod } from '../../graphql/type/AuthPayload';
 import { LOGIN } from '../../graphql/mutations/auth';
 import { GraphqlDto } from '../../graphql/type/type';
@@ -13,6 +13,7 @@ import { UIStatus } from '../../graphql/type/UIStatus';
 import { UI_STATUS } from '../../graphql/queries/uiStatus';
 import { useEffect, useState } from 'react';
 import { setAccessToken } from '../../graphql/links/authLink';
+import { useNotification } from '../../components/Notification';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -90,6 +91,7 @@ export default function Login() {
 
     const [realLoading, setRealLoading] = useState(false);
     const history = useHistory();
+    const { enqueueNotification } = useNotification();
 
     const { data, refetch } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { fetchPolicy: 'network-only', nextFetchPolicy: 'network-only' });
     const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
@@ -125,7 +127,13 @@ export default function Login() {
                 history.push(routes.HOME);
             }
         } catch (e) {
-            console.error(e);
+            if (e instanceof ApolloError) {
+                enqueueNotification({
+                    title: '無法登入',
+                    content: e.message,
+                    variant: 'error',
+                });
+            } else console.error(e);
             setRealLoading(false);
         }
     }
