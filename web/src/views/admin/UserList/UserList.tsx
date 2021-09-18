@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto } from "../../../graphql/type/type";
 import { User, UserStatus } from "../../../graphql/type/user";
+import { useCallback } from "react";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -33,8 +34,15 @@ const useStyles = makeStyles(theme =>
 export default function UserList() {
     const classes = useStyles();
 
-    const { data } = useQuery<GraphqlDto<'user', Connection<User>>>(USER_CONNECTION, { variables: { first: 10 }});
+    const { data, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
+        USER_CONNECTION,
+        { variables: { first: 10 }},
+    );
     const users = data ? data.user.edges.map((edge) => ({ ...edge.node })) : [];
+
+    const handleChangeRowsPerPage = useCallback(async (pageSize: number) => {
+        await refetch({ first: pageSize });
+    }, [refetch]);
 
     return (
         <AppLayout>
@@ -92,7 +100,9 @@ export default function UserList() {
                         selection: true,
                         pageSize: 10,
                         pageSizeOptions: [10, 50],
+                        
                     }}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Card>
         </AppLayout>
