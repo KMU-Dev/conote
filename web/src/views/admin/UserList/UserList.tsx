@@ -1,13 +1,16 @@
 import { Avatar, Box, Button, Card, Chip, createStyles, IconButton, makeStyles, Typography } from "@material-ui/core";
+import Papa from 'papaparse';
 import AppLayout from "../../../components/AppLayout/AppLayout";
 import PageHeading from "../../../components/PageHeading/PageHeading";
 import DataTable from "../../../components/DataTable/DataTable";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto } from "../../../graphql/type/type";
 import { User, UserStatus } from "../../../graphql/type/user";
-import { useCallback } from "react";
+import { ChangeEvent, useCallback, useRef } from "react";
+import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
+import { BatchPayload } from "../../../graphql/type/BatchPayload";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -34,20 +37,54 @@ const useStyles = makeStyles(theme =>
 export default function UserList() {
     const classes = useStyles();
 
+    const input = useRef<HTMLInputElement>(null);
+
     const { data, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
         USER_CONNECTION,
         { variables: { first: 10 }},
     );
+    const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
+
     const users = data ? data.user.edges.map((edge) => ({ ...edge.node })) : [];
 
     const handleChangeRowsPerPage = useCallback(async (pageSize: number) => {
         await refetch({ first: pageSize });
     }, [refetch]);
 
+    const handleImportClick = useCallback(() => {
+        if (input.current) input.current.click();
+    }, [input]);
+
+    const handleInputChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+        const files = e.currentTarget.files;
+        if (files.length > 0) {
+            const file = files[0];
+            const content = await file.text();
+            const users = Papa.parse(content, { header: true });
+            const result = await createMultipleUsers({
+                variables: {
+                    input: { items: users.data },
+                },
+            });
+            console.log(result.data);
+        }
+    }, [createMultipleUsers]);
+
     return (
         <AppLayout>
             <PageHeading title="使用者" breadcrumb="admin.users">
-                <Button variant="outlined" color="primary">匯入使用者</Button>
+                <input
+                    ref={input}
+                    type="file"
+                    accept=".csv"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    style={{ display: 'none' }}
+                    onChange={handleInputChange}
+                />
+                <Button variant="outlined" color="primary" onClick={handleImportClick}>
+                    匯入使用者
+                </Button>
                 <Button variant="contained" color="primary" className={classes.headingButtonMargin}>
                     新增使用者
                 </Button>
