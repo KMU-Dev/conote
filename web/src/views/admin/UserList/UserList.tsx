@@ -8,7 +8,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto } from "../../../graphql/type/type";
 import { User, UserStatus } from "../../../graphql/type/user";
-import { ChangeEvent, useCallback, useRef } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 
@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme =>
 export default function UserList() {
     const classes = useStyles();
 
+    const [pageSize, setPageSize] = useState(10);
     const input = useRef<HTMLInputElement>(null);
 
     const { data, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
@@ -48,6 +49,7 @@ export default function UserList() {
     const users = data ? data.user.edges.map((edge) => ({ ...edge.node })) : [];
 
     const handleChangeRowsPerPage = useCallback(async (pageSize: number) => {
+        setPageSize(pageSize);
         await refetch({ first: pageSize });
     }, [refetch]);
 
@@ -61,14 +63,14 @@ export default function UserList() {
             const file = files[0];
             const content = await file.text();
             const users = Papa.parse(content, { header: true });
-            const result = await createMultipleUsers({
+            await createMultipleUsers({
                 variables: {
                     input: { items: users.data },
                 },
             });
-            console.log(result.data);
+            await refetch({ first: pageSize });
         }
-    }, [createMultipleUsers]);
+    }, [createMultipleUsers, refetch, pageSize]);
 
     return (
         <AppLayout>
@@ -135,9 +137,8 @@ export default function UserList() {
                     data={users}
                     options={{
                         selection: true,
-                        pageSize: 10,
+                        pageSize: pageSize,
                         pageSizeOptions: [10, 50],
-                        
                     }}
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
