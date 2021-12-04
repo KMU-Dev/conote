@@ -17,4 +17,5 @@ export interface PageInfo {
 export interface Connection<T> {
     edges: ConnectionEdge<T>[];
     pageInfo: PageInfo;
+    count: number;
 }

@@ -32,11 +32,12 @@ export function PrismaConnectionService<
                 take,
                 skip: cursor && 1,
             });
+            const count = await this.getDelegate().count();
 
             const hasNext = entities.length === takeLength;
 
             const edges: IEdgeType<Model>[] = entities
-                .filter((_entity, index) => !(hasNext && index === takeLength - 1))
+                .filter((_entity, index) => !(hasNext && index === (args.first ? takeLength - 1 : 0)))
                 .map((entity) => ({
                     cursor: `${entity[cursorField as keyof typeof entity]}`,
                     node: entity,
@@ -49,7 +50,7 @@ export function PrismaConnectionService<
                 endCursor: `${edges.length > 0 && edges[edges.length - 1].cursor}`,
             };
 
-            return { edges, pageInfo } as IConnectionType<Model>;
+            return { edges, pageInfo, count } as IConnectionType<Model>;
         }
 
         protected abstract parseCursor(

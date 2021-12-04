@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IConnectionType, IEdgeType, IPageInfoType } from './type';
 
 export function Connection<T>(classRef: Type<T>, basename?: string): Type<IConnectionType<T>> {
@@ -24,6 +24,9 @@ export function Connection<T>(classRef: Type<T>, basename?: string): Type<IConne
         edges: EdgeType[];
 
         pageInfo: PageInfoType;
+
+        @Field(() => Int)
+        count: number;
     }
 
     return ConnectionType as Type<IConnectionType<T>>;

@@ -18,6 +18,6 @@ export interface Delegate<Entity, TypeMap extends CrudTypeMap<Entity>> {
         args: Prisma.SelectSubset<T, TypeMap['updateMany']>,
     ): PrismaPromise<Prisma.BatchPayload>;
     upsert<T extends TypeMap['upsert']>(args: Prisma.SelectSubset<T, TypeMap['upsert']>): TypeMap['client'];
-    count<T extends TypeMap['count']>(args: Prisma.SelectSubset<T, TypeMap['count']>): number;
+    count<T extends TypeMap['count']>(args?: Prisma.SelectSubset<T, TypeMap['count']>): number;
     // aggreate and groupBy is ommited
 }

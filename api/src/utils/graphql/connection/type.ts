@@ -13,4 +13,5 @@ export interface IPageInfoType {
 export interface IConnectionType<T> {
     edges: IEdgeType<T>[];
     pageInfo: IPageInfoType;
+    count: number;
 }

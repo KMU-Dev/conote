@@ -7,6 +7,11 @@ export const client = new ApolloClient({
     link: from([errorLink, authLink, httpLink]),
     cache: new InMemoryCache({
         typePolicies: {
+            /* Query: {
+                fields: {
+                    user: relayStylePagination(),
+                },
+            }, */
             AuthPayload: {
                 keyFields: [],
             },
