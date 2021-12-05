@@ -6,11 +6,15 @@ import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';
 import { DeleteUserInput } from './models/delete-user.model';
 import { UpdateUserInput } from './models/upadte-user.model';
+import { UserConnectionArgs } from './models/user-connection-args.model';
 import { UserModel } from './models/user.model';
 import { UserTypeMap } from './type';
 
 @Injectable()
-export class UserService extends PrismaConnectionService<UserModel, User, UserTypeMap>('user', 'id') {
+export class UserService extends PrismaConnectionService<UserModel, User, UserTypeMap, UserConnectionArgs>(
+    'user',
+    'id',
+) {
     private readonly logger = new Logger(UserService.name);
 
     constructor(private readonly prisma: PrismaService) {
@@ -19,6 +23,18 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
 
     protected parseCursor(beforeOrAfter: string): string | number {
         return +beforeOrAfter;
+    }
+
+    protected getQueryWhere(args: UserConnectionArgs): Prisma.UserWhereInput | undefined {
+        return (
+            args.query && {
+                OR: [
+                    { name: { contains: args.query } },
+                    { email: { contains: args.query } },
+                    { studentId: { contains: args.query } },
+                ],
+            }
+        );
     }
 
     async createUser(userInput: CreateUserInput) {

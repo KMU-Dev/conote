@@ -11,6 +11,7 @@ import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';
 import { DeleteUserInput } from './models/delete-user.model';
 import { UpdateUserInput } from './models/upadte-user.model';
+import { UserConnectionArgs } from './models/user-connection-args.model';
 import { UserConnection } from './models/user-connection.model';
 import { UserModel } from './models/user.model';
 import { UserService } from './user.service';
@@ -23,7 +24,7 @@ export class UserResolver {
 
     @Actions(Action.List)
     @Query(() => UserConnection)
-    async user(@Args() args: ConnectionArgs) {
+    async user(@Args() args: UserConnectionArgs) {
         return await this.userService.getConnection(args);
     }
 

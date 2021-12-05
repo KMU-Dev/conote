@@ -19,6 +19,10 @@ export interface BaseCreateArgs {
     data: Record<string, unknown>;
 }
 
+export interface BaseCountArgs extends Omit<BaseFindManyArgs, 'select' | 'include'> {
+    select?: OptionObject | true;
+}
+
 export interface CrudTypeMap<Entity> {
     client: PrismaPromise<Entity | null>;
     findUnique: unknown;
@@ -31,7 +35,7 @@ export interface CrudTypeMap<Entity> {
     deleteMany: unknown;
     updateMany: unknown;
     upsert: unknown;
-    count: unknown;
+    count: BaseCountArgs;
     aggreate: unknown;
     groupBy: unknown;
 }

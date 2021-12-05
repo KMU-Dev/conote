@@ -28,11 +28,12 @@ export function PrismaConnectionService<
             const take = args.first ? takeLength : -takeLength;
 
             const entities = await this.getDelegate().findMany({
+                where: this.getQueryWhere(args),
                 cursor: cursor && { [cursorField]: cursor },
                 take,
                 skip: cursor && 1,
             });
-            const count = await this.getDelegate().count();
+            const count = await this.getDelegate().count({ where: this.getQueryWhere(args) });
 
             const hasNext = entities.length === takeLength;
 
@@ -56,6 +57,8 @@ export function PrismaConnectionService<
         protected abstract parseCursor(
             beforeOrAfter: string,
         ): Parameters<Delegate<Entity, TypeMap>['findMany']>[0]['cursor'][typeof cursorField];
+
+        protected abstract getQueryWhere<T extends Record<string, unknown>>(args: Args): T | undefined;
 
         private getDelegate() {
             return this.prisma[entityName] as unknown as Delegate<Entity, CrudTypeMap<Entity>>;
