@@ -5,7 +5,6 @@ import { Action } from '../casl/action';
 import { Actions } from '../casl/decorators/actions.decorator';
 import { Domain } from '../casl/decorators/domain.decorator';
 import { PoliciesGuard } from '../casl/guards/policies.guard';
-import { ConnectionArgs } from '../utils/graphql/connection/argument';
 import { BatchPayload } from '../utils/graphql/models/batch-payload.model';
 import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';

@@ -26,15 +26,16 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
     }
 
     protected getQueryWhere(args: UserConnectionArgs): Prisma.UserWhereInput | undefined {
-        return (
-            args.query && {
+        if (args.query) {
+            return {
                 OR: [
                     { name: { contains: args.query } },
                     { email: { contains: args.query } },
                     { studentId: { contains: args.query } },
                 ],
-            }
-        );
+            };
+        }
+        return undefined;
     }
 
     async createUser(userInput: CreateUserInput) {
