@@ -5,6 +5,7 @@ import { IConnectionType, IEdgeType, IPageInfoType } from '../connection/type';
 import { Delegate } from './interfaces/delegate';
 import { CrudTypeMap } from './interfaces/crud-type-map';
 import { Logger, Type } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 export function PrismaConnectionService<
     Model,
@@ -29,11 +30,15 @@ export function PrismaConnectionService<
 
             const entities = await this.getDelegate().findMany({
                 where: this.getQueryWhere(args),
+                orderBy: this.getQueryOrderBy(args),
                 cursor: cursor && { [cursorField]: cursor },
                 take,
                 skip: cursor && 1,
             });
-            const count = await this.getDelegate().count({ where: this.getQueryWhere(args) });
+            const count = await this.getDelegate().count({
+                where: this.getQueryWhere(args),
+                orderBy: this.getQueryOrderBy(args),
+            });
 
             const hasNext = entities.length === takeLength;
 
@@ -59,6 +64,10 @@ export function PrismaConnectionService<
         ): Parameters<Delegate<Entity, TypeMap>['findMany']>[0]['cursor'][typeof cursorField];
 
         protected abstract getQueryWhere<T extends Record<string, unknown>>(args: Args): T | undefined;
+
+        protected abstract getQueryOrderBy<T extends Prisma.Enumerable<Record<string, unknown>>>(
+            args: Args,
+        ): T | undefined;
 
         private getDelegate() {
             return this.prisma[entityName] as unknown as Delegate<Entity, CrudTypeMap<Entity>>;
