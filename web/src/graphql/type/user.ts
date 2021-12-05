@@ -41,3 +41,11 @@ export interface User {
     createdAt: number;
     updatedAt: number;
 }
+
+export interface UserConnectionArgs {
+    first?: number
+    last?: number
+    after?: string
+    before?: string
+    query?: string
+}

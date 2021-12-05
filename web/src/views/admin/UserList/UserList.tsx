@@ -7,7 +7,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto } from "../../../graphql/type/type";
-import { User, UserRole, UserStatus } from "../../../graphql/type/user";
+import { User, UserConnectionArgs, UserRole, UserStatus } from "../../../graphql/type/user";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
@@ -39,6 +39,7 @@ export default function UserList() {
 
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [searchText, setSearchText] = useState('');
     const input = useRef<HTMLInputElement>(null);
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
@@ -53,29 +54,43 @@ export default function UserList() {
         [data],
     );
     const count = data ? data.user.count : 0;
+    const baseVariable: UserConnectionArgs = useMemo(() => ({
+        first: undefined,
+        after: undefined,
+        last: undefined,
+        before: undefined,
+        query: searchText ? searchText : undefined,
+    }), [searchText]);
 
     const handleChangePage = useCallback(async (newPage: number, newPageSize: number) => {
-        console.log(`page: ${page}, newPage: ${newPage}, pageSize: ${pageSize}, newPageSize: ${newPageSize}`);
-
         if (newPage - page === 1) {
             // next page
             const cursor = data?.user.pageInfo.endCursor;
-            await refetch({ first: newPageSize, after: cursor, last: undefined, before: undefined });
+            await refetch({...baseVariable, ...{ first: newPageSize, after: cursor }});
         } else if (newPage - page === -1) {
             // previous page
             const cursor = data?.user.pageInfo.startCursor;
-            await refetch({ first: undefined, after: undefined, last: newPageSize, before: cursor });
+            await refetch({...baseVariable, ...{ last: newPageSize, before: cursor }});
         } else if (newPage === 0) {
             // first page
-            await refetch({ first: newPageSize, after: undefined, last: undefined, before: undefined });
+            await refetch({...baseVariable, ...{ first: newPageSize }});
         } else if (newPage === Math.ceil(count / pageSize) - 1) {
             // last page
-            await refetch({ first: undefined, after: undefined, last: count % newPageSize, before: undefined })
+            const last = count % newPageSize ? count % newPageSize : newPageSize;
+            await refetch({...baseVariable, ...{ last }});
         }
 
         setPage(newPage);
         setPageSize(newPageSize);
-    }, [page, pageSize, data, count, refetch, setPage, setPageSize]);
+    }, [page, pageSize, data, refetch, baseVariable, count, setPage, setPageSize]);
+
+    const handleSearchChange = useCallback(async (newSearchText: string) => {
+        if (newSearchText) await refetch({...baseVariable, ...{ first: pageSize, query: newSearchText }});
+        else await refetch({...baseVariable, ...{ first: pageSize, query: undefined }});
+
+        setSearchText(newSearchText);
+        setPage(0);
+    }, [refetch, baseVariable, pageSize]);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -175,11 +190,12 @@ export default function UserList() {
                         selection: true,
                         grouping: false,
                         draggable: false,
+                        debounceInterval: 300,
                         pageSize: pageSize,
                         pageSizeOptions: [10, 50],
                     }}
-                    // onChangeRowsPerPage={handleChangeRowsPerPage}
                     onChangePage={handleChangePage}
+                    onSearchChange={handleSearchChange}
                 />
             </Card>
         </AppLayout>
