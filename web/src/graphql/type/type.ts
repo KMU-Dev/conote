@@ -19,3 +19,8 @@ export interface Connection<T> {
     pageInfo: PageInfo;
     count: number;
 }
+
+export enum OrderDirection {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}

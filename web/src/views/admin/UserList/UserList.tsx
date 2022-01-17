@@ -6,11 +6,12 @@ import DataTable from "../../../components/DataTable/DataTable";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
-import { Connection, GraphqlDto } from "../../../graphql/type/type";
-import { User, UserConnectionArgs, UserRole, UserStatus } from "../../../graphql/type/user";
+import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
+import { User, UserConnectionArgs, UserOrder, UserRole, UserStatus } from "../../../graphql/type/user";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
+import { columnsField } from "./constant";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -40,6 +41,7 @@ export default function UserList() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [searchText, setSearchText] = useState('');
+    const [order, setOrder] = useState<UserOrder>(undefined);
     const input = useRef<HTMLInputElement>(null);
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
@@ -60,7 +62,8 @@ export default function UserList() {
         last: undefined,
         before: undefined,
         query: searchText ? searchText : undefined,
-    }), [searchText]);
+        order,
+    }), [searchText, order]);
 
     const handleChangePage = useCallback(async (newPage: number, newPageSize: number) => {
         if (newPage - page === 1) {
@@ -91,6 +94,33 @@ export default function UserList() {
         setSearchText(newSearchText);
         setPage(0);
     }, [refetch, baseVariable, pageSize]);
+
+    const handleOrderChange = useCallback(async (orderBy: number, orderDirection: 'asc' | 'desc' | '') => {
+        console.log(orderBy === -1 ? 'none' : columnsField[orderBy], orderDirection);
+
+        if (orderBy === -1) {
+            await refetch({ ...baseVariable, ...{ first: pageSize, order: undefined } });
+
+            setOrder(undefined);
+            setPage(0);
+        } else {
+            const order: UserOrder = { direction: orderDirection.toUpperCase() as OrderDirection, field: columnsField[orderBy] };
+
+            await refetch({ ...baseVariable, ...{ first: pageSize, order } });
+
+            setOrder(order);
+            setPage(0);
+        }
+    }, [refetch, baseVariable, pageSize]);
+
+    // Fix sort direction always displays asc
+    const getColumnDefaultSort = useCallback((index: number) => {
+        const columnOrderName = columnsField[index];
+        return order && columnOrderName === order.field ? order.direction.toLowerCase() as ('asc' | 'desc') : undefined;
+    }, [order]);
+
+    // Disable inbuit sort algorithm
+    const customSort = useCallback(() => 0, []);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -146,9 +176,11 @@ export default function UserList() {
                                         {data.name}
                                     </Typography>
                                 </Box>,
+                            defaultSort: getColumnDefaultSort(0),
+                            customSort,
                         },
-                        { field: 'studentId', title: '學號' },
-                        { field: 'email', title: 'Email' },
+                        { field: 'studentId', title: '學號', defaultSort: getColumnDefaultSort(1), customSort, },
+                        { field: 'email', title: 'Email', defaultSort: getColumnDefaultSort(2), customSort, },
                         {
                             field: 'role',
                             title: '角色',
@@ -160,6 +192,8 @@ export default function UserList() {
                                         return '使用者';
                                 }
                             },
+                            defaultSort: getColumnDefaultSort(3),
+                            customSort,
                         },
                         {
                             field: 'status',
@@ -173,7 +207,9 @@ export default function UserList() {
                                     case UserStatus.UNVERIFIED:
                                         return <Chip label="未驗證" />
                                 }
-                            }
+                            },
+                            defaultSort: getColumnDefaultSort(4),
+                            customSort,
                         },
                         {
                             render: () => <IconButton size="small"><MoreVertIcon /></IconButton>,
@@ -190,12 +226,13 @@ export default function UserList() {
                         selection: true,
                         grouping: false,
                         draggable: false,
-                        debounceInterval: 300,
+                        debounceInterval: 250,
                         pageSize: pageSize,
                         pageSizeOptions: [10, 50],
                     }}
                     onChangePage={handleChangePage}
                     onSearchChange={handleSearchChange}
+                    onOrderChange={handleOrderChange}
                 />
             </Card>
         </AppLayout>
