@@ -96,8 +96,6 @@ export default function UserList() {
     }, [refetch, baseVariable, pageSize]);
 
     const handleOrderChange = useCallback(async (orderBy: number, orderDirection: 'asc' | 'desc' | '') => {
-        console.log(orderBy === -1 ? 'none' : columnsField[orderBy], orderDirection);
-
         if (orderBy === -1) {
             await refetch({ ...baseVariable, ...{ first: pageSize, order: undefined } });
 
