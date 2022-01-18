@@ -12,6 +12,8 @@ import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { columnsField } from "./constant";
+import { matchAccept } from "../../../utils/file";
+import { useNotification } from "../../../components/Notification";
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -42,6 +44,7 @@ export default function UserList() {
     const [pageSize, setPageSize] = useState(10);
     const [searchText, setSearchText] = useState('');
     const [order, setOrder] = useState<UserOrder>(undefined);
+    const [importLoading, setImportLoading] = useState(false);
     const input = useRef<HTMLInputElement>(null);
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
@@ -49,6 +52,7 @@ export default function UserList() {
         { variables: { first: pageSize }, notifyOnNetworkStatusChange: true },
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
+    const { enqueueNotification } = useNotification();
 
     // data map types
     const users = useMemo(
@@ -128,18 +132,72 @@ export default function UserList() {
     // Handle import input change and resolve csv to create users
     const handleInputChange = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.currentTarget.files;
+        const accept = '.csv';
         if (files.length > 0) {
             const file = files[0];
+            if (!matchAccept(accept, file)) {
+                enqueueNotification({
+                    variant: 'error',
+                    title: '檔案格式錯誤',
+                    content: `你只能匯入格式為 ${accept} 的檔案。`,
+                });
+                return;
+            }
+
+            setImportLoading(true);
+
             const content = await file.text();
-            const users = Papa.parse(content, { header: true });
-            await createMultipleUsers({
-                variables: {
-                    input: { items: users.data },
-                },
-            });
-            await refetch({ first: pageSize });
+            const result = Papa.parse(content, { header: true, skipEmptyLines: 'greedy' });
+
+            // check validity of data
+            if (result.errors.length > 0) {
+                enqueueNotification({
+                    variant: 'error',
+                    title: '檔案格式錯誤',
+                    content: '請提供格式正確的 csv 檔。',
+                });
+                setImportLoading(false);
+                return;
+            }
+
+            const expectedFields = ['name', 'studentId', 'role'];
+            const fields = result.meta.fields;
+            if (fields &&
+                fields.length === expectedFields.length &&
+                fields.every((v, i) => v === expectedFields[i])
+            ) {
+                const response = await createMultipleUsers({
+                    variables: {
+                        input: { items: result.data },
+                    },
+                });
+                const updatedCount = response.data?.createMultipleUsers.count;
+                if (updatedCount > 0) {
+                    enqueueNotification({
+                        variant: 'success',
+                        title: '成功匯入使用者',
+                        content: `已匯入 ${updatedCount} 筆資料。`,
+                    });
+                } else {
+                    enqueueNotification({
+                        variant: 'info',
+                        title: '未更新使用者資料',
+                        content: '匯入的使用者皆已存在。',
+                    });
+                }
+                
+                await refetch({ first: pageSize });
+            } else {
+                enqueueNotification({
+                    variant: 'error',
+                    title: '缺少必填欄位',
+                    content: 'csv 檔必須包含 name, studentId, role 欄位。',
+                });
+            }
+
+            setImportLoading(false);
         }
-    }, [createMultipleUsers, refetch, pageSize]);
+    }, [enqueueNotification, createMultipleUsers, refetch, pageSize]);
 
     return (
         <AppLayout>
@@ -153,7 +211,7 @@ export default function UserList() {
                     style={{ display: 'none' }}
                     onChange={handleInputChange}
                 />
-                <Button variant="outlined" color="primary" onClick={handleImportClick}>
+                <Button variant="outlined" color="primary" disabled={importLoading} onClick={handleImportClick}>
                     匯入使用者
                 </Button>
                 <Button variant="contained" color="primary" className={classes.headingButtonMargin}>
