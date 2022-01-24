@@ -1,4 +1,4 @@
-import { OutlinedInputProps } from '@material-ui/core';
+import { FormHelperText, OutlinedInputProps } from '@material-ui/core';
 import { createStyles, FormControl, InputLabel, makeStyles, OutlinedInput } from '@material-ui/core';
 
 const useStyles = makeStyles(theme =>
@@ -9,12 +9,15 @@ const useStyles = makeStyles(theme =>
         },
         textField: {
             marginTop: theme.spacing(2),
+        },
+        error: {
+            marginLeft: theme.spacing(0),
         }
     }),
 );
 
 export default function TailwindInput(props: TailwindInputProps) {
-    const { id, required, label, fullWidth, className } = props;
+    const { id, required, label, fullWidth, error, className, ...restProps } = props;
     const classes = useStyles();
 
     return (
@@ -27,16 +30,18 @@ export default function TailwindInput(props: TailwindInputProps) {
             >
                 {label}
             </InputLabel>
-            <FormControl variant="outlined" size="small" fullWidth={fullWidth}>
-                <OutlinedInput {...props} className={classes.textField} label={undefined} />
+            <FormControl variant="outlined" size="small" fullWidth={fullWidth} error={typeof error !== 'undefined'}>
+                <OutlinedInput {...restProps} className={classes.textField} label={undefined} />
+                {error && <FormHelperText className={classes.error}>{error}</FormHelperText>}
             </FormControl>
         </div>
     );
 }
 
-interface TailwindInputProps extends OutlinedInputProps {
+export interface TailwindInputProps extends Omit<OutlinedInputProps, 'error'> {
     label: string;
     required?: boolean;
     fullwidth?: boolean;
+    error?: string;
     className?: string;
 }

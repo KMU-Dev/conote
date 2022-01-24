@@ -1,10 +1,19 @@
-import { Box, Button, Container, Typography, Link, Hidden, Card } from '@material-ui/core';
+import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import { Link as RouterLink } from 'react-router-dom';
-import { ReactComponent as Google } from './google.svg';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
+import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
+import { useMutation, gql, useQuery, ApolloError } from '@apollo/client';
+import { AuthPaylaod } from '../../graphql/type/AuthPayload';
+import { LOGIN } from '../../graphql/mutations/auth';
+import { GraphqlDto } from '../../graphql/type/type';
+import { UIStatus } from '../../graphql/type/UIStatus';
+import { UI_STATUS } from '../../graphql/queries/uiStatus';
+import { useEffect, useState } from 'react';
+import { setAccessToken } from '../../graphql/links/authLink';
+import { useNotification } from '../../components/Notification';
 
 const useStyles = makeStyles(theme =>
     createStyles({
@@ -64,21 +73,9 @@ const useStyles = makeStyles(theme =>
         },
         buttonBox: {
             margin: theme.spacing(12, 0),
-        },
-        button: {
-            backgroundColor: theme.palette.common.white,
-            color: theme.palette.text.secondary,
-        },
-        buttonLabel: {
-            justifyContent: 'unset',
-        },
-        google: {
-            width: '18px',
-            height: '18px',
-            marginRight: theme.spacing(6),
-        },
-        flexGrow: {
-            flexGrow: 2,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
         },
         bold: {
             fontWeight: 'bold',
@@ -91,6 +88,55 @@ const useStyles = makeStyles(theme =>
 
 export default function Login() {
     const classes = useStyles();
+
+    const [realLoading, setRealLoading] = useState(false);
+    const history = useHistory();
+    const { enqueueNotification } = useNotification();
+
+    const { data, refetch } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { fetchPolicy: 'network-only', nextFetchPolicy: 'network-only' });
+    const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
+        update: (cache, { data: { login }}) => {
+            cache.writeFragment({
+                fragment: gql`
+                    fragment CurrentAuthPayload on AuthPayload {
+                        accessToken
+                    }
+                `,
+                data: login,
+            });
+        },
+    });
+
+    useEffect(() => {
+        if (data && data.uiStatus.user) history.push(routes.HOME);
+    }, [data, history]);
+
+    useEffect(() => {
+        if (loading) setRealLoading(loading);
+    }, [loading]);
+
+    const handleCodeRetrieve = async (code: string) => {
+        try {
+            const response = await login({ variables: { input: { code } } });
+            if (response.data) {
+                const accessToken = response.data.login.accessToken;
+                setAccessToken(accessToken);
+
+                await refetch();
+
+                history.push(routes.HOME);
+            }
+        } catch (e) {
+            if (e instanceof ApolloError) {
+                enqueueNotification({
+                    title: '無法登入',
+                    content: e.message,
+                    variant: 'error',
+                });
+            } else console.error(e);
+            setRealLoading(false);
+        }
+    }
 
     return (
         <Box className={classes.root}>
@@ -119,18 +165,10 @@ export default function Login() {
                         <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
                     </Box>
                     <Box className={classes.buttonBox}>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            fullWidth={true}
-                            startIcon={<Google className={classes.google} />}
-                            classes={{
-                                label: classes.buttonLabel,
-                            }}
-                            className={classes.button}
-                        >
-                            <span className={classes.flexGrow}>以 @gap.kmu.edu.tw 登入</span>
-                        </Button>
+                        {realLoading ?
+                            <CircularProgress /> :
+                            <GoogleLoginButton onCodeRetrieve={handleCodeRetrieve} />
+                        }
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;

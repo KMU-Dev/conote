@@ -12,6 +12,7 @@ import { useMemo } from "react";
 const useStyles = makeStyles(theme =>
     createStyles({
         cardContent: {
+            minWidth: '288px',
             '&:last-child': {
                 paddingBottom: theme.spacing(4),
             },
