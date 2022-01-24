@@ -14,7 +14,11 @@ const useStyles = makeStyles(theme =>
             minHeight: '100%',
         },
         main: {
+            maxWidth: '100%',
             flex: 1,
+            [theme.breakpoints.up('md')]: {
+                maxWidth: 'calc(100% - 260px)',
+            }
         },
     }),
 );
