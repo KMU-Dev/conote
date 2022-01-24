@@ -1,4 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsUrl, MaxLength } from 'class-validator';
+import { OrderDirection } from './type';
 
 export enum UserRole {
     ADMIN = 'ADMIN',
@@ -40,4 +41,26 @@ export interface User {
     status: UserStatus;
     createdAt: number;
     updatedAt: number;
+}
+
+export enum UserOrderField {
+    NAME = 'NAME',
+    STUDENT_ID = 'STUDENT_ID',
+    EMAIL = 'EMAIL',
+    ROLE = 'ROLE',
+    STATUS = 'STATUS',
+}
+
+export interface UserOrder {
+    direction: OrderDirection;
+    field: UserOrderField;
+}
+
+export interface UserConnectionArgs {
+    first?: number;
+    last?: number;
+    after?: string;
+    before?: string;
+    query?: string;
+    order?: UserOrder;
 }

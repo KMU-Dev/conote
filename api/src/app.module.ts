@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { InitModule } from './init/init.module';
 import { UiModule } from './ui/ui.module';
 import configuration from './config/configuration';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import configuration from './config/configuration';
         }),
         PrismaModule,
         AuthModule,
+        CaslModule,
         UserModule,
         InitModule,
         UiModule,

@@ -4,6 +4,7 @@ const defaultOptions: ValidationPipeOptions = {
     whitelist: true,
     forbidNonWhitelisted: true,
     forbidUnknownValues: true,
+    strictGroups: true,
 };
 
 @Injectable()

@@ -20,7 +20,8 @@ export class InitResolver {
 
     @Mutation(() => UserModel)
     async initialCreateAdmin(
-        @Args('createUserInput', new DefaultValidationPipe({ groups: ['initial', undefined] })) input: CreateUserInput,
+        @Args('createUserInput', new DefaultValidationPipe({ groups: ['initial'] }))
+        input: CreateUserInput,
     ) {
         return this.initService.createAdminUser(input);
     }
