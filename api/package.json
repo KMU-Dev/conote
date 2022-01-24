@@ -32,7 +32,7 @@
     "@nestjs/passport": "^8.1.0",
     "@nestjs/platform-express": "^8.2.6",
     "@prisma/client": "^2.30.3",
-    "apollo-server-express": "^3.3.0",
+    "apollo-server-express": "^3.6.2",
     "app-root-path": "^3.0.0",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
@@ -50,7 +50,7 @@
     "rxjs": "^7.5.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.0.0",
+    "@nestjs/cli": "^8.2.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
     "@types/app-root-path": "^1.2.4",
