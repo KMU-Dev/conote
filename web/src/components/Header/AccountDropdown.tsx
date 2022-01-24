@@ -69,7 +69,6 @@ export default function AccountDropdown(props: AccountDropdownProps) {
             {...menuProps}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            getContentAnchorEl={null}
             className={clsx(classes.root, props.className)}
         >
             <Box className={classes.accountInfo}>

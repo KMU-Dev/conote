@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme =>
     }),
 );
 
-const DrawerInfoPanel = forwardRef<HTMLSpanElement, DrawerInfoPanelProps>((props, ref) => {
+const DrawerInfoPanel = forwardRef<HTMLAnchorElement, DrawerInfoPanelProps>((props, ref) => {
     const { variant, onGoBackClick } = props;
 
     const classes = useStyles();

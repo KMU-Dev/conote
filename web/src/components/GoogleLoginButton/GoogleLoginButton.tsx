@@ -69,10 +69,12 @@ export default function GoogleLoginButton(props: LoginButtonProps) {
             size="large"
             fullWidth={true}
             startIcon={<Google className={classes.google} />}
-            classes={{
-                label: classes.buttonLabel,
-            }}
             className={clsx(classes.button, className)}
+            sx={{
+                ':hover': {
+                    backgroundColor: 'white',
+                },
+            }}
             onClick={handleLoginClick}
             {...restProps}
         >

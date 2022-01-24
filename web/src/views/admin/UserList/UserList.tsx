@@ -221,7 +221,7 @@ export default function UserList() {
                 </Button>
             </PageHeading>
             <Card className={classes.card}>
-                <DataTable
+                {/* <DataTable
                     title=""
                     columns={[
                         {
@@ -291,7 +291,7 @@ export default function UserList() {
                     onChangePage={handleChangePage}
                     onSearchChange={handleSearchChange}
                     onOrderChange={handleOrderChange}
-                />
+                /> */}
             </Card>
         </AppLayout>
     );

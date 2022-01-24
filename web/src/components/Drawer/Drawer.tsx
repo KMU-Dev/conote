@@ -43,7 +43,7 @@ export default function Drawer(props: DrawerProps) {
     const getVariant = useCallback(() => isMatch('/admin', false) ? 'admin' : 'default', []);
     const [variant, setVariant] = useState<DrawerVariant>(getVariant());
     const location = useLocation();
-    const goBackLink = useRef<HTMLSpanElement | null>(null);
+    const goBackLink = useRef<HTMLAnchorElement | null>(null);
 
     useEffect(() => {
         setVariant(getVariant());
