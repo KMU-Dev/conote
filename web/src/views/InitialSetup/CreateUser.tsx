@@ -1,4 +1,6 @@
-import { Avatar, Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
+import { Avatar, Box, InputLabel, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";

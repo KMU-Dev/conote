@@ -1,4 +1,6 @@
-import { createStyles, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ReactNode } from "react";
 import HeadingBreadcrumb from "./HeadingBreadcrumb";
 

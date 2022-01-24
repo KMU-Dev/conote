@@ -1,4 +1,6 @@
-import { Avatar, Box, createStyles, makeStyles, Paper, Typography } from "@material-ui/core";
+import { Avatar, Box, Paper, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MenuSection } from "../../components/Header";
 import NestedList from "../../components/NestedList/NestedList";
 

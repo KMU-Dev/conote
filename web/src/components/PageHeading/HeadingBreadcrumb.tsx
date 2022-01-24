@@ -1,5 +1,5 @@
-import { Breadcrumbs, Link } from "@material-ui/core";
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { Breadcrumbs, Link } from "@mui/material";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Link as RouterLink } from 'react-router-dom';
 import { BreadcrumbDefinition } from "./BreadcrumbDefinition";
 import { parseBreadcrumbPath } from "./parser";
@@ -12,13 +12,26 @@ export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
     const elements = (defs: BreadcrumbDefinition[]) => defs.map((def, i) => {
         if (i === defs.length - 1) {
             return (
-                <Link key={i} color="textPrimary" variant="body2" component={RouterLink} to={def.path} aria-current="page">
+                <Link
+                    key={i}
+                    color="textPrimary"
+                    variant="body2"
+                    component={RouterLink}
+                    to={def.path}
+                    aria-current="page"
+                    underline="hover">
                     {def.name}
                 </Link>
             );
         }
         return (
-            <Link key={i} color="inherit" variant="body2" component={RouterLink} to={def.path}>
+            <Link
+                key={i}
+                color="inherit"
+                variant="body2"
+                component={RouterLink}
+                to={def.path}
+                underline="hover">
                     {def.name}
             </Link>
         );

@@ -1,10 +1,12 @@
-import { makeStyles, createStyles, Card, CardContent, Box, Typography, IconButton, useTheme, Theme } from "@material-ui/core";
+import { Card, CardContent, Box, Typography, IconButton, useTheme, Theme } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { SnackbarContent, SnackbarKey, useSnackbar } from "notistack";
-import CloseIcon from '@material-ui/icons/Close';
-import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import ErrorOutlineRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { forwardRef, ReactChild, ReactElement } from "react";
 import { useCallback } from "react";
 import { useMemo } from "react";

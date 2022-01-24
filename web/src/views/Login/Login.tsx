@@ -1,6 +1,7 @@
-import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
+import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
@@ -140,7 +141,7 @@ export default function Login() {
 
     return (
         <Box className={classes.root}>
-            <Hidden smDown>
+            <Hidden mdDown>
                 <Card className={classes.card}>
                     <Box className={classes.cardIconBox}>
                         <RouterLink to={routes.HOME}>
@@ -172,9 +173,9 @@ export default function Login() {
                     </Box>
                     <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;
-                        <Link to="/tos" color="primary" component={RouterLink}>使用者服務條款</Link>
+                        <Link to="/tos" color="primary" component={RouterLink} underline="hover">使用者服務條款</Link>
                         &ensp;及&ensp;
-                        <Link to="/privacy" color="primary" component={RouterLink}>隱私權政策</Link>
+                        <Link to="/privacy" color="primary" component={RouterLink} underline="hover">隱私權政策</Link>
                     </Typography>
                 </Box>
             </Container>

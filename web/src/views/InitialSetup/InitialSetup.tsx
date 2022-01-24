@@ -1,5 +1,7 @@
-import { makeStyles, createStyles, Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@material-ui/core";
-import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
+import { Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { createElement, useCallback, useEffect, useMemo } from "react";
 import { useState } from "react";
 import { StepDefinition } from "./StepDefinition";

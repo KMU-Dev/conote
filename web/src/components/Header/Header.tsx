@@ -1,13 +1,14 @@
 import clsx from 'clsx';
-import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@material-ui/core";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MouseEvent, ReactNode } from "react";
-import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { Drawer } from '../Drawer';
 import { headerDef, HeaderDefinition } from "./HeaderDefinition";
-import NotificationsOutlinedIcon from '@material-ui/icons/NotificationsOutlined';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { useState } from "react";
 import ListItemLink from '../ListItemLink/ListItemLink';
 import { isMatch, useRenderLink } from '../../utils/routes';
@@ -159,7 +160,7 @@ export default function Header(props: HeaderProps) {
                         <LocalLibraryOutlinedIcon color="primary" />
                         <Typography variant="h4" color="primary" className={classes.title}>CONOTE</Typography>
                     </Box>
-                    <Hidden smDown>
+                    <Hidden mdDown>
                         <List className={classes.buttonList}>
                             {listItems(headerDef)}
                         </List>
@@ -171,7 +172,7 @@ export default function Header(props: HeaderProps) {
                             aria-label="menu"
                             className={clsx(classes.iconButton, classes.iconButtonMargin)}
                             onClick={() => setDrawerOpen(!drawerOpen)}
-                        >
+                            size="large">
                             <MenuIcon className={classes.iconButtonIcon} />
                         </IconButton>
                     </Hidden>
@@ -180,11 +181,11 @@ export default function Header(props: HeaderProps) {
                         aria-label="account"
                         className={clsx(classes.iconButton, classes.iconButtonMargin)}
                         onClick={handleAccountBtnClick}
-                    >
+                        size="large">
                         <AccountCircleOutlinedIcon className={classes.iconButtonIcon} />
                     </IconButton>
-                    <Hidden smDown>
-                        <IconButton aria-label="notification" className={classes.iconButton}>
+                    <Hidden mdDown>
+                        <IconButton aria-label="notification" className={classes.iconButton} size="large">
                             <NotificationsOutlinedIcon className={classes.iconButtonIcon} />
                         </IconButton>
                     </Hidden>

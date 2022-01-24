@@ -1,4 +1,6 @@
-import { makeStyles, createStyles, Box, Typography } from "@material-ui/core";
+import { Box, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { useHistory } from "react-router";
 import { useEffect } from "react";
 import { StepContentProps } from "./StepContentProps";

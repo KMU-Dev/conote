@@ -1,5 +1,7 @@
 import { useQuery } from '@apollo/client';
-import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, makeStyles, createStyles, Box, Typography } from '@material-ui/core';
+import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, Box, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';

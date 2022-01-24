@@ -1,5 +1,7 @@
 import { ApolloError, useMutation } from "@apollo/client";
-import { Box, CircularProgress, createStyles, makeStyles, Typography } from "@material-ui/core";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import GoogleLoginButton from "../../components/GoogleLoginButton/GoogleLoginButton";
 import { useNotification } from "../../components/Notification";
 import { INITIAL_GOOGLE_LINK } from "../../graphql/mutations/initialSetup";

@@ -1,4 +1,6 @@
-import { Button, createStyles, makeStyles, Typography } from "@material-ui/core";
+import { Button, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Link } from "react-router-dom";
 import SplitImageLayout from "../../components/SplitImageLayout/SplitImageLayout";
 import PageNotFound from './page_not_found.svg';

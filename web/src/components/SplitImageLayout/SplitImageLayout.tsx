@@ -1,5 +1,7 @@
 import clsx from 'clsx';
-import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
+import { Box, Grid } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ReactNode } from "react";
 
 const useStyles = makeStyles(theme =>

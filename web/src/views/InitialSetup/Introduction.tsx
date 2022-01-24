@@ -1,4 +1,6 @@
-import { makeStyles, Typography, createStyles, Box } from "@material-ui/core";
+import { Typography, Box } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { useEffect } from "react";
 import { StepContentProps } from "./StepContentProps";
 import AppreciationSecondaryImage from "./appreciation_secondary.svg";

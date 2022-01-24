@@ -1,5 +1,7 @@
 import clsx from "clsx";
-import { Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
+import { Box, InputLabel, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { DragEvent, useState, MouseEvent, useRef } from "react";
 import { useNotification } from "../Notification";
 import { matchAccept } from "../../utils/file";

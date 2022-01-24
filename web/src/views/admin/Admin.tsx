@@ -1,4 +1,6 @@
-import { Box, createStyles, Hidden, makeStyles } from '@material-ui/core';
+import { Box, Hidden } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Switch } from 'react-router-dom';
 import { headerDef } from '../../components/Header';
 import PageRoute from '../../components/Page/PageRoute';
@@ -28,7 +30,7 @@ export default function Admin() {
 
     return (
         <Box className={classes.root}>
-            <Hidden smDown>
+            <Hidden mdDown>
                 <AdminMenu menu={headerDef.admin} />
             </Hidden>
             <Box className={classes.main}>

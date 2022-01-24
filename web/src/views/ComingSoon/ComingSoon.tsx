@@ -1,4 +1,6 @@
-import { Box, Button, createStyles, makeStyles, Typography } from "@material-ui/core";
+import { Box, Button, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import SplitImageLayout from "../../components/SplitImageLayout/SplitImageLayout";
 import UnderConstruction from './under_construction.svg';

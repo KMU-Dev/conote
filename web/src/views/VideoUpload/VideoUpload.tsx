@@ -1,5 +1,16 @@
-import { Button, ButtonTypeMap, Card, CardContent, createStyles, Grid, makeStyles, Typography, useMediaQuery, useTheme } from '@material-ui/core';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import {
+    Button,
+    ButtonTypeMap,
+    Card,
+    CardContent,
+    Grid,
+    Typography,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
 import PageHeading from '../../components/PageHeading/PageHeading';

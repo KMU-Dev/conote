@@ -1,4 +1,6 @@
-import { Box, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, SwipeableDrawer } from "@material-ui/core";
+import { Box, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Link, useLocation } from "react-router-dom";
 import clsx from 'clsx';
 import { MenuDefinition } from "../Header/MenuDefinition";

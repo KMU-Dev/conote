@@ -1,6 +1,9 @@
-import { pink } from "@material-ui/core/colors";
-import { unstable_createMuiStrictModeTheme as createTheme } from "@material-ui/core/styles";
-import createPalette from "@material-ui/core/styles/createPalette";
+import { pink } from "@mui/material/colors";
+import {
+    unstable_createMuiStrictModeTheme as createTheme,
+    adaptV4Theme,
+} from "@mui/material/styles";
+import createPalette from "@mui/material/styles/createPalette";
 
 const defaultPalette = createPalette({
     primary: {
@@ -9,7 +12,7 @@ const defaultPalette = createPalette({
     secondary: pink
 });
 
-const defaultTheme = createTheme({
+const defaultTheme = createTheme(adaptV4Theme({
     palette: defaultPalette,
     typography: {
         fontFamily: [
@@ -17,7 +20,7 @@ const defaultTheme = createTheme({
             'sans-serif',
         ].join(','),
     },
-    spacing: factor => `${0.25 * factor}rem`,
+    spacing: (factor: number) => `${0.25 * factor}rem`,
     overrides: {
         MuiButton: {
             root: {
@@ -30,6 +33,6 @@ const defaultTheme = createTheme({
             }
         }
     }
-});
+}));
 
 export default defaultTheme;

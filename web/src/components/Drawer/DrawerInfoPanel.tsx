@@ -1,6 +1,8 @@
-import { Avatar, Box, createStyles, Divider, Link, makeStyles, Typography } from "@material-ui/core";
-import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { Avatar, Box, Divider, Link, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { DrawerVariant } from "./types";
 import { MouseEvent } from "react";
 import { forwardRef } from "react";

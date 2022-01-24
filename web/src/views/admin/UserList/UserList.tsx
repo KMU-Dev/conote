@@ -1,9 +1,11 @@
-import { Avatar, Box, Button, Card, Chip, createStyles, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { Avatar, Box, Button, Card, Chip, IconButton, Typography } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import Papa from 'papaparse';
 import AppLayout from "../../../components/AppLayout/AppLayout";
 import PageHeading from "../../../components/PageHeading/PageHeading";
 import DataTable from "../../../components/DataTable/DataTable";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
