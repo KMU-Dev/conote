@@ -38,7 +38,9 @@ export class UserService extends PrismaConnectionService<UserModel, User, UserTy
         return undefined;
     }
 
-    protected getQueryOrderBy(args: UserConnectionArgs): Prisma.Enumerable<Prisma.UserOrderByInput> | undefined {
+    protected getQueryOrderBy(
+        args: UserConnectionArgs,
+    ): Prisma.Enumerable<Prisma.UserOrderByWithRelationInput> | undefined {
         if (args.order) return [{ [args.order.field as unknown as string]: args.order.direction }];
         return undefined;
     }
