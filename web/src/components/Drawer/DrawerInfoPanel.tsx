@@ -1,45 +1,12 @@
 import { Avatar, Box, Divider, Link, Typography } from "@mui/material";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { DrawerVariant } from "./types";
-import { MouseEvent } from "react";
-import { forwardRef } from "react";
+import { MouseEvent, forwardRef } from "react";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        infoBox: {
-            padding: theme.spacing(5),
-        },
-        icon: {
-            fontSize: '40px',
-        },
-        link: {
-            cursor: 'pointer',
-        },
-        linkFlex: {
-            display: 'flex',
-            alignItems: 'center',
-        },
-        linkTypography: {
-            marginLeft: theme.spacing(2),
-        },
-        flex: {
-            marginTop: theme.spacing(6),
-            display: 'flex',
-            alignItems: 'center',
-        },
-        infoTextBox: {
-            marginLeft: theme.spacing(4),
-        },
-    }),
-);
 
 const DrawerInfoPanel = forwardRef<HTMLAnchorElement, DrawerInfoPanelProps>((props, ref) => {
     const { variant, onGoBackClick } = props;
-
-    const classes = useStyles();
 
     const handleGoBackLinkClick = (e: MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
@@ -48,25 +15,25 @@ const DrawerInfoPanel = forwardRef<HTMLAnchorElement, DrawerInfoPanelProps>((pro
 
     return (
         <>
-            <Box className={classes.infoBox}>
+            <Box p={5}>
                 {variant === 'default' ?
-                    <LocalLibraryOutlinedIcon color="primary" className={classes.icon} /> :
+                    <LocalLibraryOutlinedIcon color="primary" sx={{ fontSize: 40 }} /> :
                     <>
                         <Link
                             ref={ref}
                             underline="hover"
                             color="textSecondary"
-                            className={classes.link}
+                            sx={{ cursor: 'pointer' }}
                             onClick={handleGoBackLinkClick}
                         >
-                            <Box className={classes.linkFlex}>
+                            <Box display="flex" alignItems="center">
                                 <ArrowBackIcon fontSize="small" />
-                                <Typography variant="body2" className={classes.linkTypography}>返回主選單</Typography>
+                                <Typography variant="body2" sx={{ ml: 2 }}>返回主選單</Typography>
                             </Box>
                         </Link>
-                        <Box className={classes.flex}>
+                        <Box display="flex" alignItems="center" mt={6}>
                             <Avatar />
-                            <Box className={classes.infoTextBox}>
+                            <Box ml={4}>
                                 <Typography variant="subtitle2">趙子賢</Typography>
                                 <Typography variant="body2" color="textSecondary">系統管理員</Typography>
                             </Box>

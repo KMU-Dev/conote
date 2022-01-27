@@ -1,7 +1,4 @@
-import clsx from 'clsx';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import { MouseEvent, ReactNode } from "react";
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -22,92 +19,7 @@ import { useNotification } from '../Notification';
 import { history } from '../../utils/history';
 import { client } from '../../graphql/client';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            minHeight: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-        },
-        toolbar: {
-            padding: theme.spacing(0, 4),
-            justifyContent: 'space-between',
-            [theme.breakpoints.up('sm')]: {
-                padding: theme.spacing(0, 6),
-            },
-            [theme.breakpoints.up('lg')]: {
-                padding: theme.spacing(0, 8),
-            },
-        },
-        main: {
-            flex: 1,
-            backgroundColor: theme.palette.background.default,
-        },
-        leftBox: {
-            height: theme.mixins.toolbar.minHeight,
-            display: 'flex',
-            alignItems: 'center',
-            [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-                minHeight: 48,
-            },
-            [theme.breakpoints.up('sm')]: {
-                minHeight: 64,
-            }
-        },
-        rightBox: {
-            display: 'flex',
-            flexDirection: 'row-reverse',
-            alignItems: 'center',
-        },
-        titleBox: {
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-        },
-        title: {
-            margin: theme.spacing(0, 2),
-            fontSize: '1.25rem',
-            fontWeight: 600,
-        },
-        buttonList: {
-            height: '100%',
-            margin: theme.spacing(0, 4),
-            padding: theme.spacing(0),
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        listLi: {
-            height: '100%',
-            margin: theme.spacing(0, 4),
-        },
-        listItem: {
-            height: '100%',
-            padding: theme.spacing(0, 2),
-            color: theme.palette.text.secondary,
-            '&:hover': {
-                color: theme.palette.text.primary,
-            }
-        },
-        listItemMatch: {
-            color: theme.palette.text.primary,
-            borderBottom: `2px solid ${theme.palette.primary.main}`,
-        },
-        iconButton: {
-            padding: theme.spacing(0),
-        },
-        iconButtonMargin: {
-            marginLeft: theme.spacing(4),
-        },
-        iconButtonIcon: {
-            fontSize: '1.625rem',
-        },
-    })
-);
-
 export default function Header(props: HeaderProps) {
-    const classes = useStyles();
     const renderLink = useRenderLink(routes.HOME);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -118,14 +30,33 @@ export default function Header(props: HeaderProps) {
     const [logout] = useMutation<GraphqlDto<'logout', boolean>>(LOGOUT);
 
     const listItems = (def: HeaderDefinition) => def.navigation.map((def) => (
-        <li key={def.name} className={clsx(classes.listLi)}>
+        <Box
+            component="li"
+            key={def.name}
+            height={1}
+            mx={4}
+        >
             <ListItemLink
                 to={def.href}
-                className={clsx(classes.listItem, isMatch(def.href, def.exact) && classes.listItemMatch)}
+                sx={[
+                    {
+                        height: 1,
+                        px: 2,
+                        color: 'text.secondary',
+                        '&:hover': {
+                            color: 'text.primary',
+                        },
+                    },
+                    isMatch(def.href, def.exact) !== null && {
+                        borderBottom: 2,
+                        borderColor: 'primary.main',
+                        color: 'text.primary'
+                    },
+                ]}
             >
                 <ListItemText primary={def.name} />
             </ListItemLink>
-        </li>
+        </Box>
     ));
 
     const handleAccountBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -153,48 +84,77 @@ export default function Header(props: HeaderProps) {
     };
 
     return (
-        <Box className={classes.root}>
-            <Toolbar className={classes.toolbar}>
-                <Box className={classes.leftBox}>
-                    <Box component={renderLink} className={classes.titleBox}>
+        <Box display='flex' flexDirection='column' height={1} minHeight={1}>
+            <Toolbar 
+                sx={{
+                    justifyContent: 'space-between',
+                    px: {
+                        xs: 4,
+                        sm: 6,
+                        lg: 8,
+                    }
+                }}
+            >
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    height={(theme) => theme.mixins.toolbar.minHeight}
+                    minHeight={{ xs: 48, sm: 64 }}
+                >
+                    <Box
+                        component={renderLink}
+                        display='flex'
+                        alignItems='center'
+                        style={{ textDecoration: 'none' }}
+                    >
                         <LocalLibraryOutlinedIcon color="primary" />
-                        <Typography variant="h4" color="primary" className={classes.title}>CONOTE</Typography>
+                        <Typography variant="h4" color="primary" sx={{ mx: 2, fontSize: '1.25rem', fontWeight: 600 }} /*className={classes.title}*/>CONOTE</Typography>
                     </Box>
                     <Hidden mdDown>
-                        <List className={classes.buttonList}>
+                        <List
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                height: 1,
+                                mx: 4,
+                                p: 0,
+                            }}
+                        >
                             {listItems(headerDef)}
                         </List>
                     </Hidden>
                 </Box>
-                <Box className={classes.rightBox}>
+                <Box display='flex' flexDirection='row-reverse' alignItems='center'>
                     <Hidden mdUp>
                         <IconButton
+                            size="large"
                             aria-label="menu"
-                            className={clsx(classes.iconButton, classes.iconButtonMargin)}
+                            sx={{ p: 0, ml: 4 }}
                             onClick={() => setDrawerOpen(!drawerOpen)}
-                            size="large">
-                            <MenuIcon className={classes.iconButtonIcon} />
+                        >
+                            <MenuIcon sx={{ fontSize: '1.625rem' }} />
                         </IconButton>
                     </Hidden>
                     <IconButton
                         id={accountDrowpdownId.current}
                         aria-label="account"
-                        className={clsx(classes.iconButton, classes.iconButtonMargin)}
+                        sx={{ p: 0, ml: 4 }}
                         onClick={handleAccountBtnClick}
                         size="large">
-                        <AccountCircleOutlinedIcon className={classes.iconButtonIcon} />
+                        <AccountCircleOutlinedIcon sx={{ fontSize: '1.625rem' }} />
                     </IconButton>
                     <Hidden mdDown>
-                        <IconButton aria-label="notification" className={classes.iconButton} size="large">
-                            <NotificationsOutlinedIcon className={classes.iconButtonIcon} />
+                        <IconButton size="large" aria-label="notification" sx={{ p: 0 }}>
+                            <NotificationsOutlinedIcon sx={{ fontSize: '1.625rem' }} />
                         </IconButton>
                     </Hidden>
                 </Box>
             </Toolbar>
             <Divider />
-            <main className={classes.main}>
+            <Box component="main" flexGrow={1} bgcolor='background.default'>
                 {props.children}
-            </main>
+            </Box>
             <AccountDropdown
                 id={accountDrowpdownId.current}
                 menuDefinitions={headerDef.account}

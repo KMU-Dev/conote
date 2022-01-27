@@ -1,3 +1,4 @@
+import { SxProps, Theme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import React from 'react';
 import { useRenderLink } from '../../utils/routes';
@@ -17,5 +18,5 @@ export default function ListItemLink(props: ListItemLinkProps) {
 interface ListItemLinkProps {
     to: string;
     children: React.ReactNode;
-    className?: string;
+    sx?: SxProps<Theme>;
 }

@@ -22,9 +22,6 @@ const useStyles = makeStyles(theme =>
         infoTextBox: {
             marginLeft: theme.spacing(4),
         },
-        list: {
-            paddingTop: theme.spacing(2),
-        },
     }),
 );
 
@@ -43,7 +40,7 @@ export default function AdminMenu(props: AdminMenuProps) {
                     </Box>
                 </Box>
             </Box>
-            <NestedList sections={menu} className={classes.list} />
+            <NestedList sections={menu} sx={{ pt: 2 }} />
         </Paper>
     );
 }
