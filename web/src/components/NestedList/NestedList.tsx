@@ -27,7 +27,7 @@ const listItemSx: SxProps<Theme> = {
     py: 3,
     pr: 2,
     pl: 4,
-    borderRadius: 16,
+    borderRadius: 4,
 };
 
 const listItemMatchSx: SxProps<Theme> = {
@@ -82,7 +82,7 @@ export default function NestedList(props: NestedListProps) {
                     pr: 2,
                     pl: 13,
                     color: 'grey.700',
-                    borderRadius: 16,
+                    borderRadius: 4,
                     '& .MuiTouchRipple-child': {
                         bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
                     },

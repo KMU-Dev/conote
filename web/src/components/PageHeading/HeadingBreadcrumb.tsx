@@ -1,11 +1,11 @@
-import { Breadcrumbs, Link } from "@mui/material";
+import { Breadcrumbs, Link, SxProps, Theme } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Link as RouterLink } from 'react-router-dom';
 import { BreadcrumbDefinition } from "./BreadcrumbDefinition";
 import { parseBreadcrumbPath } from "./parser";
 
 export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
-    const { path, className } = props;
+    const { path, sx } = props;
 
     const defs = parseBreadcrumbPath(path);
 
@@ -41,7 +41,7 @@ export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
         <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
-            className={className}
+            sx={sx}
         >
             {elements(defs)}
         </Breadcrumbs>
@@ -50,5 +50,5 @@ export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
 
 interface HeadingBreadcrumbProps {
     path: string;
-    className?: string;
+    sx?: SxProps<Theme>;
 }

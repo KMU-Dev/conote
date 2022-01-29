@@ -30,7 +30,7 @@ export default function NotFound() {
     const classes = useStyles();
 
     return (
-        <SplitImageLayout image={PageNotFound} alt="Not found" classes={{textGrid: classes.textGrid}}>
+        <SplitImageLayout image={PageNotFound} alt="Not found" classes={{ textGrid: { textAlign: { md: 'unset' } } }}>
             <Typography variant="h1" className={classes.title}>404</Typography>
             <Typography variant="h6" color="textSecondary">
                 糟糕！看起來您點到壞掉的連結了，

@@ -1,30 +1,28 @@
-import clsx from 'clsx';
 import { Box, BoxProps } from "@mui/material";
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            minHeight: '100%',
-            padding: theme.spacing(6, 4),
-            [theme.breakpoints.up('sm')]: {
-                padding: theme.spacing(6, 6),
-            },
-            [theme.breakpoints.up('lg')]: {
-                padding: theme.spacing(8, 8),
-            },
-        },
-    }),
-);
 
 export default function AppLayout(props: AppLayoutProps) {
-    const { className } = props;
-    const classes = useStyles();
+    const { sx } = props;
 
-    return <Box {...props} className={clsx(classes.root, className)} />;
+    return <Box
+        {...props}
+        sx={[
+            {
+                height: 1,
+                minHeight: 1,
+                px: {
+                    xs: 4,
+                    sm: 6,
+                    lg: 8,
+                },
+                py: {
+                    xs: 6,
+                    lg: 8,
+                },
+            },
+            ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+    />;
 }
 
 interface AppLayoutProps extends BoxProps {}

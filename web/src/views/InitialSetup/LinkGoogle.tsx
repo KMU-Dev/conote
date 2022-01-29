@@ -73,7 +73,7 @@ export default function LinkGoogle(props: LinkGoogleProps) {
                 <Box className={classes.loadingBox}>
                     <CircularProgress />
                 </Box> :
-                <GoogleLoginButton className={classes.button} onCodeRetrieve={handleCodeRetrieve} />
+                <GoogleLoginButton sx={{ my: 12, mx: 0 }} onCodeRetrieve={handleCodeRetrieve} />
             }
             <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
                 此 Google 帳號將會作為您未來登入用的帳號，因此請您牢記登入資訊。
