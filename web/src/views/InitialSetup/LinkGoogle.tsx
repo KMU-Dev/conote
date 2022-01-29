@@ -1,7 +1,5 @@
 import { ApolloError, useMutation } from "@apollo/client";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import GoogleLoginButton from "../../components/GoogleLoginButton/GoogleLoginButton";
 import { useNotification } from "../../components/Notification";
 import { INITIAL_GOOGLE_LINK } from "../../graphql/mutations/initialSetup";
@@ -9,42 +7,9 @@ import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { GraphqlDto } from "../../graphql/type/type";
 import { StepContentProps } from "./StepContentProps";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            padding: theme.spacing(2, 6),
-        },
-        image: {
-            width: '100%',
-            maxHeight: '220px',
-            padding: theme.spacing(6),
-        },
-        titleBox: {
-            marginTop: theme.spacing(6),
-        },
-        title: {
-            marginBottom: theme.spacing(2),
-            fontSize: '1.5rem',
-            lineHeight: 1.5,
-        },
-        button: {
-            margin: theme.spacing(12, 0),
-        },
-        loadingBox: {
-            padding: theme.spacing(12, 0),
-            display: 'flex',
-            justifyContent: 'center',
-        },
-        subtitle: {
-            marginBottom: theme.spacing(6),
-        }
-    }),
-);
 
 export default function LinkGoogle(props: LinkGoogleProps) {
     const { onOAuthUserRetrieve, triggerNext } = props;
-    const classes = useStyles();
 
     const [initialGoogleLink, { loading }] = useMutation<
         GraphqlDto<'initialGoogleLink', OAuth2User>
@@ -64,18 +29,18 @@ export default function LinkGoogle(props: LinkGoogleProps) {
     }
 
     return (
-        <Box className={classes.root}>
-            <Box className={classes.titleBox}>
-                <Typography variant="h4" className={classes.title}>綁定 Google 帳號</Typography>
+        <Box height={1} px={6} py={2}>
+            <Box mt={6}>
+                <Typography variant="h4" mb={2} fontSize="h5.fontSize" lineHeight={1.5}>綁定 Google 帳號</Typography>
                 <Typography variant="body1" color="textSecondary">目前僅支援高雄醫學大學 Google Workspace 帳號</Typography>
             </Box>
             {loading ?
-                <Box className={classes.loadingBox}>
+                <Box display="flex" justifyContent="center" py={12}>
                     <CircularProgress />
                 </Box> :
                 <GoogleLoginButton sx={{ my: 12, mx: 0 }} onCodeRetrieve={handleCodeRetrieve} />
             }
-            <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
+            <Typography variant="body2" color="textSecondary" mb={6}>
                 此 Google 帳號將會作為您未來登入用的帳號，因此請您牢記登入資訊。
             </Typography>
         </Box>

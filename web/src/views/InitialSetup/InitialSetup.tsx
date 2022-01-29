@@ -1,6 +1,4 @@
 import { Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { createElement, useCallback, useEffect, useMemo } from "react";
 import { useState } from "react";
@@ -18,37 +16,8 @@ import { GraphqlDto } from "../../graphql/type/type";
 import { UIStatus } from "../../graphql/type/UIStatus";
 import routes from '../../constant/routes.json';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            minHeight: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        },
-        icon: {
-            margin: theme.spacing(8, 0, 4, 0),
-        },
-        stepper: {
-            width: '100%',
-        },
-        contentBox: {
-            width: '100%',
-            flexGrow: 1,
-        },
-        buttonBox: {
-            width: '100%',
-            padding: theme.spacing(6),
-            display: 'flex',
-            justifyContent: 'flex-end',
-        },
-    }),
-);
 
 export default function InitialSetup() {
-    const classes = useStyles();
-
     const [activeStep, setActiveStep] = useState(0);
     const [nextClicked, setNextClicked] = useState(-1);
     const [oauthUser, setOauthUser] = useState<OAuth2User | null>(null);
@@ -89,17 +58,26 @@ export default function InitialSetup() {
     }
 
     return (
-        <Container maxWidth="sm" className={classes.root}>
-            <LocalLibraryOutlinedIcon color="primary" fontSize="large" className={classes.icon} />
+        <Container
+            maxWidth="sm"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: 1,
+                minHeight: 1,
+            }}
+        >
+            <LocalLibraryOutlinedIcon color="primary" fontSize="large" sx={{ mt: 8, mb: 4 }} />
             <Typography variant="h5">設定 Conote</Typography>
-            <Stepper activeStep={activeStep} alternativeLabel className={classes.stepper}>
+            <Stepper activeStep={activeStep} alternativeLabel sx={{ width: 1, p: 6 }}>
                 {steps.map((def) =>(
                     <Step key={def.title}>
                         <StepLabel>{def.title}</StepLabel>
                     </Step>
                 ))}
             </Stepper>
-            <Box className={classes.contentBox}>
+            <Box flexGrow={1} width={1}>
                 {createElement(
                         steps[activeStep].content,
                         {
@@ -112,7 +90,7 @@ export default function InitialSetup() {
             </Box>
             {
                 nextButton ?
-                    <Box className={classes.buttonBox}>
+                    <Box display="flex" justifyContent="flex-end" width={1} p={6}>
                         <Button
                             variant="contained"
                             color="primary"

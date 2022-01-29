@@ -64,10 +64,10 @@ function App() {
                     <Header>
                         <Switch>
                             <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1632326400000)} />
+                                <ComingSoon time={new Date(1645372800000)} />
                             </PageRoute>
                             <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1632326400000)} />
+                                <ComingSoon time={new Date(1645372800000)} />
                             </PageRoute>
                             <PageRoute
                                 exact

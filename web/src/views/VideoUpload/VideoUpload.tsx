@@ -8,8 +8,6 @@ import {
     useMediaQuery,
     useTheme,
 } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
@@ -18,39 +16,8 @@ import TailwindInput from '../../components/TailwindInput/TailwindInput';
 import FolderAdornment from './FolderAdornment';
 import VideoFiles from './video_files.svg';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        card: {
-            margin: theme.spacing(6, 0),
-        },
-        cardContent: {
-            padding: theme.spacing(6, 4),
-            '&:last-child': {
-                paddingBottom: theme.spacing(8),
-            },
-        },
-        gridItem: {
-            padding: theme.spacing(4, 0),
-        },
-        formGridContainer: {
-            [theme.breakpoints.up("md")]: {
-                paddingLeft: theme.spacing(6),
-            },
-        },
-        subtitle: {
-            marginTop: theme.spacing(1),
-        },
-        textFieldMargin: {
-            marginTop: theme.spacing(6),
-            [theme.breakpoints.up("lg")]: {
-                marginTop: theme.spacing(0),
-            },
-        }
-    }),
-);
 
 export default function VideoUpload() {
-    const classes = useStyles();
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -68,17 +35,25 @@ export default function VideoUpload() {
                     上傳
                 </Button>
             </PageHeading>
-            <Card className={classes.card}>
-                <CardContent className={classes.cardContent}>
+            <Card sx={{ my: 6 }}>
+                <CardContent
+                    sx={{
+                        px: 4,
+                        py: 6,
+                        ':last-child': {
+                            pb: 8,
+                        },
+                    }}
+                >
                     <Grid container justifyContent="space-between" spacing={6}>
-                        <Grid item xs={12} md={4} /* className={classes.gridItem} */>
+                        <Grid item xs={12} md={4}>
                             <Typography variant="h6">影片資訊</Typography>
-                            <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
+                            <Typography variant="body2" color="textSecondary" mt={1}>
                                 這些資訊會公開顯示在網頁上，請注意填寫的內容。
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={8} /* className={classes.gridItem} */>
-                            <Grid container /* className={classes.formGridContainer} */ spacing={6}>
+                        <Grid item xs={12} md={8}>
+                            <Grid container spacing={6}>
                                 <Grid item xs={12} lg={6}>
                                     <TailwindInput id="name" label="名稱" fullWidth required />
                                 </Grid>
