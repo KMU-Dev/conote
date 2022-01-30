@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, makeStyles, createStyles, Box, Typography } from '@material-ui/core';
-import clsx from 'clsx';
+import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, Box, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { UI_STATUS } from '../../graphql/queries/uiStatus';
@@ -10,39 +9,23 @@ import { PartialBy } from '../../utils/types';
 import { MenuDefinition } from './MenuDefinition';
 
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            marginTop: theme.spacing(4),
-            [theme.breakpoints.up('sm')]: {
-                marginTop: theme.spacing(5),
-            },
-        },
-        accountInfo: {
-            minWidth: '200px',
-            padding: theme.spacing(2, 4, 4, 4),
-        },
-        title: {
-            fontWeight: 500,
-            fontSize: '1.125rem',
-        },
-        subtitle: {
-            marginTop: theme.spacing(1),
-        },
-        listItem: {
-            '&:hover .MuiListItemIcon-root': {
-                color: theme.palette.primary.main,
-            },
-        },
-    }),
-);
-
 const getMenuItems = (
     menuDefs: AccountMenuDefinition[],
-    classes: ReturnType<typeof useStyles>,
     onMenuItemClick?: MenuItemClickCallback
 ) => menuDefs.map((def, index) => (
-    <MenuItem key={def.name} className={classes.listItem} component={def.href && Link} to={def.href} onClick={() => onMenuItemClick(index)}>
+    <MenuItem
+        component={def.href && Link}
+        to={def.href} key={def.name}
+        sx={{
+            '& .MuiListItemText-root': {
+                my: 1,
+            },
+            '&:hover .MuiListItemIcon-root': {
+                color: 'primary.main'
+            },
+        }}
+        onClick={() => onMenuItemClick(index)}
+    >
         <ListItemIcon>
             {def.icon}
         </ListItemIcon>
@@ -51,15 +34,14 @@ const getMenuItems = (
 ));
 
 export default function AccountDropdown(props: AccountDropdownProps) {
-    const { menuDefinitions, onMenuItemClick, ...menuProps } = props;
-    const classes = useStyles();
+    const { menuDefinitions, onMenuItemClick, sx, ...menuProps } = props;
 
     const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
     const user = data && data.uiStatus.user;
 
     const menuItems = useMemo(() =>
-        getMenuItems(menuDefinitions, classes, onMenuItemClick),
-        [menuDefinitions, classes, onMenuItemClick]
+        getMenuItems(menuDefinitions, onMenuItemClick),
+        [menuDefinitions, onMenuItemClick]
     );
 
     return (
@@ -67,10 +49,9 @@ export default function AccountDropdown(props: AccountDropdownProps) {
             {...menuProps}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            getContentAnchorEl={null}
-            className={clsx(classes.root, props.className)}
+            sx={[{ mt: { xs: 4, sm: 5 }}, ...(Array.isArray(sx) ? sx: [sx])]}
         >
-            <Box className={classes.accountInfo}>
+            <Box minWidth={200} px={4} pt={2} pb={4}>
                 <Typography variant="h6">{user && user.name}</Typography>
                 <Typography variant="body2" color="textSecondary">
                     {user && user.studentId}

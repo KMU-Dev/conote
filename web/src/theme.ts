@@ -1,35 +1,42 @@
-import { pink } from "@material-ui/core/colors";
-import { unstable_createMuiStrictModeTheme as createTheme } from "@material-ui/core/styles";
-import createPalette from "@material-ui/core/styles/createPalette";
+import { pink } from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles";
 
-const defaultPalette = createPalette({
-    primary: {
-        main: '#4F46E5',
+let defaultTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#4F46E5',
+        },
+        secondary: pink,
+        background: {
+            default: '#fafafa', // Material UI default background color
+        },
     },
-    secondary: pink
-});
-
-const defaultTheme = createTheme({
-    palette: defaultPalette,
     typography: {
         fontFamily: [
             'Noto Sans TC',
             'sans-serif',
         ].join(','),
     },
-    spacing: factor => `${0.25 * factor}rem`,
-    overrides: {
+    spacing: (factor: number) => `${0.25 * factor}rem`,
+});
+
+defaultTheme = createTheme(defaultTheme, {
+    components: {
         MuiButton: {
-            root: {
-                textTransform: 'none',
-            }
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
         },
-        MuiInputLabel: {
-            asterisk: {
-                color: defaultPalette.secondary.main,
-            }
-        }
-    }
+        MuiFormLabel: {
+            styleOverrides: {
+                asterisk: {
+                    color: defaultTheme.palette.secondary.main,
+                },
+            },
+        },
+    },
 });
 
 export default defaultTheme;

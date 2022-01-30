@@ -1,22 +1,12 @@
-import { Box, createStyles, makeStyles } from "@material-ui/core";
+import { Box } from "@mui/material";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DateUnit, getTimeDiff } from "../../utils/date";
 import CountDownUnit from "./CountDownUnit";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-around',
-        },
-    }),
-);
 
 export default function CountDownTimer(props: CountDownTimerProps) {
     const { time } = props;
-    const classes = useStyles();
 
     const [timeDiff, setTimeDiff] = useState(() => getTimeDiff(time));
 
@@ -32,7 +22,7 @@ export default function CountDownTimer(props: CountDownTimerProps) {
     ));
 
     return (
-        <Box className={classes.root}>
+        <Box display="flex" justifyContent="space-around" width={1}>
             {timeUnits}
         </Box>
     )

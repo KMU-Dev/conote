@@ -1,69 +1,35 @@
-import clsx from 'clsx';
-import { Box, createStyles, Grid, makeStyles } from "@material-ui/core";
+import { Box, Grid, SxProps, Theme } from "@mui/material";
 import { ReactNode } from "react";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            minHeight: '100%',
-            padding: theme.spacing(8, 4),
-            [theme.breakpoints.up('sm')]: {
-                padding: theme.spacing(12, 4),
-            },
-            [theme.breakpoints.up('md')]: {
-                padding: theme.spacing(16, 4),
-            },
-        },
-        grid: {
-            minHeight: '100%',
-            justifyContent: 'center',
-            alignContent: 'center',
-        },
-        imageGrid: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            [theme.breakpoints.up('md')]: {
-                padding: theme.spacing(0, 6, 0, 0),
-            },
-            [theme.breakpoints.up('lg')]: {
-                padding: theme.spacing(0, 18, 0, 0),
-            },
-        },
-        textGrid: {
-            maxWidth: `${theme.breakpoints.values.sm}px`,
-            padding: theme.spacing(12, 0),
-            display: 'flex',
-            flexDirection: 'column',
-            textAlign: 'center',
-            justifyContent: 'center',
-            [theme.breakpoints.up('lg')]: {
-                padding: theme.spacing(12, 6),
-            },
-        },
-        img: {
-            width: '100%',
-            maxWidth: '500px',
-            padding: theme.spacing(4),
-            [theme.breakpoints.up('md')]: {
-                maxWidth: 'unset',
-            },
-        },
-    }),
-);
 
 export default function SplitImageLayout(props: SplitImageLayoutProps) {
-    const { children, image, alt } = props;
-    const classes = useStyles();
+    const { children, image, alt, classes } = props;
 
     return (
-        <Box className={classes.root}>
-            <Grid container className={classes.grid}>
-                <Grid item xs={12} md={6} className={classes.imageGrid}>
-                    <img src={image} alt={alt} className={classes.img} />
+        <Box height={1} minHeight={1} px={4} py={{ xs: 8, sm: 12, md: 16 }}>
+            <Grid container minHeight={1} justifyContent='center' alignContent="center">
+                <Grid item xs={12} md={6} display="flex" flexDirection="column" alignItems="center" pr={{ md: 6, lg: 18 }}>
+                    <Box component="img" src={image} alt={alt} width={1} maxWidth={{ xs: 500, md: 'unset' }} p={4} />
                 </Grid>
-                <Grid item xs={12} md={6} className={clsx(classes.textGrid, props.classes?.textGrid)}>
+                <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    sx={[
+                        {
+                            display: 'flex',
+                            flexDirection: 'column',
+                            textAlign: 'center',
+                            maxWidth: (theme) => ({
+                                xs: theme.breakpoints.values.sm,
+                            }),
+                            justifyContent: 'center',
+                            py: 12,
+                            px: { lg: 6 },
+                        },
+                        ...(Array.isArray(classes?.textGrid) ? classes?.textGrid : [classes?.textGrid]),
+                    ]}
+                >
                     {children}
                 </Grid>
             </Grid>
@@ -72,7 +38,7 @@ export default function SplitImageLayout(props: SplitImageLayoutProps) {
 }
 
 interface Classes {
-    textGrid?: string;
+    textGrid?: SxProps<Theme>;
 }
 
 interface SplitImageLayoutProps {

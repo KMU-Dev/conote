@@ -1,59 +1,11 @@
-import clsx from "clsx";
-import { Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
+import { Box, InputLabel, SxProps, Theme, Typography } from "@mui/material";
 import { DragEvent, useState, MouseEvent, useRef } from "react";
 import { useNotification } from "../Notification";
 import { matchAccept } from "../../utils/file";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            padding: theme.spacing(12),
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            outline: 'none',
-            border: '1px solid rgba(0, 0, 0, 0.23)',
-            borderRadius: theme.spacing(4),
-            '&:hover': {
-                cursor: 'pointer',
-                backgroundColor: theme.palette.action.hover,
-                opacity: 0.5,
-            },
-        },
-        rootDrag: {
-            backgroundColor: theme.palette.action.hover,
-            opacity: 0.5,
-        },
-        label: {
-            color: theme.palette.text.primary,
-            fontSize: theme.typography.body2.fontSize,
-            marginBottom: theme.spacing(2),
-        },
-        input: {
-            display: 'none',
-        },
-        innerBox: {
-            padding: theme.spacing(6),
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-        },
-        title: {
-            fontWeight: 'bold',
-        },
-        subtitle: {
-            marginTop: theme.spacing(2),
-        },
-        subtitleSpan: {
-            color: theme.palette.primary.main,
-            textDecoration: 'underline',
-        },
-    }),
-)
 
 export default function FileInput(props: FileInputProps) {
-    const { id, image, label, required, accept, multiple, className } = props;
-    const classes = useStyles();
+    const { id, image, label, required, accept, multiple, sx } = props;
 
     const [drag, setDrag] = useState(0);
     const input = useRef<HTMLInputElement>(null);
@@ -100,20 +52,44 @@ export default function FileInput(props: FileInputProps) {
     }
 
     return (
-        <Box className={className}>
+        <Box sx={sx}>
             {label ?
                 <InputLabel
                     htmlFor={id}
                     color="primary"
                     required={required}
-                    className={classes.label}
+                    sx={{
+                        color: 'text.primary',
+                        fontSize: 'body2.fontSize',
+                        mb: 2,
+                    }}
                 >
                     {label}
                 </InputLabel> : ''
             }
             <Box
-                className={clsx(classes.root, drag > 0 && classes.rootDrag)}
                 tabIndex={0}
+                sx={[
+                    {
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        p: 12,
+                        outline: 'none',
+                        border: 1,
+                        borderColor: 'action.disabled',
+                        borderRadius: 4,
+                        '&:hover': {
+                            cursor: 'pointer',
+                            bgcolor: 'action.hover',
+                            opacity: 0.5,
+                        },
+                    },
+                    drag > 0 && {
+                        bgcolor: 'action.hover',
+                        opacity: 0.5,
+                    },
+                ]}
                 onClick={handleClick}
                 onDragOver={handleDragOver}
                 onDragEnter={handleDragEnter}
@@ -131,11 +107,11 @@ export default function FileInput(props: FileInputProps) {
                     style={{ display: 'none' }}
                 />
                 <img src={image} alt="Select file" width="220px" />
-                <Box className={classes.innerBox}>
-                    <Typography variant="h6" className={classes.title}>拖曳或選擇檔案</Typography>
-                    <Typography variant="subtitle2" color="textSecondary" className={classes.subtitle}>
+                <Box display="flex" flexDirection="column" justifyContent="center" p={6}>
+                    <Typography variant="h6" fontWeight="bold">拖曳或選擇檔案</Typography>
+                    <Typography variant="subtitle2" color="textSecondary" mt={2}>
                         拖曳檔案或點擊這裡從電腦
-                        <span className={classes.subtitleSpan}>瀏覽</span>
+                        <Box component="span" color="primary.main" style={{ textDecoration: 'underline' }}>瀏覽</Box>
                         檔案
                     </Typography>
                 </Box>
@@ -151,5 +127,5 @@ interface FileInputProps {
     required?: boolean;
     accept?: string;
     multiple?: boolean;
-    className?: string;
+    sx?: SxProps<Theme>;
 }

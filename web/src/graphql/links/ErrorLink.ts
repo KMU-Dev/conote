@@ -11,6 +11,7 @@ export const errorLink = onError(({ networkError, response }) => {
             content: '請再試一次。如果問題持續發生，請聯絡系統管理員。',
             variant: 'error',
         });
+        return;
     }
     
     const remainedErrors: GraphQLError[] = [];
