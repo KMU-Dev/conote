@@ -1,47 +1,29 @@
-import { Avatar, Box, createStyles, makeStyles, Paper, Typography } from "@material-ui/core";
+import { Avatar, Box, Paper, Typography } from "@mui/material";
 import { MenuSection } from "../../components/Header";
 import NestedList from "../../components/NestedList/NestedList";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            width: '260px',
-        },
-        infoBox: {
-            padding: theme.spacing(4),
-        },
-        avatarBox: {
-            padding: theme.spacing(4),
-            borderRadius: theme.spacing(4),
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: theme.palette.grey[100],
-        },
-        infoTextBox: {
-            marginLeft: theme.spacing(4),
-        },
-        list: {
-            paddingTop: theme.spacing(2),
-        },
-    }),
-);
 
 export default function AdminMenu(props: AdminMenuProps) {
     const { menu } = props;
-    const classes = useStyles();
 
     return (
-        <Paper elevation={0} className={classes.root}>
-            <Box className={classes.infoBox}>
-                <Box className={classes.avatarBox}>
+        <Paper elevation={0} sx={{ width: 260 }}>
+            <Box p={4}>
+                <Box
+                    display="flex"
+                    alignItems="center"
+                    p={4}
+                    bgcolor={(theme) => theme.palette.grey[100]}
+                    borderRadius={4}
+                >
                     <Avatar />
-                    <Box className={classes.infoTextBox}>
+                    <Box ml={4}>
                         <Typography variant="subtitle2">趙子賢</Typography>
                         <Typography variant="body2" color="textSecondary">系統管理員</Typography>
                     </Box>
                 </Box>
             </Box>
-            <NestedList sections={menu} className={classes.list} />
+            <NestedList sections={menu} sx={{ pt: 2 }} />
         </Paper>
     );
 }

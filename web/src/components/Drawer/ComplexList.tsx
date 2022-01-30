@@ -1,53 +1,42 @@
-import { Collapse, createStyles, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, useTheme } from "@material-ui/core";
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import clsx from "clsx";
+import {
+    alpha,
+    Collapse,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    ListSubheader,
+    SxProps,
+    Theme,
+    useTheme,
+} from "@mui/material";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Fragment, useState } from "react";
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
-import { hexToRGBA } from "../../utils/colors";
 import { isMatch } from "../../utils/routes";
 import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header/MenuDefinition";
+import { csx } from "../../utils/style";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            padding: theme.spacing(4),
-        },
-        subheader: {
-            padding: theme.spacing(0),
-            color: theme.palette.text.primary,
-            fontWeight: 500,
-            lineHeight: 2.5,
-        },
-        listItem: {
-            padding: theme.spacing(3, 2, 3, 4),
-            borderRadius: '16px',
-        },
-        listItemMatch: {
-            backgroundColor: hexToRGBA(theme.palette.primary.main, 0.08),
-        },
-        listItemIcon: {
-            minWidth: 'unset',
-            marginRight: theme.spacing(3),
-        },
-        listItemText: {
-            color: theme.palette.grey[700],
-        },
-        listItemTextMatch: {
-            color: theme.palette.primary.main,
-        },
-        collapseListItem: {
-            padding: theme.spacing(3, 2, 3, 13),
-            color: theme.palette.grey[700],
-            borderRadius: '16px',
-        },
-    }),
-);
+
+const listItemSx: SxProps<Theme> = {
+    py: 3,
+    pr: 2,
+    pl: 4,
+    borderRadius: 16,
+};
+
+const listItemMatchSx: SxProps<Theme> = {
+    bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+};
+
+const listItemTextMatchSx: SxProps<Theme> = {
+    color: 'primary.main',
+};
 
 export default function ComplexList(props: ComplexListProps) {
     const { sections } = props;
-    const classes = useStyles();
 
     const [collapseOpens, setCollapseOpens] = useState<boolean[]>([]);
     const theme = useTheme();
@@ -62,23 +51,33 @@ export default function ComplexList(props: ComplexListProps) {
         <ListItem
             key={item.name}
             button
-            className={clsx(classes.collapseListItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
             component={Link}
-            to={item.href}>
+            to={item.href}
+            sx={csx(
+                {
+                    py: 3,
+                    pr: 2,
+                    pl: 13,
+                    color: (theme) => theme.palette.grey[700],
+                    borderRadius: 16,
+                },
+                isMatch(item.href, item.exact) !== null && listItemMatchSx,
+            )}
+        >
             <ListItemText
                 primary={item.name}
-                className={clsx(isMatch(item.href, item.exact) && classes.listItemTextMatch)}
+                sx={isMatch(item.href, item.exact) !== null && listItemTextMatchSx}
             />
         </ListItem>
-    )), [classes]);
+    )), []);
 
     const menuItems = useCallback((items: MenuItemDefinition[]) => items.map((item, index) => (
         <Fragment key={item.name}>
             {item.type === 'collapse' ?
                 <>
-                    <ListItem button onClick={() => handleCollapseClick(index)} className={classes.listItem}>
-                        <ListItemIcon className={classes.listItemIcon}>{item.icon}</ListItemIcon>
-                        <ListItemText primary={item.name} className={classes.listItemText} />
+                    <ListItem button onClick={() => handleCollapseClick(index)} sx={listItemSx}>
+                        <ListItemIcon sx={{ minWidth: 'unset', mr: 3 }}>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.name} sx={{ color: (theme) => theme.palette.grey[700] }} />
                         {collapseOpens[index] ?
                             <ExpandLess htmlColor={theme.palette.action.active} /> :
                             <ExpandMore htmlColor={theme.palette.action.active} />
@@ -91,19 +90,19 @@ export default function ComplexList(props: ComplexListProps) {
                     </Collapse>
                 </> :
                 <ListItem
-                    className={clsx(classes.listItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
                     component={Link}
                     to={item.href}
+                    sx={csx(listItemSx, isMatch(item.href, item.exact) !== null && listItemMatchSx)}
                 >
                     {item.icon ? <ListItemIcon>{item.icon}</ListItemIcon> : ''}
                     <ListItemText
                         primary={item.name}
-                        className={clsx(isMatch(item.href, item.exact) && classes.listItemTextMatch)}
+                        sx={isMatch(item.href, item.exact) !== null && listItemTextMatchSx}
                     />
                 </ListItem>
             }
         </Fragment>
-    )), [collapseOpens, collapseListItems, handleCollapseClick, classes, theme]);
+    )), [collapseOpens, collapseListItems, handleCollapseClick, theme]);
 
     return (
         <>
@@ -112,11 +111,19 @@ export default function ComplexList(props: ComplexListProps) {
                     key={section.id}
                     aria-labelledby={section.id}
                     subheader={
-                        <ListSubheader id={section.id} className={classes.subheader}>
+                        <ListSubheader
+                            id={section.id}
+                            sx={{
+                                p: 0,
+                                color: 'text.primary',
+                                fontWeight: 500,
+                                lineHeight: 2.5,
+                            }}
+                        >
                             {section.name}
                         </ListSubheader>
                     }
-                    className={classes.root}
+                    sx={{ p: 4 }}
                 >
                     {menuItems(section.items)}
                 </List>

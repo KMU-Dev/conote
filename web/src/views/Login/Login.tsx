@@ -1,6 +1,5 @@
-import { Box, Container, Typography, Link, Hidden, Card, CircularProgress } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import LocalLibraryOutlinedIcon from '@material-ui/icons/LocalLibraryOutlined';
+import { Box, Container, Typography, Link, Hidden, Card, CircularProgress, Theme, SxProps } from '@mui/material';
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import LoginImage from './login_illustration.svg';
 import routes from '../../constant/routes.json';
@@ -15,80 +14,12 @@ import { useEffect, useState } from 'react';
 import { setAccessToken } from '../../graphql/links/authLink';
 import { useNotification } from '../../components/Notification';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            display: 'flex',
-        },
-        card: {
-            width: '100%',
-            maxWidth: '464px',
-            margin: theme.spacing(4, 0, 0, 4),
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            boxShadow: 'rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px',
-            borderRadius: theme.spacing(4),
-            overflow: 'none',
-        },
-        cardIconBox: {
-            padding: theme.spacing(0, 12),
-        },
-        cardTitle: {
-            margin: theme.spacing(30, 0),
-            padding: theme.spacing(0, 10),
-            fontSize: '1.875rem',
-        },
-        cardImage: {
-            padding: theme.spacing(0, 4),
-        },
-        container: {
-            height: '100%',
-            padding: theme.spacing(4),
-            [theme.breakpoints.up('sm')]: {
-                padding: theme.spacing(6),
-            }
-        },
-        header: {
-            padding: theme.spacing(2),
-            marginBottom: theme.spacing(4),
-        },
-        icon: {
-            fontSize: '2.5rem',
-        },
-        title: {
-            marginBottom: theme.spacing(2),
-            fontSize: '1.5rem',
-            lineHeight: 1.5,
-        },
-        greyText: {
-            color: theme.palette.text.secondary,
-        },
-        loginBox: {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            height: '100%',
-        },
-        buttonBox: {
-            margin: theme.spacing(12, 0),
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-        },
-        bold: {
-            fontWeight: 'bold',
-        },
-        terms: {
-            marginBottom: theme.spacing(10),
-        },
-    }),
-);
+
+const iconSx: SxProps<Theme> = {
+    fontSize: '2.5rem',
+};
 
 export default function Login() {
-    const classes = useStyles();
-
     const [realLoading, setRealLoading] = useState(false);
     const history = useHistory();
     const { enqueueNotification } = useNotification();
@@ -139,42 +70,55 @@ export default function Login() {
     }
 
     return (
-        <Box className={classes.root}>
-            <Hidden smDown>
-                <Card className={classes.card}>
-                    <Box className={classes.cardIconBox}>
+        <Box display="flex" height={1}>
+            <Hidden mdDown>
+                <Card
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        width: 1,
+                        maxWidth: 464,
+                        mt: 4,
+                        ml: 4,
+                        borderRadius: 4,
+                        boxShadow: 'rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px',
+                        overflow: 'none',
+                    }}
+                >
+                    <Box px={12}>
                         <RouterLink to={routes.HOME}>
-                            <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                            <LocalLibraryOutlinedIcon color="primary" sx={iconSx} />
                         </RouterLink>
                     </Box>
-                    <Typography variant="h3" className={classes.cardTitle}>歡迎回來</Typography>
-                    <img src={LoginImage} alt="Login" className={classes.cardImage} />
+                    <Typography variant="h3" my={30} px={10} fontSize="1.875rem">歡迎回來</Typography>
+                    <Box component="img" src={LoginImage} alt="Login" px={4} />
                 </Card>
             </Hidden>
-            <Container maxWidth="sm" className={classes.container}>
-                <Box className={classes.loginBox}>
+            <Container maxWidth="sm" sx={{ height: 1, p: { xs: 4, sm: 6 } }}>
+                <Box display="flex" flexDirection="column" justifyContent="center" height={1}>
                     <Hidden mdUp>
-                        <Box className={classes.header}>
+                        <Box p={2} mb={4}>
                             <RouterLink to={routes.HOME}>
-                                <LocalLibraryOutlinedIcon color="primary" className={classes.icon} />
+                                <LocalLibraryOutlinedIcon color="primary" sx={iconSx} />
                             </RouterLink>
                         </Box>
                     </Hidden>
                     <Box>
-                        <Typography variant="h4" className={classes.title}>登入</Typography>
-                        <Typography variant="body1" className={classes.greyText}>使用你的 Conote 帳號</Typography>
+                        <Typography variant="h4" mb={2} fontSize="h5.fontSize" lineHeight={1.5}>登入</Typography>
+                        <Typography variant="body1" color="text.secondary">使用你的 Conote 帳號</Typography>
                     </Box>
-                    <Box className={classes.buttonBox}>
+                    <Box display="flex" justifyContent="center" alignItems="center" my={12}>
                         {realLoading ?
                             <CircularProgress /> :
                             <GoogleLoginButton onCodeRetrieve={handleCodeRetrieve} />
                         }
                     </Box>
-                    <Typography variant="body2" className={classes.greyText + " " + classes.terms}>
+                    <Typography variant="body2" mb={10} color="text.secondary">
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;
-                        <Link to="/tos" color="primary" component={RouterLink}>使用者服務條款</Link>
+                        <Link to="/tos" color="primary" component={RouterLink} underline="hover">使用者服務條款</Link>
                         &ensp;及&ensp;
-                        <Link to="/privacy" color="primary" component={RouterLink}>隱私權政策</Link>
+                        <Link to="/privacy" color="primary" component={RouterLink} underline="hover">隱私權政策</Link>
                     </Typography>
                 </Box>
             </Container>

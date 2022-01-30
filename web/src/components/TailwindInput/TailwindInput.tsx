@@ -1,40 +1,28 @@
-import { FormHelperText, OutlinedInputProps } from '@material-ui/core';
-import { createStyles, FormControl, InputLabel, makeStyles, OutlinedInput } from '@material-ui/core';
+import { Box, FormHelperText, OutlinedInputProps } from '@mui/material';
+import { FormControl, InputLabel, OutlinedInput } from '@mui/material';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        inputLabel: {
-            color: theme.palette.text.primary,
-            fontSize: theme.typography.body2.fontSize,
-        },
-        textField: {
-            marginTop: theme.spacing(2),
-        },
-        error: {
-            marginLeft: theme.spacing(0),
-        }
-    }),
-);
 
 export default function TailwindInput(props: TailwindInputProps) {
-    const { id, required, label, fullWidth, error, className, ...restProps } = props;
-    const classes = useStyles();
+    const { id, required, label, fullWidth, error, sx, ...restProps } = props;
 
     return (
-        <div className={className}>
+        <Box sx={sx}>
             <InputLabel
                 htmlFor={id}
                 color="primary"
                 required={required}
-                className={classes.inputLabel}
+                sx={{
+                    color: 'text.primary',
+                    fontSize: 'body2.fontSize',
+                }}
             >
                 {label}
             </InputLabel>
             <FormControl variant="outlined" size="small" fullWidth={fullWidth} error={typeof error !== 'undefined'}>
-                <OutlinedInput {...restProps} className={classes.textField} label={undefined} />
-                {error && <FormHelperText className={classes.error}>{error}</FormHelperText>}
+                <OutlinedInput {...restProps} label={undefined} sx={{ mt: 2 }} />
+                {error && <FormHelperText sx={{ ml: 0 }}>{error}</FormHelperText>}
             </FormControl>
-        </div>
+        </Box>
     );
 }
 
@@ -43,5 +31,4 @@ export interface TailwindInputProps extends Omit<OutlinedInputProps, 'error'> {
     required?: boolean;
     fullwidth?: boolean;
     error?: string;
-    className?: string;
 }

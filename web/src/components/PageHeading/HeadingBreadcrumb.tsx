@@ -1,24 +1,37 @@
-import { Breadcrumbs, Link } from "@material-ui/core";
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { Breadcrumbs, Link, SxProps, Theme } from "@mui/material";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Link as RouterLink } from 'react-router-dom';
 import { BreadcrumbDefinition } from "./BreadcrumbDefinition";
 import { parseBreadcrumbPath } from "./parser";
 
 export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
-    const { path, className } = props;
+    const { path, sx } = props;
 
     const defs = parseBreadcrumbPath(path);
 
     const elements = (defs: BreadcrumbDefinition[]) => defs.map((def, i) => {
         if (i === defs.length - 1) {
             return (
-                <Link key={i} color="textPrimary" variant="body2" component={RouterLink} to={def.path} aria-current="page">
+                <Link
+                    key={i}
+                    color="textPrimary"
+                    variant="body2"
+                    component={RouterLink}
+                    to={def.path}
+                    aria-current="page"
+                    underline="hover">
                     {def.name}
                 </Link>
             );
         }
         return (
-            <Link key={i} color="inherit" variant="body2" component={RouterLink} to={def.path}>
+            <Link
+                key={i}
+                color="inherit"
+                variant="body2"
+                component={RouterLink}
+                to={def.path}
+                underline="hover">
                     {def.name}
             </Link>
         );
@@ -28,7 +41,7 @@ export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
         <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
-            className={className}
+            sx={sx}
         >
             {elements(defs)}
         </Breadcrumbs>
@@ -37,5 +50,5 @@ export default function HeadingBreadcrumb(props: HeadingBreadcrumbProps) {
 
 interface HeadingBreadcrumbProps {
     path: string;
-    className?: string;
+    sx?: SxProps<Theme>;
 }

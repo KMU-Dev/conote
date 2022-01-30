@@ -1,9 +1,9 @@
-import { Avatar, Box, Button, Card, Chip, createStyles, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { Avatar, Box, Button, Card, Chip, IconButton, Typography } from "@mui/material";
 import Papa from 'papaparse';
 import AppLayout from "../../../components/AppLayout/AppLayout";
 import PageHeading from "../../../components/PageHeading/PageHeading";
 import DataTable from "../../../components/DataTable/DataTable";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
@@ -15,7 +15,7 @@ import { columnsField } from "./constant";
 import { matchAccept } from "../../../utils/file";
 import { useNotification } from "../../../components/Notification";
 
-const useStyles = makeStyles(theme =>
+/* const useStyles = makeStyles(theme =>
     createStyles({
         headingButtonMargin: {
             marginLeft: theme.spacing(3),
@@ -35,11 +35,9 @@ const useStyles = makeStyles(theme =>
             color: theme.palette.common.white,
         }
     }),
-);
+); */
 
 export default function UserList() {
-    const classes = useStyles();
-
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [searchText, setSearchText] = useState('');
@@ -214,12 +212,12 @@ export default function UserList() {
                 <Button variant="outlined" color="primary" disabled={importLoading} onClick={handleImportClick}>
                     匯入使用者
                 </Button>
-                <Button variant="contained" color="primary" className={classes.headingButtonMargin}>
+                <Button variant="contained" color="primary" sx={{ ml: 3 }}>
                     新增使用者
                 </Button>
             </PageHeading>
-            <Card className={classes.card}>
-                <DataTable
+            <Card sx={{ my: 6 }}>
+                {/* <DataTable
                     title=""
                     columns={[
                         {
@@ -289,7 +287,7 @@ export default function UserList() {
                     onChangePage={handleChangePage}
                     onSearchChange={handleSearchChange}
                     onOrderChange={handleOrderChange}
-                />
+                /> */}
             </Card>
         </AppLayout>
     );

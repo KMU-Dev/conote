@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { useTheme, useMediaQuery } from '@material-ui/core';
+import { useTheme, useMediaQuery } from '@mui/material';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { useEffect } from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
@@ -22,7 +22,7 @@ import VideoUpload from './views/VideoUpload/VideoUpload';
 
 function App() {
     const theme = useTheme();
-    const matchXsDown = useMediaQuery(theme.breakpoints.down('xs'));
+    const matchXsDown = useMediaQuery(theme.breakpoints.down('sm'));
 
     // handle UI status
     const onUIStatusFetched = (data: GraphqlDto<'uiStatus', UIStatus>) => {
@@ -64,10 +64,10 @@ function App() {
                     <Header>
                         <Switch>
                             <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1632326400000)} />
+                                <ComingSoon time={new Date(1645372800000)} />
                             </PageRoute>
                             <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1632326400000)} />
+                                <ComingSoon time={new Date(1645372800000)} />
                             </PageRoute>
                             <PageRoute
                                 exact

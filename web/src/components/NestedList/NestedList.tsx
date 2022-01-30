@@ -1,61 +1,65 @@
-import { Box, Collapse, createStyles, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, useTheme } from "@material-ui/core";
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import clsx from "clsx";
+import {
+    Box,
+    Collapse,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    ListSubheader,
+    styled,
+    SxProps,
+    Theme,
+    useTheme,
+    ListItemIconProps,
+    alpha
+} from "@mui/material";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Fragment, useState } from "react";
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
-import { hexToRGBA } from "../../utils/colors";
 import { isMatch } from "../../utils/routes";
 import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header";
+import { csx } from "../../utils/style";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            padding: theme.spacing(4),
+
+const listItemSx: SxProps<Theme> = {
+    py: 3,
+    pr: 2,
+    pl: 4,
+    borderRadius: 4,
+};
+
+const listItemMatchSx: SxProps<Theme> = {
+    bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+    '&:hover': {
+        bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+    },
+};
+
+const listItemTextSx: SxProps<Theme> = {
+    color: 'grey.700',
+    fontSize: {
+        sm: '0.875rem'
+    },
+};
+
+const listItemTextMatchSx: SxProps = {
+    color: 'primary.main',
+};
+
+const StyledListItemIcon = styled(ListItemIcon)<ListItemIconProps>(({ theme }) => ({
+    minWidth: 'unset',
+    marginRight: theme.spacing(3),
+    [theme.breakpoints.up('sm')]: {
+        '& .MuiSvgIcon-root': {
+            fontSize: '20px',
         },
-        subheader: {
-            padding: theme.spacing(0),
-            color: theme.palette.text.primary,
-            fontWeight: 500,
-            lineHeight: 2.5,
-        },
-        listItem: {
-            padding: theme.spacing(3, 2, 3, 4),
-            borderRadius: '16px',
-        },
-        listItemMatch: {
-            backgroundColor: hexToRGBA(theme.palette.primary.main, 0.08),
-        },
-        listItemIcon: {
-            minWidth: 'unset',
-            marginRight: theme.spacing(3),
-            [theme.breakpoints.up('sm')]: {
-                '& .MuiSvgIcon-root': {
-                    fontSize: '20px',
-                },
-            }
-        },
-        listItemText: {
-            color: theme.palette.grey[700],
-            [theme.breakpoints.up('sm')]: {
-                fontSize: '0.875rem',
-            }
-        },
-        listItemTextMatch: {
-            color: theme.palette.primary.main,
-        },
-        collapseListItem: {
-            padding: theme.spacing(3, 2, 3, 13),
-            color: theme.palette.grey[700],
-            borderRadius: '16px',
-        },
-    }),
-);
+    },
+}));
 
 export default function NestedList(props: NestedListProps) {
-    const { sections, className } = props;
-    const classes = useStyles();
+    const { sections, sx } = props;
 
     const [collapseOpens, setCollapseOpens] = useState<boolean[]>([]);
     const theme = useTheme();
@@ -68,30 +72,44 @@ export default function NestedList(props: NestedListProps) {
 
     const collapseListItems = useCallback((items: MenuCollapseItemDefinition[]) => items.map((item) => (
         <ListItem
+            component={Link}
+            to={item.href}
             key={item.name}
             button
-            className={clsx(classes.collapseListItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
-            component={Link}
-            to={item.href}>
+            sx={csx(
+                {
+                    py: 3,
+                    pr: 2,
+                    pl: 13,
+                    color: 'grey.700',
+                    borderRadius: 4,
+                    '& .MuiTouchRipple-child': {
+                        bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
+                    },
+                },
+                isMatch(item.href, item.exact) && listItemMatchSx,
+            )}
+        >
             <ListItemText
                 primary={item.name}
                 primaryTypographyProps={{
-                    className: clsx(
-                        classes.listItemText,
-                        isMatch(item.href, item.exact) && classes.listItemTextMatch
-                    )
+                    sx: csx(listItemTextSx, isMatch(item.href, item.exact) !== null && listItemTextMatchSx),
                 }}
             />
         </ListItem>
-    )), [classes]);
+    )), []);
 
     const menuItems = useCallback((items: MenuItemDefinition[]) => items.map((item, index) => (
         <Fragment key={item.name}>
             {item.type === 'collapse' ?
                 <>
-                    <ListItem button onClick={() => handleCollapseClick(index)} className={classes.listItem}>
-                        <ListItemIcon className={classes.listItemIcon}>{item.icon}</ListItemIcon>
-                        <ListItemText primary={item.name} primaryTypographyProps={{className: classes.listItemText}} />
+                    <ListItem
+                        button
+                        sx={listItemSx}
+                        onClick={() => handleCollapseClick(index)}
+                    >
+                        <StyledListItemIcon>{item.icon}</StyledListItemIcon>
+                        <ListItemText primary={item.name} primaryTypographyProps={{ sx: listItemTextSx }} />
                         {collapseOpens[index] ?
                             <ExpandLess htmlColor={theme.palette.action.active} /> :
                             <ExpandMore htmlColor={theme.palette.action.active} />
@@ -104,33 +122,38 @@ export default function NestedList(props: NestedListProps) {
                     </Collapse>
                 </> :
                 <ListItem
-                    className={clsx(classes.listItem, isMatch(item.href, item.exact) && classes.listItemMatch)}
                     component={Link}
                     to={item.href}
+                    sx={csx(listItemSx, isMatch(item.href, item.exact) !== null && listItemMatchSx)}
                 >
-                    <ListItemIcon className={classes.listItemIcon}>{item.icon}</ListItemIcon>
+                    <StyledListItemIcon>{item.icon}</StyledListItemIcon>
                     <ListItemText
                         primary={item.name}
                         primaryTypographyProps={{
-                            className: clsx(
-                                classes.listItemText,
-                                isMatch(item.href, item.exact) && classes.listItemTextMatch
-                            )
+                            sx: csx(listItemTextSx, isMatch(item.href, item.exact) !== null && listItemTextMatchSx),
                         }}
                     />
                 </ListItem>
             }
         </Fragment>
-    )), [collapseOpens, collapseListItems, handleCollapseClick, classes, theme]);
+    )), [collapseOpens, collapseListItems, handleCollapseClick, theme]);
 
     return (
-        <Box className={clsx(classes.root, className)}>
+        <Box sx={[{ p: 4 }, ...(Array.isArray(sx) ? sx : [sx])]}>
             {sections.map((section) => (
                 <List
                     key={section.id}
                     aria-labelledby={section.id}
                     subheader={
-                        <ListSubheader id={section.id} className={classes.subheader}>
+                        <ListSubheader
+                            id={section.id}
+                            sx={{
+                                p: 0,
+                                color: 'text.primary',
+                                fontWeight: 500,
+                                lineHeight: 2.5,
+                            }}
+                        >
                             {section.name}
                         </ListSubheader>
                     }
@@ -144,5 +167,5 @@ export default function NestedList(props: NestedListProps) {
 
 interface NestedListProps {
     sections: MenuSection[];
-    className?: string;
+    sx?: SxProps<Theme>
 }

@@ -1,15 +1,12 @@
-import { IconButton, InputAdornment } from "@material-ui/core";
-import FolderIcon from '@material-ui/icons/Folder';
+import { IconButton, InputAdornment } from "@mui/material";
+import FolderIcon from '@mui/icons-material/Folder';
 
 export default function FolderAdornment() {
     return (
         <InputAdornment position="end">
-            <IconButton
-                aria-label="select drive location"
-                edge="end"
-            >
+            <IconButton aria-label="select drive location" edge="end" size="large">
                 <FolderIcon />
             </IconButton>
         </InputAdornment>
-    )
+    );
 }
