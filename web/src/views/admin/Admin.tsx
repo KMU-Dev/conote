@@ -1,4 +1,4 @@
-import { Box, createStyles, Hidden, makeStyles } from '@material-ui/core';
+import { Box, Hidden } from '@mui/material';
 import { Switch } from 'react-router-dom';
 import { headerDef } from '../../components/Header';
 import PageRoute from '../../components/Page/PageRoute';
@@ -6,32 +6,14 @@ import AdminMenu from './AdminMenu';
 import routes from '../../constant/routes.json';
 import UserList from './UserList/UserList';
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            display: 'flex',
-            height: '100%',
-            minHeight: '100%',
-        },
-        main: {
-            maxWidth: '100%',
-            flex: 1,
-            [theme.breakpoints.up('md')]: {
-                maxWidth: 'calc(100% - 260px)',
-            }
-        },
-    }),
-);
 
 export default function Admin() {
-    const classes = useStyles();
-
     return (
-        <Box className={classes.root}>
-            <Hidden smDown>
+        <Box display="flex" height={1} minHeight={1}>
+            <Hidden mdDown>
                 <AdminMenu menu={headerDef.admin} />
             </Hidden>
-            <Box className={classes.main}>
+            <Box flexGrow={1} maxWidth={{ xs: 1, md: 'calc(100% - 260px)' }}>
                 <Switch>
                     <PageRoute exact path={routes.ADMIN_USER_LIST} component={UserList} title="使用者清單" />
                 </Switch>

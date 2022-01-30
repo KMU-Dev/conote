@@ -1,11 +1,11 @@
 import { MenuDefinition, MenuSection } from "./MenuDefinition";
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import VideocamIcon from '@material-ui/icons/Videocam';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
-import SettingsIcon from '@material-ui/icons/Settings';
-import PeopleIcon from '@material-ui/icons/People';
-import ClassIcon from '@material-ui/icons/Class';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import SettingsIcon from '@mui/icons-material/Settings';
+import PeopleIcon from '@mui/icons-material/People';
+import ClassIcon from '@mui/icons-material/Class';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import routes from '../../constant/routes.json';
 import { AccountMenuDefinition } from "./AccountDropdown";
 

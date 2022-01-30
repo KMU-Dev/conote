@@ -1,4 +1,4 @@
-import { Avatar, Box, createStyles, InputLabel, makeStyles, Typography } from "@material-ui/core";
+import { Avatar, Box, InputLabel, SxProps, Theme, Typography } from "@mui/material";
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -24,38 +24,12 @@ class CreateUserForm {
     studentId: String;
 }
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        root: {
-            height: '100%',
-            padding: theme.spacing(6, 6, 0, 6),
-        },
-        title: {
-            marginBottom: theme.spacing(2),
-            fontSize: '1.5rem',
-            lineHeight: 1.5,
-        },
-        form: {
-            margin: theme.spacing(4, 0),
-        },
-        textField: {
-            margin: theme.spacing(4, 0),
-        },
-        inputLabel: {
-            color: theme.palette.text.primary,
-            fontSize: theme.typography.body2.fontSize,
-        },
-        avatar: {
-            width: theme.spacing(14),
-            height: theme.spacing(14),
-            marginTop: theme.spacing(2),
-        }
-    }),
-);
+const textFieldSx: SxProps<Theme> = {
+    my: 4
+};
 
 export default function CreateUser(props: CreateUserProps) {
     const { user, nextClicked, triggerNext } = props;
-    const classes = useStyles();
 
     const { control, handleSubmit, formState: { errors } } = useForm<CreateUserForm>({
         resolver: classValidatorResolver(CreateUserForm)
@@ -78,12 +52,12 @@ export default function CreateUser(props: CreateUserProps) {
     }, [nextClicked, handleSubmit, onSubmit]);
 
     return (
-        <Box className={classes.root}>
-            <Typography variant="h4" className={classes.title}>建立使用者</Typography>
-            <form id="form" className={classes.form}>
-                <Box className={classes.textField}>
-                    <InputLabel color="primary" className={classes.inputLabel}>頭像</InputLabel>
-                    <Avatar alt={user.name} src={user.picture} className={classes.avatar} />
+        <Box height={1} px={6} pt={6}>
+            <Typography variant="h4" mb={2} fontSize="h5.fontSize" lineHeight={1.5}>建立使用者</Typography>
+            <Box component="form" id="form" my={4}>
+                <Box my={4}>
+                    <InputLabel color="primary" sx={{ color: 'text.primary', fontSize: 'body2.fontSize' }}>頭像</InputLabel>
+                    <Avatar alt={user.name} src={user.picture} sx={{ width: 64, height: 64, mt: 2 }} />
                 </Box>
                 <TailwindController
                     name="name"
@@ -93,7 +67,7 @@ export default function CreateUser(props: CreateUserProps) {
                     required={true}
                     fullWidth={true}
                     errors={errors}
-                    className={classes.textField}
+                    sx={textFieldSx}
                 />
                 <TailwindController
                     name="email"
@@ -104,7 +78,7 @@ export default function CreateUser(props: CreateUserProps) {
                     required={true}
                     fullWidth={true}
                     errors={errors}
-                    className={classes.textField}
+                    sx={textFieldSx}
                 />
                 <TailwindController
                     name="studentId"
@@ -114,9 +88,9 @@ export default function CreateUser(props: CreateUserProps) {
                     required={true}
                     fullWidth={true}
                     errors={errors}
-                    className={classes.textField}
+                    sx={textFieldSx}
                 />
-            </form>
+            </Box>
         </Box>
     );
 }

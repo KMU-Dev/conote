@@ -1,8 +1,6 @@
-import { Box, createStyles, List, ListItem, ListItemIcon, ListItemText, makeStyles, SwipeableDrawer } from "@material-ui/core";
+import { alpha, Box, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
-import clsx from 'clsx';
 import { MenuDefinition } from "../Header/MenuDefinition";
-import { hexToRGBA } from "../../utils/colors";
 import { isMatch } from "../../utils/routes";
 import { useState } from "react";
 import { useRef } from "react";
@@ -14,34 +12,13 @@ import { HeaderDefinition } from "../Header/HeaderDefinition";
 import NestedList from "../NestedList/NestedList";
 
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        list: {
-            width: '260px',
-        },
-        listItem: {
-            color: theme.palette.action.active,
-        },
-        listItemMatch: {
-            color: theme.palette.primary.main,
-            backgroundColor: hexToRGBA(theme.palette.primary.main, 0.08),
-        },
-        listItemIcon: {
-            minWidth: 'auto',
-            marginRight: theme.spacing(4),
-            color: 'inherit',
-        },
-    })
-);
-
 export default function Drawer(props: DrawerProps) {
     const { open, toggleDrawer, menu } = props;
-    const classes = useStyles();
 
     const getVariant = useCallback(() => isMatch('/admin', false) ? 'admin' : 'default', []);
     const [variant, setVariant] = useState<DrawerVariant>(getVariant());
     const location = useLocation();
-    const goBackLink = useRef<HTMLSpanElement | null>(null);
+    const goBackLink = useRef<HTMLAnchorElement | null>(null);
 
     useEffect(() => {
         setVariant(getVariant());
@@ -52,12 +29,26 @@ export default function Drawer(props: DrawerProps) {
     const listItems = (menuDef: MenuDefinition[]) => menuDef.map((def) => (
         <ListItem
             button
+            component={Link}
             key={def.name}
             to={def.href}
-            component={Link}
-            className={clsx(classes.listItem, isMatch(def.href, def.exact) && classes.listItemMatch)}
+            sx={[
+                { color: 'action.active' },
+                isMatch(def.href, def.exact) !== null && {
+                    color: 'primary.main',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
+                },
+            ]}
         >
-            <ListItemIcon className={classes.listItemIcon}>{def.icon}</ListItemIcon>
+            <ListItemIcon
+                sx={{
+                    minWidth: 'auto',
+                    mr: 4,
+                    color: 'inherit',
+                }}
+            >
+                    {def.icon}
+            </ListItemIcon>
             <ListItemText primary={def.name} />
         </ListItem>
     ));
@@ -88,7 +79,7 @@ export default function Drawer(props: DrawerProps) {
         <SwipeableDrawer open={open} onOpen={handleDrawerEvent(true)} onClose={handleDrawerEvent(false)}>
             <Box
                 role="presentation"
-                className={classes.list}
+                width={260}
                 onKeyDown={handleDrawerEvent(false)}
             >
                 <DrawerInfoPanel ref={goBackLink} variant={variant} onGoBackClick={handleGoBackClick} />

@@ -1,5 +1,4 @@
-import { Button, ButtonProps, createStyles, makeStyles } from "@material-ui/core";
-import clsx from "clsx";
+import { Box, Button, ButtonProps } from "@mui/material";
 import { useEffect } from "react";
 import { useCallback } from "react";
 import { useHistory } from "react-router-dom";
@@ -7,29 +6,8 @@ import { generateAuthUrl } from "../../utils/oauth2/google";
 import { ReactComponent as Google } from './google.svg';
 import oauth2 from "../../constant/oauth2.json";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        button: {
-            backgroundColor: theme.palette.common.white,
-            color: theme.palette.text.secondary,
-        },
-        buttonLabel: {
-            justifyContent: 'unset',
-        },
-        google: {
-            width: '18px',
-            height: '18px',
-            marginRight: theme.spacing(6),
-        },
-        flexGrow: {
-            flexGrow: 2,
-        },
-    }),
-);
-
 export default function GoogleLoginButton(props: LoginButtonProps) {
-    const { onCodeRetrieve, onError, className, ...restProps } = props;
-    const classes = useStyles();
+    const { onCodeRetrieve, onError, sx, ...restProps } = props;
 
     const history = useHistory();
 
@@ -66,15 +44,21 @@ export default function GoogleLoginButton(props: LoginButtonProps) {
             variant="contained"
             size="large"
             fullWidth={true}
-            startIcon={<Google className={classes.google} />}
-            classes={{
-                label: classes.buttonLabel,
-            }}
-            className={clsx(classes.button, className)}
+            startIcon={<Box component={Google} sx={{ width: 18, height: 18, mr: 6 }} />}
+            sx={[
+                {
+                    color: 'text.secondary',
+                    bgcolor: 'common.white',
+                    ':hover': {
+                        backgroundColor: 'white',
+                    },
+                },
+                ...(Array.isArray(sx) ? sx : [sx]),
+            ]}
             onClick={handleLoginClick}
             {...restProps}
         >
-            <span className={classes.flexGrow}>以 @gap.kmu.edu.tw 登入</span>
+            <span style={{ flexGrow: 2 }}>以 @gap.kmu.edu.tw 登入</span>
         </Button>
     );
 }
