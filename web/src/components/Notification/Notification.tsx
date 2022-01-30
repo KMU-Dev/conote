@@ -1,6 +1,4 @@
-import { Card, CardContent, Box, Typography, IconButton, useTheme, Theme } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
+import { Card, CardContent, Box, Typography, IconButton, useTheme, Theme, SxProps } from "@mui/material";
 import { SnackbarContent, SnackbarKey, useSnackbar } from "notistack";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
@@ -11,38 +9,8 @@ import { forwardRef, ReactChild, ReactElement } from "react";
 import { useCallback } from "react";
 import { useMemo } from "react";
 
-const useStyles = makeStyles(theme =>
-    createStyles({
-        cardContent: {
-            minWidth: '288px',
-            '&:last-child': {
-                paddingBottom: theme.spacing(4),
-            },
-        },
-        box: {
-            display: 'flex',
-            alignItems: 'start',
-            justifyContent: 'center',
-        },
-        image: {
-            paddingRight: theme.spacing(4),
-        },
-        title: {
-            fontWeight: 500,
-        },
-        content: {
-            marginTop: theme.spacing(1),
-        },
-        close: {
-            marginLeft: theme.spacing(4),
-        },
-        actions: {
-            marginTop: theme.spacing(4),
-        },
-    }),
-);
 
-const getImageBox = (theme: Theme, variant?: NotificationVariant, image?: ReactChild, boxClass?: string) => {
+const getImageBox = (theme: Theme, variant?: NotificationVariant, image?: ReactChild, sx?: SxProps<Theme>) => {
     if (!image && variant) {
         switch (variant) {
             case 'success':
@@ -62,7 +30,7 @@ const getImageBox = (theme: Theme, variant?: NotificationVariant, image?: ReactC
 
     if (!image) return '';
     return (
-        <Box className={boxClass}>
+        <Box sx={sx}>
             {image}
         </Box>
     );
@@ -70,13 +38,12 @@ const getImageBox = (theme: Theme, variant?: NotificationVariant, image?: ReactC
 
 export const Notification = forwardRef<HTMLDivElement, NotificationProps>((props, ref) => {
     const { snackbarKey: key, title, content, close, variant, image, actions } = props;
-    const classes = useStyles();
 
     const { closeSnackbar } = useSnackbar();
     const theme = useTheme();
 
     const imageBox = useMemo(() =>
-        getImageBox(theme, variant, image, classes.image), [theme, variant, image, classes]
+        getImageBox(theme, variant, image, { pr: 4 }), [theme, variant, image]
     );
 
     const handleDismiss = useCallback(() => {
@@ -86,13 +53,20 @@ export const Notification = forwardRef<HTMLDivElement, NotificationProps>((props
     return (
         <SnackbarContent ref={ref}>
             <Card elevation={3}>
-                <CardContent className={classes.cardContent}>
-                    <Box className={classes.box}>
+                <CardContent
+                    sx={{
+                        minWidth: 288,
+                        ':last-child': {
+                            pb: 4,
+                        },
+                    }}
+                >
+                    <Box display="flex" justifyContent="center" alignItems="start">
                         {imageBox}
-                        <Box>
-                            <Typography variant="body2" className={classes.title}>{title}</Typography>
+                        <Box flexGrow={1}>
+                            <Typography variant="body2" fontWeight={500}>{title}</Typography>
                             {content ?
-                                <Typography variant="body2" color="textSecondary" className={classes.content}>
+                                <Typography variant="body2" color="textSecondary" mt={1}>
                                     {content}
                                 </Typography> :
                                 ''
@@ -101,8 +75,8 @@ export const Notification = forwardRef<HTMLDivElement, NotificationProps>((props
                         {close ?
                             <IconButton
                                 aria-label="close"
-                                className={classes.close}
                                 size="small"
+                                sx={{ ml: 4 }}
                                 onClick={handleDismiss}
                             >
                                 <CloseIcon fontSize="small" />
@@ -111,7 +85,7 @@ export const Notification = forwardRef<HTMLDivElement, NotificationProps>((props
                         }
                     </Box>
                     {actions ?
-                        <Box className={classes.actions}>
+                        <Box mt={4}>
                             {actions}
                         </Box> :
                         ''
