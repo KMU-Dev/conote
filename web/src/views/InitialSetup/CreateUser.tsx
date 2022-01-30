@@ -14,14 +14,14 @@ import { GraphqlDto } from "../../graphql/type/type";
 class CreateUserForm {
     @IsNotEmpty({ message: '姓名為必填欄位' })
     @MaxLength(256, { message: '姓名不可超過 $constraint1 個字元' })
-    name: String;
+    name?: string;
 
     @IsEmail(undefined, { message: '請填入正確的 email' })
-    email?: String;
+    email?: string;
 
     @IsNotEmpty({ message: '學號為必填欄位' })
     @MaxLength(64, { message: '學號不可超過 $constraint1 個字元' })
-    studentId: String;
+    studentId?: string;
 }
 
 const textFieldSx: SxProps<Theme> = {
