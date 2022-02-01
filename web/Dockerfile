@@ -19,7 +19,7 @@ COPY src/ /app/src/
 RUN yarn build
 
 # Production Container
-FROM node:14.17.4-alpine
+FROM node:14.18.1-alpine
 
 LABEL maintainer="Chao Tzu-Hsien"
 
