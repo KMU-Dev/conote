@@ -8,6 +8,7 @@ import { PoliciesGuard } from '../casl/guards/policies.guard';
 import { BatchPayload } from '../utils/graphql/models/batch-payload.model';
 import { CreateMultipleUsersInput } from './models/create-multiple-users.model';
 import { CreateUserInput } from './models/create-user.model';
+import { DeleteMultipleUsersInput } from './models/delete-multiple-users.model';
 import { DeleteUserInput } from './models/delete-user.model';
 import { UpdateUserInput } from './models/upadte-user.model';
 import { UserConnectionArgs } from './models/user-connection-args.model';
@@ -41,13 +42,19 @@ export class UserResolver {
 
     @Actions(Action.Update)
     @Mutation(() => UserModel)
-    async updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
+    async updateUser(@Args('input') updateUserInput: UpdateUserInput) {
         return await this.userService.updateUser(updateUserInput);
     }
 
     @Actions(Action.Delete)
     @Mutation(() => UserModel)
-    async deleteUser(@Args('deleteUserInput') deleteUserInput: DeleteUserInput) {
+    async deleteUser(@Args('input') deleteUserInput: DeleteUserInput) {
         return await this.userService.deleteUser(deleteUserInput);
+    }
+
+    @Actions(Action.DeleteMultiple)
+    @Mutation(() => BatchPayload)
+    async deleteMultipleUsers(@Args('input') deleteMultipleUsersInput: DeleteMultipleUsersInput) {
+        return await this.userService.deleteMultipleUsers(deleteMultipleUsersInput);
     }
 }
