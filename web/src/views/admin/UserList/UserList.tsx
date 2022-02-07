@@ -12,28 +12,8 @@ import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { matchAccept } from "../../../utils/file";
 import { useNotification } from "../../../components/Notification";
 import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
+import QuickSearchToolbar from "../../../components/ConnectionDataGrid/QuickSearchToolbar";
 
-/* const useStyles = makeStyles(theme =>
-    createStyles({
-        headingButtonMargin: {
-            marginLeft: theme.spacing(3),
-        },
-        card: {
-            margin: theme.spacing(6, 0),
-        },
-        flex: {
-            display: 'flex',
-            alignItems: 'center',
-        },
-        tableSubtitle: {
-            marginLeft: theme.spacing(2),
-        },
-        activeChip: {
-            backgroundColor: theme.palette.success.main,
-            color: theme.palette.common.white,
-        }
-    }),
-); */
 
 function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
     if (sortModel.length === 0) return undefined;
@@ -52,7 +32,7 @@ export default function UserList() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [sortModel, setSortModel] = useState<GridSortModel>([]);
-    const [searchText, setSearchText] = useState('');
+    const [search, setSearch] = useState('');
     const [importLoading, setImportLoading] = useState(false);
     const [connectionArgs, setConnectionArgs] = useState<UserConnectionArgs>({ first: pageSize });
     const input = useRef<HTMLInputElement>(null);
@@ -75,9 +55,9 @@ export default function UserList() {
         after: undefined,
         last: undefined,
         before: undefined,
-        query: searchText ? searchText : undefined,
+        query: search ? search : undefined,
         order: sortModelToOrder(sortModel),
-    }), [searchText, sortModel]);
+    }), [search, sortModel]);
 
     // table definitions
     const columns: GridColDef[] = [
@@ -154,13 +134,13 @@ export default function UserList() {
         }
     }, [page, data, baseVariable, pageSize]);
 
-    const handleSearchChange = useCallback(async (newSearchText: string) => {
-        if (newSearchText) await refetch({...baseVariable, ...{ first: pageSize, query: newSearchText }});
-        else await refetch({...baseVariable, ...{ first: pageSize, query: undefined }});
+    const handleSearchChange = useCallback((search: string) => {
+        if (search) setConnectionArgs({...baseVariable, ...{ first: pageSize, query: search }});
+        else setConnectionArgs({...baseVariable, ...{ first: pageSize, query: undefined }});
 
-        setSearchText(newSearchText);
+        setSearch(search);
         setPage(0);
-    }, [refetch, baseVariable, pageSize]);
+    }, [baseVariable, pageSize]);
 
     const handleSortModelChange = useCallback((newModel: GridSortModel) => {
         setSortModel(newModel);
@@ -282,8 +262,17 @@ export default function UserList() {
                     sortingMode="server"
                     sortModel={sortModel}
                     onSortModelChange={handleSortModelChange}
+                    // selecting
                     checkboxSelection
                     disableSelectionOnClick
+                    loading={networkStatus < 7}
+                    components={{ Toolbar: QuickSearchToolbar }}
+                    componentsProps={{
+                        toolbar: {
+                            onSearchChange: handleSearchChange,
+                            debounceInterval: 250,
+                        }
+                    }}
                 />
             </Card>
         </AppLayout>
