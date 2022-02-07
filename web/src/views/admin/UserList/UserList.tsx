@@ -1,19 +1,17 @@
-import { Avatar, Box, Button, Card, Chip, IconButton, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
 import Papa from 'papaparse';
 import AppLayout from "../../../components/AppLayout/AppLayout";
 import PageHeading from "../../../components/PageHeading/PageHeading";
-import DataTable from "../../../components/DataTable/DataTable";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
-import { User, UserConnectionArgs, UserOrder, UserRole, UserStatus } from "../../../graphql/type/user";
+import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
-import { columnsField } from "./constant";
 import { matchAccept } from "../../../utils/file";
 import { useNotification } from "../../../components/Notification";
+import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
 
 /* const useStyles = makeStyles(theme =>
     createStyles({
@@ -37,17 +35,31 @@ import { useNotification } from "../../../components/Notification";
     }),
 ); */
 
+function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
+    if (sortModel.length === 0) return undefined;
+    const sortItem = sortModel[0];
+    const direction = sortItem.sort.toUpperCase() as OrderDirection;
+    switch (sortItem.field) {
+        case 'name': return { field: UserOrderField.NAME, direction };
+        case 'studentId': return { field: UserOrderField.STUDENT_ID, direction };
+        case 'email': return { field: UserOrderField.EMAIL, direction };
+        case 'role': return { field: UserOrderField.ROLE, direction };
+        case 'status': return { field: UserOrderField.STATUS, direction };
+    }
+}
+
 export default function UserList() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [sortModel, setSortModel] = useState<GridSortModel>([]);
     const [searchText, setSearchText] = useState('');
-    const [order, setOrder] = useState<UserOrder>(undefined);
     const [importLoading, setImportLoading] = useState(false);
+    const [connectionArgs, setConnectionArgs] = useState<UserConnectionArgs>({ first: pageSize });
     const input = useRef<HTMLInputElement>(null);
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
         USER_CONNECTION,
-        { variables: { first: pageSize }, notifyOnNetworkStatusChange: true },
+        { variables: connectionArgs, notifyOnNetworkStatusChange: true },
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
     const { enqueueNotification } = useNotification();
@@ -64,30 +76,83 @@ export default function UserList() {
         last: undefined,
         before: undefined,
         query: searchText ? searchText : undefined,
-        order,
-    }), [searchText, order]);
+        order: sortModelToOrder(sortModel),
+    }), [searchText, sortModel]);
 
-    const handleChangePage = useCallback(async (newPage: number, newPageSize: number) => {
+    // table definitions
+    const columns: GridColDef[] = [
+        {
+            field: 'name',
+            headerName: '名字',
+            flex: 1,
+            minWidth: 140,
+            editable: true,
+            renderCell: (params: GridRenderCellParams<string, User>) => (
+                <Box display="flex" alignItems="center">
+                    <Avatar src={params.row.picture}>{!params.row.picture && params.row.name.charAt(0)}</Avatar>
+                    <Typography variant="subtitle1" ml={2}>{params.row.name}</Typography>
+                </Box>
+            ),
+        },
+        { field: 'studentId', headerName: '學號', flex: 1, minWidth: 110 },
+        { field: 'email', headerName: 'Email', flex: 2, minWidth: 225 },
+        {
+            field: 'role',
+            headerName: '角色',
+            type: 'singleSelect',
+            flex: 1,
+            minWidth: 100,
+            editable: true,
+            valueOptions: Object.values(UserRole),
+            valueFormatter: (params: GridValueFormatterParams) => {
+                switch (params.value) {
+                    case UserRole.ADMIN:
+                        return '系統管理員';
+                    case UserRole.USER:
+                        return '使用者';
+                }
+            },
+        },
+        {
+            field: 'status',
+            headerName: '狀態',
+            type: 'singleSelect',
+            flex: 1,
+            minWidth: 100,
+            editable: true,
+            valueOptions: Object.values(UserStatus),
+            renderCell: (params: GridRenderCellParams<string, User>) => {
+                switch (params.row.status) {
+                    case UserStatus.ACTIVE:
+                        return <Chip label="活躍" color="success" />;
+                    case UserStatus.BANNED:
+                        return <Chip label="封鎖" color="error" />;
+                    case UserStatus.UNVERIFIED:
+                        return <Chip label="未驗證" />
+                }
+            },
+        },
+    ];
+
+    const handlePageSizeChange = useCallback((pageSize: number) => {
+        setPage(0);
+        setPageSize(pageSize);
+        setConnectionArgs({ ...baseVariable, ...{ first: pageSize }});
+    }, [baseVariable]);
+
+    const handlePageChange = useCallback(async (newPage: number) => {
         if (newPage - page === 1) {
             // next page
             const cursor = data?.user.pageInfo.endCursor;
-            await refetch({...baseVariable, ...{ first: newPageSize, after: cursor }});
+            setPage(newPage);
+            setConnectionArgs({ ...baseVariable, ...{ first: pageSize, after: cursor }});
         } else if (newPage - page === -1) {
             // previous page
             const cursor = data?.user.pageInfo.startCursor;
-            await refetch({...baseVariable, ...{ last: newPageSize, before: cursor }});
-        } else if (newPage === 0) {
-            // first page
-            await refetch({...baseVariable, ...{ first: newPageSize }});
-        } else if (newPage === Math.ceil(count / pageSize) - 1) {
-            // last page
-            const last = count % newPageSize ? count % newPageSize : newPageSize;
-            await refetch({...baseVariable, ...{ last }});
+            setPage(newPage);
+            setConnectionArgs({ ...baseVariable, ...{ last: pageSize, before: cursor }});
         }
-
-        setPage(newPage);
-        setPageSize(newPageSize);
-    }, [page, pageSize, data, refetch, baseVariable, count, setPage, setPageSize]);
+    }, [page, data, baseVariable, pageSize]);
 
     const handleSearchChange = useCallback(async (newSearchText: string) => {
         if (newSearchText) await refetch({...baseVariable, ...{ first: pageSize, query: newSearchText }});
@@ -97,30 +162,11 @@ export default function UserList() {
         setPage(0);
     }, [refetch, baseVariable, pageSize]);
 
-    const handleOrderChange = useCallback(async (orderBy: number, orderDirection: 'asc' | 'desc' | '') => {
-        if (orderBy === -1) {
-            await refetch({ ...baseVariable, ...{ first: pageSize, order: undefined } });
-
-            setOrder(undefined);
-            setPage(0);
-        } else {
-            const order: UserOrder = { direction: orderDirection.toUpperCase() as OrderDirection, field: columnsField[orderBy] };
-
-            await refetch({ ...baseVariable, ...{ first: pageSize, order } });
-
-            setOrder(order);
-            setPage(0);
-        }
-    }, [refetch, baseVariable, pageSize]);
-
-    // Fix sort direction always displays asc
-    const getColumnDefaultSort = useCallback((index: number) => {
-        const columnOrderName = columnsField[index];
-        return order && columnOrderName === order.field ? order.direction.toLowerCase() as ('asc' | 'desc') : undefined;
-    }, [order]);
-
-    // Disable inbuit sort algorithm
-    const customSort = useCallback(() => 0, []);
+    const handleSortModelChange = useCallback((newModel: GridSortModel) => {
+        setSortModel(newModel);
+        setPage(0);
+        setConnectionArgs({ ...baseVariable, ...{ first: pageSize, order: sortModelToOrder(newModel)}});
+    }, [baseVariable, pageSize]);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -217,77 +263,28 @@ export default function UserList() {
                 </Button>
             </PageHeading>
             <Card sx={{ my: 6 }}>
-                {/* <DataTable
-                    title=""
-                    columns={[
-                        {
-                            field: 'name',
-                            title: '名字',
-                            render: data => 
-                                <Box className={classes.flex}>
-                                    <Avatar src={data.picture}>{!data.picture && data.name.charAt(0)}</Avatar>
-                                    <Typography variant="subtitle1" className={classes.tableSubtitle}>
-                                        {data.name}
-                                    </Typography>
-                                </Box>,
-                            defaultSort: getColumnDefaultSort(0),
-                            customSort,
-                        },
-                        { field: 'studentId', title: '學號', defaultSort: getColumnDefaultSort(1), customSort, },
-                        { field: 'email', title: 'Email', defaultSort: getColumnDefaultSort(2), customSort, },
-                        {
-                            field: 'role',
-                            title: '角色',
-                            render: data => {
-                                switch (data.role) {
-                                    case UserRole.ADMIN:
-                                        return '系統管理員';
-                                    case UserRole.USER:
-                                        return '使用者';
-                                }
-                            },
-                            defaultSort: getColumnDefaultSort(3),
-                            customSort,
-                        },
-                        {
-                            field: 'status',
-                            title: '狀態',
-                            render: data => {
-                                switch (data.status) {
-                                    case UserStatus.ACTIVE:
-                                        return <Chip label="活躍" className={classes.activeChip} />;
-                                    case UserStatus.BANNED:
-                                        return <Chip color="secondary" label="封鎖" />;
-                                    case UserStatus.UNVERIFIED:
-                                        return <Chip label="未驗證" />
-                                }
-                            },
-                            defaultSort: getColumnDefaultSort(4),
-                            customSort,
-                        },
-                        {
-                            render: () => <IconButton size="small"><MoreVertIcon /></IconButton>,
-                            align: 'right',
-                            width: '5%',
-                            sorting: false
-                        },
-                    ]}
-                    data={users}
+                <DataGrid
+                    columns={columns}
+                    rows={users}
+                    autoHeight
+                    density="comfortable"
+                    disableColumnMenu
+                    editMode="row"
+                    // pagination
+                    rowsPerPageOptions={[10, 50]}
+                    pageSize={pageSize}
+                    onPageSizeChange={handlePageSizeChange}
+                    paginationMode="server"
+                    rowCount={count}
                     page={page}
-                    totalCount={count}
-                    isLoading={networkStatus < 7}
-                    options={{
-                        selection: true,
-                        grouping: false,
-                        draggable: false,
-                        debounceInterval: 250,
-                        pageSize: pageSize,
-                        pageSizeOptions: [10, 50],
-                    }}
-                    onChangePage={handleChangePage}
-                    onSearchChange={handleSearchChange}
-                    onOrderChange={handleOrderChange}
-                /> */}
+                    onPageChange={handlePageChange}
+                    // sorting
+                    sortingMode="server"
+                    sortModel={sortModel}
+                    onSortModelChange={handleSortModelChange}
+                    checkboxSelection
+                    disableSelectionOnClick
+                />
             </Card>
         </AppLayout>
     );
