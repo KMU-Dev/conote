@@ -6,13 +6,13 @@ import { useMutation, useQuery } from "@apollo/client";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
 import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { matchAccept } from "../../../utils/file";
 import { useNotification } from "../../../components/Notification";
-import { DataGrid, GridColDef, GridRenderCellParams, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
-import QuickSearchToolbar from "../../../components/ConnectionDataGrid/QuickSearchToolbar";
+import { DataGrid, GridColDef, GridInputSelectionModel, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
+import ConnectionGridToolbar from "../../../components/ConnectionGrid/ConnectionGridToolbar";
 
 
 function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
@@ -32,10 +32,12 @@ export default function UserList() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [sortModel, setSortModel] = useState<GridSortModel>([]);
+    const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>([]);
     const [search, setSearch] = useState('');
     const [importLoading, setImportLoading] = useState(false);
     const [connectionArgs, setConnectionArgs] = useState<UserConnectionArgs>({ first: pageSize });
     const input = useRef<HTMLInputElement>(null);
+    const prevSelectionModel = useRef<GridInputSelectionModel>(selectionModel);
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
         USER_CONNECTION,
@@ -43,6 +45,11 @@ export default function UserList() {
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
     const { enqueueNotification } = useNotification();
+
+    // restore selection model when changing page
+    useEffect(() => {
+        setTimeout(() => setSelectionModel(prevSelectionModel.current));
+    }, [page, data]);
 
     // data map types
     const users = useMemo(
@@ -132,7 +139,8 @@ export default function UserList() {
             setPage(newPage);
             setConnectionArgs({ ...baseVariable, ...{ last: pageSize, before: cursor }});
         }
-    }, [page, data, baseVariable, pageSize]);
+        prevSelectionModel.current = selectionModel;
+    }, [page, data, baseVariable, pageSize, prevSelectionModel, selectionModel]);
 
     const handleSearchChange = useCallback((search: string) => {
         if (search) setConnectionArgs({...baseVariable, ...{ first: pageSize, query: search }});
@@ -147,6 +155,11 @@ export default function UserList() {
         setPage(0);
         setConnectionArgs({ ...baseVariable, ...{ first: pageSize, order: sortModelToOrder(newModel)}});
     }, [baseVariable, pageSize]);
+
+    const handleSelectionModelChange = useCallback((newSelectionModel: GridInputSelectionModel) => {
+        console.log(newSelectionModel);
+        setSelectionModel(newSelectionModel);
+    }, []);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -249,7 +262,6 @@ export default function UserList() {
                     autoHeight
                     density="comfortable"
                     disableColumnMenu
-                    editMode="row"
                     // pagination
                     rowsPerPageOptions={[10, 50]}
                     pageSize={pageSize}
@@ -265,10 +277,13 @@ export default function UserList() {
                     // selecting
                     checkboxSelection
                     disableSelectionOnClick
+                    selectionModel={selectionModel}
+                    onSelectionModelChange={handleSelectionModelChange}
                     loading={networkStatus < 7}
-                    components={{ Toolbar: QuickSearchToolbar }}
+                    components={{ Toolbar: ConnectionGridToolbar }}
                     componentsProps={{
                         toolbar: {
+                            numSelected: (selectionModel as GridRowId[]).length,
                             onSearchChange: handleSearchChange,
                             debounceInterval: 250,
                         }
