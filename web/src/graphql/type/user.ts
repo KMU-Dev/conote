@@ -64,3 +64,7 @@ export interface UserConnectionArgs {
     query?: string;
     order?: UserOrder;
 }
+
+export interface DeleteMultipleUsersInput {
+    ids: number[];
+}

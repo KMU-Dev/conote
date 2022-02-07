@@ -7,3 +7,11 @@ export const CREATE_MULTIPLE_USERS = gql`
         }
     }
 `;
+
+export const DELETE_MULTIPLE_USERS = gql`
+    mutation DeleteMultipleUsers($input: DeleteMultipleUsersInput!) {
+        deleteMultipleUsers(input: $input) {
+            count
+        }
+    }
+`;

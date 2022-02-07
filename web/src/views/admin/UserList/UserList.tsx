@@ -7,7 +7,7 @@ import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
 import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
+import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { matchAccept } from "../../../utils/file";
 import { useNotification } from "../../../components/Notification";
@@ -44,6 +44,7 @@ export default function UserList() {
         { variables: connectionArgs, notifyOnNetworkStatusChange: true },
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
+    const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
     const { enqueueNotification } = useNotification();
 
     // restore selection model when changing page
@@ -157,9 +158,43 @@ export default function UserList() {
     }, [baseVariable, pageSize]);
 
     const handleSelectionModelChange = useCallback((newSelectionModel: GridInputSelectionModel) => {
-        console.log(newSelectionModel);
         setSelectionModel(newSelectionModel);
     }, []);
+
+    const handleDeleteClick = useCallback(async () => {
+        const ids = (selectionModel as GridRowId[]).map((id) => +id);
+        const response = await deleteMultipleUsers({
+            variables: { input: { ids } },
+        });
+        const updatedCount = response.data?.deleteMultipleUsers.count;
+        if (updatedCount === ids.length) {
+            enqueueNotification({
+                variant: 'success',
+                title: '成功刪除使用者',
+                content: `已刪除 ${updatedCount} 筆資料。`,
+            });
+        } else if (updatedCount > 0 && updatedCount < ids.length) {
+            enqueueNotification({
+                variant: 'info',
+                title: '已刪除部分使用者',
+                content: `已刪除 ${updatedCount} 筆資料，其餘 ${ids.length - updatedCount} 筆使用者不存在。`,
+            });
+        } else {
+            enqueueNotification({
+                variant: 'warning',
+                title: '未刪除任何使用者',
+                content: '所選使用者皆不存在',
+            });
+        }
+
+        // clean all selections
+        setSelectionModel([]);
+        prevSelectionModel.current = [];
+
+        await refetch({...baseVariable, ...{ first: pageSize }});
+        setConnectionArgs({...baseVariable, ...{ first: pageSize}});
+        setPage(0);
+    }, [baseVariable, deleteMultipleUsers, enqueueNotification, pageSize, refetch, selectionModel]);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -223,7 +258,9 @@ export default function UserList() {
                     });
                 }
                 
-                await refetch({ first: pageSize });
+                await refetch({...baseVariable, ...{ first: pageSize }});
+                setPage(0);
+                setConnectionArgs({...baseVariable, ...{ first: pageSize}});
             } else {
                 enqueueNotification({
                     variant: 'error',
@@ -234,7 +271,7 @@ export default function UserList() {
 
             setImportLoading(false);
         }
-    }, [enqueueNotification, createMultipleUsers, refetch, pageSize]);
+    }, [enqueueNotification, createMultipleUsers, refetch, pageSize, baseVariable]);
 
     return (
         <AppLayout>
@@ -284,6 +321,7 @@ export default function UserList() {
                     componentsProps={{
                         toolbar: {
                             numSelected: (selectionModel as GridRowId[]).length,
+                            onDeleteClick: handleDeleteClick,
                             onSearchChange: handleSearchChange,
                             debounceInterval: 250,
                         }
