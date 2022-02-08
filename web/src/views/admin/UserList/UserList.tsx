@@ -1,18 +1,18 @@
-import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
-import Papa from 'papaparse';
-import AppLayout from "../../../components/AppLayout/AppLayout";
-import PageHeading from "../../../components/PageHeading/PageHeading";
 import { useMutation, useQuery } from "@apollo/client";
+import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
+import { DataGrid, GridColDef, GridInputSelectionModel, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
+import Papa from 'papaparse';
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import AppLayout from "../../../components/AppLayout/AppLayout";
+import ConnectionGridToolbar from "../../../components/ConnectionGrid/ConnectionGridToolbar";
+import { useNotification } from "../../../components/Notification";
+import PageHeading from "../../../components/PageHeading/PageHeading";
+import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
+import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
 import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
-import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { matchAccept } from "../../../utils/file";
-import { useNotification } from "../../../components/Notification";
-import { DataGrid, GridColDef, GridInputSelectionModel, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
-import ConnectionGridToolbar from "../../../components/ConnectionGrid/ConnectionGridToolbar";
 
 
 function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
@@ -41,7 +41,7 @@ export default function UserList() {
 
     const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
         USER_CONNECTION,
-        { variables: connectionArgs, notifyOnNetworkStatusChange: true },
+        { variables: connectionArgs, fetchPolicy: 'network-only', notifyOnNetworkStatusChange: true },
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
     const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
@@ -50,14 +50,14 @@ export default function UserList() {
     // restore selection model when changing page
     useEffect(() => {
         setTimeout(() => setSelectionModel(prevSelectionModel.current));
-    }, [page, data]);
+    }, [page]);
 
     // data map types
     const users = useMemo(
-        () => data ? data.user.edges.map((edge) => ({ ...edge.node })) : [],
+        () => data && data.user ? data.user.edges.map((edge) => ({ ...edge.node })) : [],
         [data],
     );
-    const count = data ? data.user.count : 0;
+    const count = data && data.user ? data.user.count : 0;
     const baseVariable: UserConnectionArgs = useMemo(() => ({
         first: undefined,
         after: undefined,
