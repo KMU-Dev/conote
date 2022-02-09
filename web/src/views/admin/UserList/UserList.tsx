@@ -1,18 +1,19 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
-import { DataGrid, GridColDef, GridInputSelectionModel, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
+import { alpha, Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
+import { DataGrid, GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSelectionModel, GridPreProcessEditCellProps, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
 import Papa from 'papaparse';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AppLayout from "../../../components/AppLayout/AppLayout";
 import ConnectionGridToolbar from "../../../components/ConnectionGrid/ConnectionGridToolbar";
 import { useNotification } from "../../../components/Notification";
 import PageHeading from "../../../components/PageHeading/PageHeading";
-import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
+import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS, UPDATE_USER_LIST } from "../../../graphql/mutations/user";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
 import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
 import { matchAccept } from "../../../utils/file";
+import { validate } from "./validation";
 
 
 function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
@@ -44,8 +45,9 @@ export default function UserList() {
         { variables: connectionArgs, fetchPolicy: 'network-only', notifyOnNetworkStatusChange: true },
     );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
+    const [updateUser] = useMutation<GraphqlDto<'updateUser', User>>(UPDATE_USER_LIST);
     const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
-    const { enqueueNotification } = useNotification();
+    const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
 
     // restore selection model when changing page
     useEffect(() => {
@@ -81,6 +83,7 @@ export default function UserList() {
                     <Typography variant="subtitle1" ml={2}>{params.row.name}</Typography>
                 </Box>
             ),
+            preProcessEditCellProps: (params: GridPreProcessEditCellProps) => validate(params, 'name'),
         },
         { field: 'studentId', headerName: '學號', flex: 1, minWidth: 110 },
         { field: 'email', headerName: 'Email', flex: 2, minWidth: 225 },
@@ -195,6 +198,25 @@ export default function UserList() {
         setConnectionArgs({...baseVariable, ...{ first: pageSize}});
         setPage(0);
     }, [baseVariable, deleteMultipleUsers, enqueueNotification, pageSize, refetch, selectionModel]);
+
+    const handleCellEditCommit = useCallback(async (params: GridCellEditCommitParams, _event, details: GridCallbackDetails) => {
+        try {
+            const response = await updateUser({
+                variables: { input: { id: params.id, [params.field]: params.value } },
+            });
+
+            const name = response.data.updateUser.name;
+            const updatedValue = response.data.updateUser[params.field as keyof User];
+
+            enqueueNotification({
+                variant: 'success',
+                title: '使用者資料已更新',
+                content: `已將${name}的 ${params.field} 更新成 ${updatedValue}。`,
+            });
+        } catch (e) {
+            enqueueCommonErrorNotification(e);
+        }
+    }, [enqueueCommonErrorNotification, enqueueNotification, updateUser]);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -316,6 +338,8 @@ export default function UserList() {
                     disableSelectionOnClick
                     selectionModel={selectionModel}
                     onSelectionModelChange={handleSelectionModelChange}
+                    // editing
+                    onCellEditCommit={handleCellEditCommit}
                     loading={networkStatus < 7}
                     components={{ Toolbar: ConnectionGridToolbar }}
                     componentsProps={{
@@ -325,6 +349,15 @@ export default function UserList() {
                             onSearchChange: handleSearchChange,
                             debounceInterval: 250,
                         }
+                    }}
+                    sx={{
+                        '& .MuiDataGrid-cell--editing .MuiInputBase-root': {
+                            height: 1,
+                        },
+                        '& .Mui-error': {
+                            bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+                            color: 'error.main',
+                        },
                     }}
                 />
             </Card>
