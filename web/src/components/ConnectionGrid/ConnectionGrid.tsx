@@ -1,7 +1,7 @@
 import { TypedDocumentNode, useQuery } from "@apollo/client";
-import { alpha } from "@mui/material";
+import { alpha, Button, Dialog, DialogActions } from "@mui/material";
 import { DataGrid, DataGridProps, GridInputSelectionModel, GridRowId, GridSortModel } from "@mui/x-data-grid";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Connection, ConnectionArgs, ConnectionOrder, GraphqlDto } from "../../graphql/type/type";
 import { PartialBy } from '../../utils/types';
 import ConnectionGridToolbar from "./ConnectionGridToolbar";
@@ -18,11 +18,12 @@ type ConnectionGridProps<TData, TOrderField extends string> = PartialBy<DataGrid
      * @returns a promise that resolves boolean indicating whether refetch is required
      */
     onDelete: (selectionModel: GridInputSelectionModel) => Promise<boolean>;
+    deleteDialogContent: ReactNode;
     onRefetchReady?: (refetch: RefetchFunction<TOrderField>) => void;
 };
 
 export default function ConnectionGrid<TData, TOrderField extends string>(props: ConnectionGridProps<TData, TOrderField>) {
-    const { connectionQuery, queryName, sortModelToOrder, searchText, debounceInterval, onDelete, onRefetchReady, ...gridProps } = props;
+    const { connectionQuery, queryName, sortModelToOrder, searchText, debounceInterval, onDelete, deleteDialogContent, onRefetchReady, ...gridProps } = props;
 
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -30,10 +31,11 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
     const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>([]);
     const [search, setSearch] = useState('');
     const [connectionArgs, setConnectionArgs] = useState<ConnectionArgs<TOrderField>>({ first: pageSize });
+    const [dialogOpen, setDialogOpen] = useState(false);
     const prevSelectionModel = useRef<GridInputSelectionModel>(selectionModel);
 
     // apollo client hooks
-    const { data, networkStatus } = useQuery(
+    const { data, networkStatus, refetch } = useQuery(
         connectionQuery, 
         { variables: connectionArgs, fetchPolicy: 'network-only', notifyOnNetworkStatusChange: true },
     );
@@ -48,16 +50,19 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
     }), [search, sortModel, sortModelToOrder]);
 
     // custom refetch function
-    const refetch = useCallback(async (variables) => {
+    const customRefetch = useCallback(async (variables) => {
         const args: ConnectionArgs<TOrderField> = variables ?
             { ...baseVariable, ...variables } : { ...baseVariable, ...{ first: pageSize } };
         setPage(0);
         setConnectionArgs(args);
-    }, [baseVariable, pageSize]);
+        if (!(connectionArgs.after && connectionArgs.before && connectionArgs.query && connectionArgs.order)) {
+            await refetch(args);
+        }
+    }, [baseVariable, connectionArgs.after, connectionArgs.before, connectionArgs.order, connectionArgs.query, pageSize, refetch]);
 
     useEffect(() => {
-        onRefetchReady(refetch);
-    }, [refetch, onRefetchReady]);
+        onRefetchReady(customRefetch);
+    }, [customRefetch, onRefetchReady]);
 
     // restore selection model when changing page
     useEffect(() => {
@@ -111,6 +116,11 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
     }, [baseVariable, pageSize]);
 
     const handleDeleteClick = useCallback(async () => {
+        setDialogOpen(true);
+    }, []);
+
+    const handleDeleteConfirm = useCallback(async () => {
+        setDialogOpen(false);
         const shouldRefetch = await onDelete(selectionModel);
 
         // clean all selections
@@ -121,53 +131,66 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
             setConnectionArgs({...baseVariable, ...{ first: pageSize}});
             setPage(0);
         }
-    }, [baseVariable, onDelete, pageSize, selectionModel]);
+    }, [baseVariable, onDelete, pageSize, selectionModel])
+
+    const handleDialogClose = useCallback(() => {
+        setDialogOpen(false);
+    }, []);
 
     return (
-        <DataGrid
-            rows={rows}
-            autoHeight
-            density="comfortable"
-            disableColumnMenu
-            // pagination
-            rowsPerPageOptions={[10, 50]}
-            pageSize={pageSize}
-            onPageSizeChange={handlePageSizeChange}
-            paginationMode="server"
-            rowCount={count}
-            page={page}
-            onPageChange={handlePageChange}
-            // sorting
-            sortingMode="server"
-            sortModel={sortModel}
-            onSortModelChange={handleSortModelChange}
-            // selecting
-            checkboxSelection
-            disableSelectionOnClick
-            selectionModel={selectionModel}
-            onSelectionModelChange={handleSelectionModelChange}
-            // miscellaneous
-            loading={networkStatus < 7}
-            components={{ Toolbar: ConnectionGridToolbar }}
-            componentsProps={{
-                toolbar: {
-                    numSelected: (selectionModel as GridRowId[]).length,
-                    onDeleteClick: handleDeleteClick,
-                    search: searchText,
-                    onSearchChange: handleSearchChange,
-                    debounceInterval: debounceInterval ?? 250,
-                }
-            }}
-            sx={{
-                '& .MuiDataGrid-cell--editing .MuiInputBase-root': {
-                    height: 1,
-                },
-                '& .Mui-error': {
-                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
-                    color: 'error.main',
-                },
-            }}
-            {...gridProps}
-        />
+        <>
+            <DataGrid
+                rows={rows}
+                autoHeight
+                density="comfortable"
+                disableColumnMenu
+                // pagination
+                rowsPerPageOptions={[10, 50]}
+                pageSize={pageSize}
+                onPageSizeChange={handlePageSizeChange}
+                paginationMode="server"
+                rowCount={count}
+                page={page}
+                onPageChange={handlePageChange}
+                // sorting
+                sortingMode="server"
+                sortModel={sortModel}
+                onSortModelChange={handleSortModelChange}
+                // selecting
+                checkboxSelection
+                disableSelectionOnClick
+                selectionModel={selectionModel}
+                onSelectionModelChange={handleSelectionModelChange}
+                // miscellaneous
+                loading={networkStatus < 7}
+                components={{ Toolbar: ConnectionGridToolbar }}
+                componentsProps={{
+                    toolbar: {
+                        numSelected: (selectionModel as GridRowId[]).length,
+                        onDeleteClick: handleDeleteClick,
+                        search: searchText,
+                        onSearchChange: handleSearchChange,
+                        debounceInterval: debounceInterval ?? 250,
+                    }
+                }}
+                sx={{
+                    '& .MuiDataGrid-cell--editing .MuiInputBase-root': {
+                        height: 1,
+                    },
+                    '& .Mui-error': {
+                        bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+                        color: 'error.main',
+                    },
+                }}
+                {...gridProps}
+            />
+            <Dialog open={dialogOpen} onClose={handleDialogClose}>
+                {deleteDialogContent}
+                <DialogActions>
+                    <Button color="inherit" sx={{ color: 'text.secondary' }} onClick={handleDialogClose}>取消</Button>
+                    <Button color="error" onClick={handleDeleteConfirm}>刪除</Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 }

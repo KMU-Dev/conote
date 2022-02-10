@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, Chip, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import { GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSelectionModel, GridPreProcessEditCellProps, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
 import Papa from 'papaparse';
 import { ChangeEvent, useCallback, useRef, useState } from "react";
@@ -39,10 +39,6 @@ export default function UserList() {
     const [updateUser] = useMutation<GraphqlDto<'updateUser', User>>(UPDATE_USER_LIST);
     const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
     const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
-
-    const handleRefetchReady = useCallback((newRefetch) => {
-        refetch.current = newRefetch;
-    }, []);
 
     // table definitions
     const columns: GridColDef[] = [
@@ -99,6 +95,21 @@ export default function UserList() {
             },
         },
     ];
+
+    const dialogContent = (
+        <>
+            <DialogTitle>確定要刪除使用者嗎？</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    使用者一旦刪除便無法復原，刪除前請再次確認。
+                </DialogContentText>
+            </DialogContent>
+        </>
+    );
+
+    const handleRefetchReady = useCallback((newRefetch) => {
+        refetch.current = newRefetch;
+    }, []);
 
     const handleDelete = useCallback(async (selectionModel: GridInputSelectionModel) => {
         const ids = (selectionModel as GridRowId[]).map((id) => +id);
@@ -249,6 +260,7 @@ export default function UserList() {
                     queryName="user"
                     sortModelToOrder={sortModelToOrder}
                     onDelete={handleDelete}
+                    deleteDialogContent={dialogContent}
                     onRefetchReady={handleRefetchReady}
                     // editing
                     onCellEditCommit={handleCellEditCommit}
