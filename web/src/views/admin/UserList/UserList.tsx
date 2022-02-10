@@ -4,8 +4,7 @@ import { GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSel
 import Papa from 'papaparse';
 import { ChangeEvent, useCallback, useRef, useState } from "react";
 import AppLayout from "../../../components/AppLayout/AppLayout";
-import ConnectionGrid from "../../../components/ConnectionGrid/ConnectionGrid";
-import { RefetchFunction } from "../../../components/ConnectionGrid/type";
+import { ConnectionGrid, RefetchFunction } from "../../../components/ConnectionGrid";
 import { useNotification } from "../../../components/Notification";
 import PageHeading from "../../../components/PageHeading/PageHeading";
 import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS, UPDATE_USER_LIST } from "../../../graphql/mutations/user";
