@@ -1,126 +1,162 @@
-import { Avatar, Box, Button, Card, Chip, IconButton, Typography } from "@mui/material";
+import { useMutation } from "@apollo/client";
+import { Avatar, Box, Button, Card, Chip, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
+import { GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSelectionModel, GridPreProcessEditCellProps, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
 import Papa from 'papaparse';
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import AppLayout from "../../../components/AppLayout/AppLayout";
-import PageHeading from "../../../components/PageHeading/PageHeading";
-import DataTable from "../../../components/DataTable/DataTable";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useMutation, useQuery } from "@apollo/client";
-import { USER_CONNECTION } from "../../../graphql/queries/user";
-import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
-import { User, UserConnectionArgs, UserOrder, UserRole, UserStatus } from "../../../graphql/type/user";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
-import { CREATE_MULTIPLE_USERS } from "../../../graphql/mutations/user";
-import { BatchPayload } from "../../../graphql/type/BatchPayload";
-import { columnsField } from "./constant";
-import { matchAccept } from "../../../utils/file";
+import { ConnectionGrid, RefetchFunction } from "../../../components/ConnectionGrid";
 import { useNotification } from "../../../components/Notification";
+import PageHeading from "../../../components/PageHeading/PageHeading";
+import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS, UPDATE_USER_LIST } from "../../../graphql/mutations/user";
+import { USER_CONNECTION } from "../../../graphql/queries/user";
+import { BatchPayload } from "../../../graphql/type/BatchPayload";
+import { GraphqlDto, OrderDirection } from "../../../graphql/type/type";
+import { User, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
+import { matchAccept } from "../../../utils/file";
+import { validate } from "./validation";
 
-/* const useStyles = makeStyles(theme =>
-    createStyles({
-        headingButtonMargin: {
-            marginLeft: theme.spacing(3),
-        },
-        card: {
-            margin: theme.spacing(6, 0),
-        },
-        flex: {
-            display: 'flex',
-            alignItems: 'center',
-        },
-        tableSubtitle: {
-            marginLeft: theme.spacing(2),
-        },
-        activeChip: {
-            backgroundColor: theme.palette.success.main,
-            color: theme.palette.common.white,
-        }
-    }),
-); */
+
+function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
+    if (sortModel.length === 0) return undefined;
+    const sortItem = sortModel[0];
+    const direction = sortItem.sort.toUpperCase() as OrderDirection;
+    switch (sortItem.field) {
+        case 'name': return { field: UserOrderField.NAME, direction };
+        case 'studentId': return { field: UserOrderField.STUDENT_ID, direction };
+        case 'email': return { field: UserOrderField.EMAIL, direction };
+        case 'role': return { field: UserOrderField.ROLE, direction };
+        case 'status': return { field: UserOrderField.STATUS, direction };
+    }
+}
 
 export default function UserList() {
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [searchText, setSearchText] = useState('');
-    const [order, setOrder] = useState<UserOrder>(undefined);
     const [importLoading, setImportLoading] = useState(false);
     const input = useRef<HTMLInputElement>(null);
+    const refetch = useRef<RefetchFunction<UserOrderField>>(null);
 
-    const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
-        USER_CONNECTION,
-        { variables: { first: pageSize }, notifyOnNetworkStatusChange: true },
-    );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
-    const { enqueueNotification } = useNotification();
+    const [updateUser] = useMutation<GraphqlDto<'updateUser', User>>(UPDATE_USER_LIST);
+    const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
+    const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
 
-    // data map types
-    const users = useMemo(
-        () => data ? data.user.edges.map((edge) => ({ ...edge.node })) : [],
-        [data],
+    // table definitions
+    const columns: GridColDef[] = [
+        {
+            field: 'name',
+            headerName: '名字',
+            flex: 1,
+            minWidth: 140,
+            editable: true,
+            renderCell: (params: GridRenderCellParams<string, User>) => (
+                <Box display="flex" alignItems="center">
+                    <Avatar src={params.row.picture}>{!params.row.picture && params.row.name.charAt(0)}</Avatar>
+                    <Typography variant="subtitle1" ml={2}>{params.row.name}</Typography>
+                </Box>
+            ),
+            preProcessEditCellProps: (params: GridPreProcessEditCellProps) => validate(params, 'name'),
+        },
+        { field: 'studentId', headerName: '學號', flex: 1, minWidth: 110 },
+        { field: 'email', headerName: 'Email', flex: 2, minWidth: 225 },
+        {
+            field: 'role',
+            headerName: '角色',
+            type: 'singleSelect',
+            flex: 1,
+            minWidth: 100,
+            editable: true,
+            valueOptions: Object.values(UserRole),
+            valueFormatter: (params: GridValueFormatterParams) => {
+                switch (params.value) {
+                    case UserRole.ADMIN:
+                        return '系統管理員';
+                    case UserRole.USER:
+                        return '使用者';
+                }
+            },
+        },
+        {
+            field: 'status',
+            headerName: '狀態',
+            type: 'singleSelect',
+            flex: 1,
+            minWidth: 100,
+            editable: true,
+            valueOptions: Object.values(UserStatus),
+            renderCell: (params: GridRenderCellParams<string, User>) => {
+                switch (params.row.status) {
+                    case UserStatus.ACTIVE:
+                        return <Chip label="活躍" color="success" />;
+                    case UserStatus.BANNED:
+                        return <Chip label="封鎖" color="error" />;
+                    case UserStatus.UNVERIFIED:
+                        return <Chip label="未驗證" />
+                }
+            },
+        },
+    ];
+
+    const dialogContent = (
+        <>
+            <DialogTitle>確定要刪除使用者嗎？</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    使用者一旦刪除便無法復原，刪除前請再次確認。
+                </DialogContentText>
+            </DialogContent>
+        </>
     );
-    const count = data ? data.user.count : 0;
-    const baseVariable: UserConnectionArgs = useMemo(() => ({
-        first: undefined,
-        after: undefined,
-        last: undefined,
-        before: undefined,
-        query: searchText ? searchText : undefined,
-        order,
-    }), [searchText, order]);
 
-    const handleChangePage = useCallback(async (newPage: number, newPageSize: number) => {
-        if (newPage - page === 1) {
-            // next page
-            const cursor = data?.user.pageInfo.endCursor;
-            await refetch({...baseVariable, ...{ first: newPageSize, after: cursor }});
-        } else if (newPage - page === -1) {
-            // previous page
-            const cursor = data?.user.pageInfo.startCursor;
-            await refetch({...baseVariable, ...{ last: newPageSize, before: cursor }});
-        } else if (newPage === 0) {
-            // first page
-            await refetch({...baseVariable, ...{ first: newPageSize }});
-        } else if (newPage === Math.ceil(count / pageSize) - 1) {
-            // last page
-            const last = count % newPageSize ? count % newPageSize : newPageSize;
-            await refetch({...baseVariable, ...{ last }});
-        }
+    const handleRefetchReady = useCallback((newRefetch) => {
+        refetch.current = newRefetch;
+    }, []);
 
-        setPage(newPage);
-        setPageSize(newPageSize);
-    }, [page, pageSize, data, refetch, baseVariable, count, setPage, setPageSize]);
-
-    const handleSearchChange = useCallback(async (newSearchText: string) => {
-        if (newSearchText) await refetch({...baseVariable, ...{ first: pageSize, query: newSearchText }});
-        else await refetch({...baseVariable, ...{ first: pageSize, query: undefined }});
-
-        setSearchText(newSearchText);
-        setPage(0);
-    }, [refetch, baseVariable, pageSize]);
-
-    const handleOrderChange = useCallback(async (orderBy: number, orderDirection: 'asc' | 'desc' | '') => {
-        if (orderBy === -1) {
-            await refetch({ ...baseVariable, ...{ first: pageSize, order: undefined } });
-
-            setOrder(undefined);
-            setPage(0);
+    const handleDelete = useCallback(async (selectionModel: GridInputSelectionModel) => {
+        const ids = (selectionModel as GridRowId[]).map((id) => +id);
+        const response = await deleteMultipleUsers({
+            variables: { input: { ids } },
+        });
+        const updatedCount = response.data?.deleteMultipleUsers.count;
+        if (updatedCount === ids.length) {
+            enqueueNotification({
+                variant: 'success',
+                title: '成功刪除使用者',
+                content: `已刪除 ${updatedCount} 筆資料。`,
+            });
+        } else if (updatedCount > 0 && updatedCount < ids.length) {
+            enqueueNotification({
+                variant: 'info',
+                title: '已刪除部分使用者',
+                content: `已刪除 ${updatedCount} 筆資料，其餘 ${ids.length - updatedCount} 筆使用者不存在。`,
+            });
         } else {
-            const order: UserOrder = { direction: orderDirection.toUpperCase() as OrderDirection, field: columnsField[orderBy] };
-
-            await refetch({ ...baseVariable, ...{ first: pageSize, order } });
-
-            setOrder(order);
-            setPage(0);
+            enqueueNotification({
+                variant: 'warning',
+                title: '未刪除任何使用者',
+                content: '所選使用者皆不存在',
+            });
         }
-    }, [refetch, baseVariable, pageSize]);
 
-    // Fix sort direction always displays asc
-    const getColumnDefaultSort = useCallback((index: number) => {
-        const columnOrderName = columnsField[index];
-        return order && columnOrderName === order.field ? order.direction.toLowerCase() as ('asc' | 'desc') : undefined;
-    }, [order]);
+        return true;
+    }, [deleteMultipleUsers, enqueueNotification]);
 
-    // Disable inbuit sort algorithm
-    const customSort = useCallback(() => 0, []);
+    const handleCellEditCommit = useCallback(async (params: GridCellEditCommitParams, _event, details: GridCallbackDetails) => {
+        try {
+            const response = await updateUser({
+                variables: { input: { id: params.id, [params.field]: params.value } },
+            });
+
+            const name = response.data.updateUser.name;
+            const updatedValue = response.data.updateUser[params.field as keyof User];
+
+            enqueueNotification({
+                variant: 'success',
+                title: '使用者資料已更新',
+                content: `已將${name}的 ${params.field} 更新成 ${updatedValue}。`,
+            });
+        } catch (e) {
+            enqueueCommonErrorNotification(e);
+        }
+    }, [enqueueCommonErrorNotification, enqueueNotification, updateUser]);
 
     // Simulate input click when import button clicked. 
     const handleImportClick = useCallback(() => {
@@ -184,7 +220,7 @@ export default function UserList() {
                     });
                 }
                 
-                await refetch({ first: pageSize });
+                refetch.current();
             } else {
                 enqueueNotification({
                     variant: 'error',
@@ -195,7 +231,7 @@ export default function UserList() {
 
             setImportLoading(false);
         }
-    }, [enqueueNotification, createMultipleUsers, refetch, pageSize]);
+    }, [enqueueNotification, createMultipleUsers, refetch]);
 
     return (
         <AppLayout>
@@ -217,77 +253,17 @@ export default function UserList() {
                 </Button>
             </PageHeading>
             <Card sx={{ my: 6 }}>
-                {/* <DataTable
-                    title=""
-                    columns={[
-                        {
-                            field: 'name',
-                            title: '名字',
-                            render: data => 
-                                <Box className={classes.flex}>
-                                    <Avatar src={data.picture}>{!data.picture && data.name.charAt(0)}</Avatar>
-                                    <Typography variant="subtitle1" className={classes.tableSubtitle}>
-                                        {data.name}
-                                    </Typography>
-                                </Box>,
-                            defaultSort: getColumnDefaultSort(0),
-                            customSort,
-                        },
-                        { field: 'studentId', title: '學號', defaultSort: getColumnDefaultSort(1), customSort, },
-                        { field: 'email', title: 'Email', defaultSort: getColumnDefaultSort(2), customSort, },
-                        {
-                            field: 'role',
-                            title: '角色',
-                            render: data => {
-                                switch (data.role) {
-                                    case UserRole.ADMIN:
-                                        return '系統管理員';
-                                    case UserRole.USER:
-                                        return '使用者';
-                                }
-                            },
-                            defaultSort: getColumnDefaultSort(3),
-                            customSort,
-                        },
-                        {
-                            field: 'status',
-                            title: '狀態',
-                            render: data => {
-                                switch (data.status) {
-                                    case UserStatus.ACTIVE:
-                                        return <Chip label="活躍" className={classes.activeChip} />;
-                                    case UserStatus.BANNED:
-                                        return <Chip color="secondary" label="封鎖" />;
-                                    case UserStatus.UNVERIFIED:
-                                        return <Chip label="未驗證" />
-                                }
-                            },
-                            defaultSort: getColumnDefaultSort(4),
-                            customSort,
-                        },
-                        {
-                            render: () => <IconButton size="small"><MoreVertIcon /></IconButton>,
-                            align: 'right',
-                            width: '5%',
-                            sorting: false
-                        },
-                    ]}
-                    data={users}
-                    page={page}
-                    totalCount={count}
-                    isLoading={networkStatus < 7}
-                    options={{
-                        selection: true,
-                        grouping: false,
-                        draggable: false,
-                        debounceInterval: 250,
-                        pageSize: pageSize,
-                        pageSizeOptions: [10, 50],
-                    }}
-                    onChangePage={handleChangePage}
-                    onSearchChange={handleSearchChange}
-                    onOrderChange={handleOrderChange}
-                /> */}
+                <ConnectionGrid
+                    columns={columns}
+                    connectionQuery={USER_CONNECTION}
+                    queryName="user"
+                    sortModelToOrder={sortModelToOrder}
+                    onDelete={handleDelete}
+                    deleteDialogContent={dialogContent}
+                    onRefetchReady={handleRefetchReady}
+                    // editing
+                    onCellEditCommit={handleCellEditCommit}
+                />
             </Card>
         </AppLayout>
     );

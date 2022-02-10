@@ -24,3 +24,18 @@ export enum OrderDirection {
     ASC = 'ASC',
     DESC = 'DESC',
 }
+
+// Field should extends enum
+export interface ConnectionOrder<Field extends string> {
+    direction: OrderDirection;
+    field: Field;
+}
+
+export interface ConnectionArgs<OrderField extends string> {
+    first?: number;
+    last?: number;
+    after?: string;
+    before?: string;
+    query?: string;
+    order?: ConnectionOrder<OrderField>;
+}

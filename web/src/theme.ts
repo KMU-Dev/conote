@@ -1,5 +1,7 @@
 import { pink } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
+import { zhTW as coreZhTW } from "@mui/material/locale";
+import { zhTW } from "./components/ConnectionGrid/localization";
 
 let defaultTheme = createTheme({
     palette: {
@@ -20,6 +22,7 @@ let defaultTheme = createTheme({
     spacing: (factor: number) => `${0.25 * factor}rem`,
 });
 
+// components override
 defaultTheme = createTheme(defaultTheme, {
     components: {
         MuiButton: {
@@ -38,5 +41,8 @@ defaultTheme = createTheme(defaultTheme, {
         },
     },
 });
+
+// localization
+defaultTheme = createTheme(defaultTheme, coreZhTW, zhTW);
 
 export default defaultTheme;
