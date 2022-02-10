@@ -50,7 +50,7 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
     }), [search, sortModel, sortModelToOrder]);
 
     // custom refetch function
-    const customRefetch = useCallback(async (variables) => {
+    const customRefetch = useCallback(async (variables?) => {
         const args: ConnectionArgs<TOrderField> = variables ?
             { ...baseVariable, ...variables } : { ...baseVariable, ...{ first: pageSize } };
         setPage(0);
@@ -127,11 +127,8 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
         setSelectionModel([]);
         prevSelectionModel.current = [];
 
-        if (shouldRefetch) {
-            setConnectionArgs({...baseVariable, ...{ first: pageSize}});
-            setPage(0);
-        }
-    }, [baseVariable, onDelete, pageSize, selectionModel])
+        if (shouldRefetch) await customRefetch();
+    }, [customRefetch, onDelete, selectionModel]);
 
     const handleDialogClose = useCallback(() => {
         setDialogOpen(false);
