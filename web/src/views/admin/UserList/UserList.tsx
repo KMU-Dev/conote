@@ -1,17 +1,18 @@
-import { useMutation, useQuery } from "@apollo/client";
-import { alpha, Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
-import { DataGrid, GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSelectionModel, GridPreProcessEditCellProps, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
+import { useMutation } from "@apollo/client";
+import { Avatar, Box, Button, Card, Chip, Typography } from "@mui/material";
+import { GridCallbackDetails, GridCellEditCommitParams, GridColDef, GridInputSelectionModel, GridPreProcessEditCellProps, GridRenderCellParams, GridRowId, GridSortModel, GridValueFormatterParams } from "@mui/x-data-grid";
 import Papa from 'papaparse';
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import AppLayout from "../../../components/AppLayout/AppLayout";
-import ConnectionGridToolbar from "../../../components/ConnectionGrid/ConnectionGridToolbar";
+import ConnectionGrid from "../../../components/ConnectionGrid/ConnectionGrid";
+import { RefetchFunction } from "../../../components/ConnectionGrid/type";
 import { useNotification } from "../../../components/Notification";
 import PageHeading from "../../../components/PageHeading/PageHeading";
 import { CREATE_MULTIPLE_USERS, DELETE_MULTIPLE_USERS, UPDATE_USER_LIST } from "../../../graphql/mutations/user";
 import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
-import { Connection, GraphqlDto, OrderDirection } from "../../../graphql/type/type";
-import { User, UserConnectionArgs, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
+import { GraphqlDto, OrderDirection } from "../../../graphql/type/type";
+import { User, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
 import { matchAccept } from "../../../utils/file";
 import { validate } from "./validation";
 
@@ -30,44 +31,18 @@ function sortModelToOrder(sortModel: GridSortModel): UserOrder | undefined {
 }
 
 export default function UserList() {
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [sortModel, setSortModel] = useState<GridSortModel>([]);
-    const [selectionModel, setSelectionModel] = useState<GridInputSelectionModel>([]);
-    const [search, setSearch] = useState('');
     const [importLoading, setImportLoading] = useState(false);
-    const [connectionArgs, setConnectionArgs] = useState<UserConnectionArgs>({ first: pageSize });
     const input = useRef<HTMLInputElement>(null);
-    const prevSelectionModel = useRef<GridInputSelectionModel>(selectionModel);
+    const refetch = useRef<RefetchFunction<UserOrderField>>(null);
 
-    const { data, networkStatus, refetch } = useQuery<GraphqlDto<'user', Connection<User>>>(
-        USER_CONNECTION,
-        { variables: connectionArgs, fetchPolicy: 'network-only', notifyOnNetworkStatusChange: true },
-    );
     const [createMultipleUsers] = useMutation<GraphqlDto<'createMultipleUsers', BatchPayload>>(CREATE_MULTIPLE_USERS);
     const [updateUser] = useMutation<GraphqlDto<'updateUser', User>>(UPDATE_USER_LIST);
     const [deleteMultipleUsers] = useMutation<GraphqlDto<'deleteMultipleUsers', BatchPayload>>(DELETE_MULTIPLE_USERS);
     const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
 
-    // restore selection model when changing page
-    useEffect(() => {
-        setTimeout(() => setSelectionModel(prevSelectionModel.current));
-    }, [page]);
-
-    // data map types
-    const users = useMemo(
-        () => data && data.user ? data.user.edges.map((edge) => ({ ...edge.node })) : [],
-        [data],
-    );
-    const count = data && data.user ? data.user.count : 0;
-    const baseVariable: UserConnectionArgs = useMemo(() => ({
-        first: undefined,
-        after: undefined,
-        last: undefined,
-        before: undefined,
-        query: search ? search : undefined,
-        order: sortModelToOrder(sortModel),
-    }), [search, sortModel]);
+    const handleRefetchReady = useCallback((newRefetch) => {
+        refetch.current = newRefetch;
+    }, []);
 
     // table definitions
     const columns: GridColDef[] = [
@@ -125,46 +100,7 @@ export default function UserList() {
         },
     ];
 
-    const handlePageSizeChange = useCallback((pageSize: number) => {
-        setPage(0);
-        setPageSize(pageSize);
-        setConnectionArgs({ ...baseVariable, ...{ first: pageSize }});
-    }, [baseVariable]);
-
-    const handlePageChange = useCallback(async (newPage: number) => {
-        if (newPage - page === 1) {
-            // next page
-            const cursor = data?.user.pageInfo.endCursor;
-            setPage(newPage);
-            setConnectionArgs({ ...baseVariable, ...{ first: pageSize, after: cursor }});
-        } else if (newPage - page === -1) {
-            // previous page
-            const cursor = data?.user.pageInfo.startCursor;
-            setPage(newPage);
-            setConnectionArgs({ ...baseVariable, ...{ last: pageSize, before: cursor }});
-        }
-        prevSelectionModel.current = selectionModel;
-    }, [page, data, baseVariable, pageSize, prevSelectionModel, selectionModel]);
-
-    const handleSearchChange = useCallback((search: string) => {
-        if (search) setConnectionArgs({...baseVariable, ...{ first: pageSize, query: search }});
-        else setConnectionArgs({...baseVariable, ...{ first: pageSize, query: undefined }});
-
-        setSearch(search);
-        setPage(0);
-    }, [baseVariable, pageSize]);
-
-    const handleSortModelChange = useCallback((newModel: GridSortModel) => {
-        setSortModel(newModel);
-        setPage(0);
-        setConnectionArgs({ ...baseVariable, ...{ first: pageSize, order: sortModelToOrder(newModel)}});
-    }, [baseVariable, pageSize]);
-
-    const handleSelectionModelChange = useCallback((newSelectionModel: GridInputSelectionModel) => {
-        setSelectionModel(newSelectionModel);
-    }, []);
-
-    const handleDeleteClick = useCallback(async () => {
+    const handleDelete = useCallback(async (selectionModel: GridInputSelectionModel) => {
         const ids = (selectionModel as GridRowId[]).map((id) => +id);
         const response = await deleteMultipleUsers({
             variables: { input: { ids } },
@@ -190,14 +126,8 @@ export default function UserList() {
             });
         }
 
-        // clean all selections
-        setSelectionModel([]);
-        prevSelectionModel.current = [];
-
-        await refetch({...baseVariable, ...{ first: pageSize }});
-        setConnectionArgs({...baseVariable, ...{ first: pageSize}});
-        setPage(0);
-    }, [baseVariable, deleteMultipleUsers, enqueueNotification, pageSize, refetch, selectionModel]);
+        return true;
+    }, [deleteMultipleUsers, enqueueNotification]);
 
     const handleCellEditCommit = useCallback(async (params: GridCellEditCommitParams, _event, details: GridCallbackDetails) => {
         try {
@@ -280,9 +210,7 @@ export default function UserList() {
                     });
                 }
                 
-                await refetch({...baseVariable, ...{ first: pageSize }});
-                setPage(0);
-                setConnectionArgs({...baseVariable, ...{ first: pageSize}});
+                refetch.current();
             } else {
                 enqueueNotification({
                     variant: 'error',
@@ -293,7 +221,7 @@ export default function UserList() {
 
             setImportLoading(false);
         }
-    }, [enqueueNotification, createMultipleUsers, refetch, pageSize, baseVariable]);
+    }, [enqueueNotification, createMultipleUsers, refetch]);
 
     return (
         <AppLayout>
@@ -315,50 +243,15 @@ export default function UserList() {
                 </Button>
             </PageHeading>
             <Card sx={{ my: 6 }}>
-                <DataGrid
+                <ConnectionGrid
                     columns={columns}
-                    rows={users}
-                    autoHeight
-                    density="comfortable"
-                    disableColumnMenu
-                    // pagination
-                    rowsPerPageOptions={[10, 50]}
-                    pageSize={pageSize}
-                    onPageSizeChange={handlePageSizeChange}
-                    paginationMode="server"
-                    rowCount={count}
-                    page={page}
-                    onPageChange={handlePageChange}
-                    // sorting
-                    sortingMode="server"
-                    sortModel={sortModel}
-                    onSortModelChange={handleSortModelChange}
-                    // selecting
-                    checkboxSelection
-                    disableSelectionOnClick
-                    selectionModel={selectionModel}
-                    onSelectionModelChange={handleSelectionModelChange}
+                    connectionQuery={USER_CONNECTION}
+                    queryName="user"
+                    sortModelToOrder={sortModelToOrder}
+                    onDelete={handleDelete}
+                    onRefetchReady={handleRefetchReady}
                     // editing
                     onCellEditCommit={handleCellEditCommit}
-                    loading={networkStatus < 7}
-                    components={{ Toolbar: ConnectionGridToolbar }}
-                    componentsProps={{
-                        toolbar: {
-                            numSelected: (selectionModel as GridRowId[]).length,
-                            onDeleteClick: handleDeleteClick,
-                            onSearchChange: handleSearchChange,
-                            debounceInterval: 250,
-                        }
-                    }}
-                    sx={{
-                        '& .MuiDataGrid-cell--editing .MuiInputBase-root': {
-                            height: 1,
-                        },
-                        '& .Mui-error': {
-                            bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
-                            color: 'error.main',
-                        },
-                    }}
                 />
             </Card>
         </AppLayout>
