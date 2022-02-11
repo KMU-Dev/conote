@@ -12,8 +12,8 @@ export class AuthResolver {
     @Mutation(() => AuthPayload, {
         description: "Exchange Google OAuth2 authorization code to conote's jwt token",
     })
-    async login(@Args('loginInput') loignInput: LoginInput, @Context() context: GraphQLContext) {
-        return this.authService.login(loignInput.code, context);
+    async login(@Args('input') input: LoginInput, @Context() context: GraphQLContext) {
+        return this.authService.login(input.code, context);
     }
 
     @Mutation(() => AuthPayload)

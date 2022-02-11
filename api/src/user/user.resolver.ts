@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Action } from '../casl/action';
 import { Actions } from '../casl/decorators/actions.decorator';
@@ -30,14 +30,14 @@ export class UserResolver {
 
     @Actions(Action.Create)
     @Mutation(() => UserModel)
-    async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-        return await this.userService.createUser(createUserInput);
+    async createUser(@Args('input') input: CreateUserInput) {
+        return await this.userService.createUser(input);
     }
 
     @Actions(Action.CreateMultiple)
     @Mutation(() => BatchPayload)
-    async createMultipleUsers(@Args('createMultipleUsersInput') createMultipleUserInput: CreateMultipleUsersInput) {
-        return await this.userService.createMultipleUsers(createMultipleUserInput);
+    async createMultipleUsers(@Args('input') input: CreateMultipleUsersInput) {
+        return await this.userService.createMultipleUsers(input);
     }
 
     @Actions(Action.Update)
