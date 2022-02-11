@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { Menu, MenuItem, MenuProps, ListItemIcon, ListItemText, Box, Typography } from '@mui/material';
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { UI_STATUS } from '../../graphql/queries/uiStatus';
@@ -12,26 +12,28 @@ import { MenuDefinition } from './MenuDefinition';
 const getMenuItems = (
     menuDefs: AccountMenuDefinition[],
     onMenuItemClick?: MenuItemClickCallback
-) => menuDefs.map((def, index) => (
-    <MenuItem
-        component={def.href && Link}
-        to={def.href} key={def.name}
-        sx={{
-            '& .MuiListItemText-root': {
-                my: 1,
-            },
-            '&:hover .MuiListItemIcon-root': {
-                color: 'primary.main'
-            },
-        }}
-        onClick={() => onMenuItemClick(index)}
-    >
-        <ListItemIcon>
-            {def.icon}
-        </ListItemIcon>
-        <ListItemText color="secondary">{def.name}</ListItemText>
-    </MenuItem>
-));
+) => menuDefs
+    .filter((def) => !def.hidden)
+    .map((def) => (
+        <MenuItem
+            component={def.href && Link}
+            to={def.href} key={def.name}
+            sx={{
+                '& .MuiListItemText-root': {
+                    my: 1,
+                },
+                '&:hover .MuiListItemIcon-root': {
+                    color: 'primary.main'
+                },
+            }}
+            onClick={() => onMenuItemClick(def)}
+        >
+            <ListItemIcon>
+                {def.icon}
+            </ListItemIcon>
+            <ListItemText color="secondary">{def.name}</ListItemText>
+        </MenuItem>
+    ));
 
 export default function AccountDropdown(props: AccountDropdownProps) {
     const { menuDefinitions, onMenuItemClick, sx, ...menuProps } = props;
@@ -62,7 +64,9 @@ export default function AccountDropdown(props: AccountDropdownProps) {
     )
 }
 
-export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href' | 'exact'> {}
+export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href' | 'exact'> {
+    hidden?: boolean;
+}
 
 export interface AccountDropdownProps extends MenuProps {
     id: string;
@@ -70,4 +74,4 @@ export interface AccountDropdownProps extends MenuProps {
     onMenuItemClick?: MenuItemClickCallback;
 }
 
-type MenuItemClickCallback = (index: number) => void;
+type MenuItemClickCallback = (def: AccountMenuDefinition) => void;

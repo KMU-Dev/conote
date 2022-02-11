@@ -1,23 +1,23 @@
-import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
-import { MouseEvent, ReactNode } from "react";
+import { useMutation, useQuery } from '@apollo/client';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { Drawer } from '../Drawer';
-import { headerDef, HeaderDefinition } from "./HeaderDefinition";
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
-import { useState } from "react";
-import ListItemLink from '../ListItemLink/ListItemLink';
-import { isMatch, useRenderLink } from '../../utils/routes';
+import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
+import { MouseEvent, ReactNode, useMemo, useRef, useState } from "react";
 import routes from '../../constant/routes.json';
-import { useRef } from 'react';
-import AccountDropdown from './AccountDropdown';
-import { useMutation } from '@apollo/client';
-import { LOGOUT } from '../../graphql/mutations/auth';
-import { GraphqlDto } from '../../graphql/type/type';
-import { useNotification } from '../Notification';
-import { history } from '../../utils/history';
 import { client } from '../../graphql/client';
+import { LOGOUT } from '../../graphql/mutations/auth';
+import { UI_STATUS } from "../../graphql/queries/uiStatus";
+import { GraphqlDto } from '../../graphql/type/type';
+import { UIStatus } from "../../graphql/type/UIStatus";
+import { history } from '../../utils/history';
+import { isMatch, useRenderLink } from '../../utils/routes';
+import { Drawer } from '../Drawer';
+import ListItemLink from '../ListItemLink/ListItemLink';
+import { useNotification } from '../Notification';
+import AccountDropdown, { AccountMenuDefinition } from './AccountDropdown';
+import { getHeaderDef, HeaderDefinition } from "./HeaderDefinition";
 
 export default function Header(props: HeaderProps) {
     const renderLink = useRenderLink(routes.HOME);
@@ -27,8 +27,10 @@ export default function Header(props: HeaderProps) {
     const accountDrowpdownId = useRef('account-dropdown');
     const { enqueueNotification } = useNotification();
 
+    const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
     const [logout] = useMutation<GraphqlDto<'logout', boolean>>(LOGOUT);
 
+    const headerDef = useMemo(() => getHeaderDef(data?.uiStatus), [data?.uiStatus]);
     const listItems = (def: HeaderDefinition) => def.navigation.map((def) => (
         <Box
             component="li"
@@ -63,9 +65,8 @@ export default function Header(props: HeaderProps) {
         setMenuAnchor(e.currentTarget);
     };
 
-    const handleAccountMenuClick = async (index: number) => {
-        if (index === 2) {
-            // logout
+    const handleAccountMenuClick = async (def: AccountMenuDefinition) => {
+        if (def.name === '登出') {
             try {
                 const result = await logout();
                 if (result.data.logout) {
