@@ -43,6 +43,16 @@ export class VodcfsSessionService {
             where: { id: session.id },
             data: { captcha: encodedCaptcha },
         });
+
+        return session;
+    }
+
+    async getSessionUser(sessionId: string) {
+        const result = await this.prisma.vodcfsSession.findFirst({
+            where: { id: sessionId },
+            select: { user: true },
+        });
+        return result.user;
     }
 
     private async getLoginPageCookies() {

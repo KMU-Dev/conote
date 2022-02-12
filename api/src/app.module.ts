@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { InitModule } from './init/init.module';
-import { UiModule } from './ui/ui.module';
-import configuration from './config/configuration';
 import { CaslModule } from './casl/casl.module';
+import configuration from './config/configuration';
+import { InitModule } from './init/init.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { UiModule } from './ui/ui.module';
+import { UserModule } from './user/user.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { CaslModule } from './casl/casl.module';
         CaslModule,
         UserModule,
         InitModule,
+        VideoModule,
         UiModule,
     ],
 })
