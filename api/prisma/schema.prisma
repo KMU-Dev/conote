@@ -11,17 +11,18 @@ generator client {
 }
 
 model User {
-  id              Int         @id @default(autoincrement())
-  name            String
-  email           String?     @unique
-  studentId       String      @unique
-  picture         String?
-  role            UserRole
-  status          UserStatus
-  oauth           OAuth[]
-  refreshTokens   RefreshToken[]
-  createdAt       DateTime
-  updatedAt       DateTime    @updatedAt
+  id                    Int         @id @default(autoincrement())
+  name                  String
+  email                 String?     @unique
+  studentId             String      @unique
+  picture               String?
+  role                  UserRole
+  status                UserStatus
+  oauth                 OAuth[]
+  refreshTokens         RefreshToken[]
+  videoUploadSessions   VodcfsSession[]
+  createdAt             DateTime
+  updatedAt             DateTime    @updatedAt
 }
 
 enum UserRole {
@@ -54,4 +55,27 @@ model RefreshToken {
   expire      DateTime
   valid       Boolean   @default(true)
   updatedAt   DateTime  @updatedAt
+}
+
+model VodcfsSession {
+  id              String               @id @default(uuid())
+  user            User                 @relation(fields: [userId], references: [id])
+  userId          Int
+  phpsessid       String
+  locale          String               @default("zh-tw")
+  loginToken      String
+  timezone        Int?
+  noteFontSize    Int?
+  noteExpand      Int?
+  captcha         String?
+  captchaAnswer   String?
+  status          VodcfsSessionStatus  @default(CREATING)
+  createdAt       DateTime             @default(now())
+}
+
+enum VodcfsSessionStatus {
+  CREATING
+  PENDING
+  UPLOADED
+  ERROR
 }
