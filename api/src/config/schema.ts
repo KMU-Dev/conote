@@ -62,6 +62,23 @@ export class AuthConfig {
     refreshToken: RefreshTokenConfig;
 }
 
+export class VodcfsConfig {
+    @IsNotEmpty()
+    @IsString()
+    account: string;
+
+    @IsNotEmpty()
+    @IsString()
+    password: string;
+}
+
+export class VideoConfig {
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => VodcfsConfig)
+    vodcfs: VodcfsConfig;
+}
+
 export class AppConfig {
     @ValidateNested()
     @IsDefined()
@@ -72,4 +89,9 @@ export class AppConfig {
     @IsDefined()
     @Type(() => AuthConfig)
     auth: AuthConfig;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => VideoConfig)
+    video: VideoConfig;
 }
