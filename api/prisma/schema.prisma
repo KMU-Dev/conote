@@ -20,7 +20,7 @@ model User {
   status                UserStatus
   oauth                 OAuth[]
   refreshTokens         RefreshToken[]
-  videoUploadSessions   VodcfsSession[]
+  vodcfsSessions        VodcfsSession[]
   createdAt             DateTime
   updatedAt             DateTime    @updatedAt
 }
@@ -58,24 +58,30 @@ model RefreshToken {
 }
 
 model VodcfsSession {
-  id              String               @id @default(uuid())
-  user            User                 @relation(fields: [userId], references: [id])
+  id              String                    @id @default(uuid())
+  user            User                      @relation(fields: [userId], references: [id])
   userId          Int
   phpsessid       String
-  locale          String               @default("zh-tw")
+  locale          String                    @default("zh-tw")
   loginToken      String
   timezone        Int?
   noteFontSize    Int?
   noteExpand      Int?
   captcha         String?
   captchaAnswer   String?
-  status          VodcfsSessionStatus  @default(CREATING)
-  createdAt       DateTime             @default(now())
+  errorReason     VodcfsSessionErrorReason?
+  status          VodcfsSessionStatus       @default(CREATING)
+  createdAt       DateTime                  @default(now())
 }
 
 enum VodcfsSessionStatus {
   CREATING
-  PENDING
-  UPLOADED
+  AUTHENTICATED
   ERROR
+}
+
+enum VodcfsSessionErrorReason {
+  INVALID_CAPTCHA
+  INVALID_ACCOUNT
+  UNKNOWN
 }

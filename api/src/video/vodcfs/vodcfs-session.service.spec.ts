@@ -8,7 +8,7 @@ import { VodcfsSessionService } from './vodcfs-session.service';
 describe('VodcfsSessionService', () => {
     let service: VodcfsSessionService;
 
-    jest.setTimeout(30 * 1000);
+    jest.setTimeout(60 * 1000);
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -27,9 +27,15 @@ describe('VodcfsSessionService', () => {
         expect(service).toBeDefined();
     });
 
-    describe('createVideoUploadSession', () => {
+    /* describe('createSession', () => {
         it('should not throw error', async () => {
-            await service.createVideoUploadSession(1);
+            await service.createSession(1);
+        });
+    }); */
+
+    describe('authenticateSession', () => {
+        it('should not throw error', async () => {
+            await service.authenticateSession('497109cf-f017-45ad-b25e-bc77b20740b7', 'heLd');
         });
     });
 });

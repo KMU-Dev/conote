@@ -6,7 +6,7 @@ interface Page {
 }
 
 type PageMap = {
-    [k in 'login' | 'captcha']: Page;
+    [k in 'login' | 'captcha' | 'loginPost']: Page;
 };
 
 export const pages: PageMap = {
@@ -16,6 +16,9 @@ export const pages: PageMap = {
     },
     captcha: {
         url: 'http://vodcfs.kmu.edu.tw/sys/libs/class/capcha/secimg.php',
+    },
+    loginPost: {
+        url: 'http://vodcfs.kmu.edu.tw/index/login',
     },
 };
 

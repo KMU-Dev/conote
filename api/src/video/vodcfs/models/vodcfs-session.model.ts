@@ -6,6 +6,7 @@ import { UserModel } from '../../../user/models/user.model';
 @ObjectType('VodcfsSession')
 export class VodcfsSessionModel {
     @Field(() => ID)
+    @IsString()
     id: string;
 
     @Field(() => UserModel)
@@ -13,8 +14,9 @@ export class VodcfsSessionModel {
 
     captcha: string;
 
-    @IsString()
     captchaAnswer?: string;
+
+    errorReason?: string;
 
     @Field(() => VodcfsSessionStatus)
     status: VodcfsSessionStatus;

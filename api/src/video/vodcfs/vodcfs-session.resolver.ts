@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { User } from '@prisma/client';
 import { CurrentUser } from '../../auth/decorators/user.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
@@ -8,6 +8,7 @@ import { Actions } from '../../casl/decorators/actions.decorator';
 import { Domain } from '../../casl/decorators/domain.decorator';
 import { PoliciesGuard } from '../../casl/guards/policies.guard';
 import { UserModel } from '../../user/models/user.model';
+import { AuthenticateVodcfsSessionInput } from './models/create-vodcfs-session.model';
 import { VodcfsSessionModel } from './models/vodcfs-session.model';
 import { VodcfsSessionService } from './vodcfs-session.service';
 
@@ -20,7 +21,13 @@ export class VodcfsSessionResolver {
     @Actions(Action.Create)
     @Mutation(() => VodcfsSessionModel)
     async createVodcfsSession(@CurrentUser() user: User) {
-        return this.vodcfsSessionService.createVideoUploadSession(user.id);
+        return this.vodcfsSessionService.createSession(user.id);
+    }
+
+    @Actions(Action.Update)
+    @Mutation(() => VodcfsSessionModel)
+    async authenticateVodcfsSession(@Args('input') input: AuthenticateVodcfsSessionInput) {
+        return this.vodcfsSessionService.authenticateSession(input.id, input.captchaAnswer);
     }
 
     @ResolveField('user', () => UserModel)

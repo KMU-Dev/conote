@@ -1,10 +1,14 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { VodcfsSession } from '@prisma/client';
+import { VodcfsSession, VodcfsSessionErrorReason, VodcfsSessionStatus } from '@prisma/client';
 import { load } from 'cheerio';
+import { createHash } from 'crypto';
+import FormData from 'form-data';
 import { PrismaService } from '../../prisma/prisma.service';
 import { cookieNameMap, pages } from './constants';
+import InvalidAccountError from './errors/invalid-account.error';
+import InvalidCaptchaError from './errors/invalid-captcha.error';
 import UnknownPageError from './errors/unknown-page.error';
 
 @Injectable()
@@ -23,7 +27,7 @@ export class VodcfsSessionService {
         this.password = configService.get<string>('video.vodcfs.password');
     }
 
-    async createVideoUploadSession(userId: number) {
+    async createSession(userId: number) {
         // create session
         const loginCookies = await this.getLoginPageCookies();
         let session = await this.prisma.vodcfsSession.create({
@@ -47,8 +51,41 @@ export class VodcfsSessionService {
         return session;
     }
 
+    async authenticateSession(sessionId: string, captchaAnswer: string) {
+        let session = await this.prisma.vodcfsSession.findUnique({ where: { id: sessionId } });
+        session = await this.prisma.vodcfsSession.update({
+            where: { id: session.id },
+            data: { timezone: 8, captchaAnswer },
+        });
+
+        // login
+        try {
+            const cookies = await this.login(session, captchaAnswer);
+            session = await this.prisma.vodcfsSession.update({
+                where: { id: session.id },
+                data: {
+                    noteFontSize: +cookies.noteFontSize,
+                    noteExpand: +cookies.noteExpand,
+                    status: VodcfsSessionStatus.AUTHENTICATED,
+                },
+            });
+        } catch (e) {
+            let reason: VodcfsSessionErrorReason;
+            if (e instanceof InvalidAccountError) reason = VodcfsSessionErrorReason.INVALID_ACCOUNT;
+            else if (e instanceof InvalidCaptchaError) reason = VodcfsSessionErrorReason.INVALID_CAPTCHA;
+            else reason = VodcfsSessionErrorReason.UNKNOWN;
+
+            session = await this.prisma.vodcfsSession.update({
+                where: { id: session.id },
+                data: { status: VodcfsSessionStatus.ERROR, errorReason: reason },
+            });
+        }
+
+        return session;
+    }
+
     async getSessionUser(sessionId: string) {
-        const result = await this.prisma.vodcfsSession.findFirst({
+        const result = await this.prisma.vodcfsSession.findUnique({
             where: { id: sessionId },
             select: { user: true },
         });
@@ -68,6 +105,34 @@ export class VodcfsSessionService {
             responseType: 'arraybuffer',
         });
         return captchaRes.data;
+    }
+
+    private async login(session: VodcfsSession, captchaAnswer: string) {
+        const encodedPassword = this.md5(`${this.md5(this.md5(this.password))}|${session.loginToken}`);
+
+        const formData = new FormData();
+        formData.append('_fmSubmit', 'yes');
+        formData.append('formVer', '3.0');
+        formData.append('formId', 'login_form');
+        formData.append('next', '/');
+        formData.append('account', this.account);
+        formData.append('password', encodedPassword);
+        formData.append('captcha', captchaAnswer);
+        formData.append('rememberMe', '');
+
+        const response = await this.axios.post(pages.loginPost.url, formData, {
+            headers: { ...formData.getHeaders(), ...{ cookie: this.buildCookies(session) } },
+        });
+
+        if (!response.headers['set-cookie'] || response.headers['set-cookie'].length === 0) {
+            // handle error
+            const error = response.data.ret.msg[0];
+            if (error.id === 'login_form') throw new InvalidAccountError();
+            else if (error.id === 'captcha') throw new InvalidCaptchaError();
+            else throw new Error('Unknown error');
+        }
+
+        return this.parseCookies(response.headers['set-cookie']);
     }
 
     private async validate(key: keyof typeof pages, html: string) {
@@ -97,5 +162,9 @@ export class VodcfsSessionService {
     private encodeImage(image: Uint8Array, mimeType: string) {
         const base64 = Buffer.from(image).toString('base64');
         return `data:${mimeType};base64,${base64}`;
+    }
+
+    private md5(string: string) {
+        return createHash('md5').update(string).digest('hex');
     }
 }
