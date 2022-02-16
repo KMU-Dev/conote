@@ -41,7 +41,7 @@ export class VodcfsSessionService {
         });
 
         // get captcha
-        const captcha = await this.getCaptcha(this.buildCookies(session));
+        const captcha = await this.getCaptcha(this.buildCookieFrom(session));
         const encodedCaptcha = this.encodeImage(captcha, 'image/jpeg');
         session = await this.prisma.vodcfsSession.update({
             where: { id: session.id },
@@ -92,6 +92,18 @@ export class VodcfsSessionService {
         return result.user;
     }
 
+    async findSessionById(id: string) {
+        return await this.prisma.vodcfsSession.findUnique({ where: { id } });
+    }
+
+    buildCookieFrom(session: VodcfsSession) {
+        const cookies: string[] = [];
+        for (const key in cookieNameMap) {
+            if (session[key] || session[key] === 0) cookies.push(`${cookieNameMap[key]}=${session[key]}`);
+        }
+        return cookies.join('; ');
+    }
+
     private async getLoginPageCookies() {
         const loginRes = await this.axios.get(pages.login.url);
         const html = loginRes.data;
@@ -121,7 +133,7 @@ export class VodcfsSessionService {
         formData.append('rememberMe', '');
 
         const response = await this.axios.post(pages.loginPost.url, formData, {
-            headers: { ...formData.getHeaders(), ...{ cookie: this.buildCookies(session) } },
+            headers: { ...formData.getHeaders(), ...{ cookie: this.buildCookieFrom(session) } },
         });
 
         if (!response.headers['set-cookie'] || response.headers['set-cookie'].length === 0) {
@@ -149,14 +161,6 @@ export class VodcfsSessionService {
             obj[split[0]] = split[1];
             return obj;
         }, {});
-    }
-
-    private buildCookies(session: VodcfsSession) {
-        const cookies: string[] = [];
-        for (const key in cookieNameMap) {
-            if (session[key]) cookies.push(`${cookieNameMap[key]}=${session[key]}`);
-        }
-        return cookies.join('; ');
     }
 
     private encodeImage(image: Uint8Array, mimeType: string) {
