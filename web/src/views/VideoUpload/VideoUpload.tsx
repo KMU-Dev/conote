@@ -13,17 +13,17 @@ import {
     useTheme
 } from '@mui/material';
 import { Box } from '@mui/system';
-import axios from 'axios';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
 import { useNotification } from '../../components/Notification';
 import PageHeading from '../../components/PageHeading/PageHeading';
 import { TailwindController } from '../../components/TailwindInput';
-import { getUploadVideoDocument } from '../../graphql/mutations/video';
+import { UPLOAD_VIDEO } from '../../graphql/mutations/video';
 import { AUTHENTICATE_VODCFS_SESSION, CREATE_VODCFS_SESSION } from '../../graphql/mutations/vodcfsSession';
 import { GraphqlDto } from '../../graphql/type/type';
+import { Video } from '../../graphql/type/video';
 import { VodcfsSession, VodcfsSessionErrorReason, VodcfsSessionStatus } from '../../graphql/type/vodcfs-session';
 import { humanFileSize } from '../../utils/file';
 import FileInputContent from './FileInputContent';
@@ -38,7 +38,7 @@ export default function VideoUpload() {
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
     const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
-    const { control, register, watch, handleSubmit, formState: { errors } } = useForm<UploadVideoForm>({
+    const { control, register, reset, watch, handleSubmit, formState: { errors } } = useForm<UploadVideoForm>({
         mode: 'onTouched',
         defaultValues: { title: '', captchaAnswer: '' },
         resolver: classValidatorResolver(UploadVideoForm),
@@ -50,6 +50,7 @@ export default function VideoUpload() {
     const [authenticateVodcfsSession] = useMutation<
         GraphqlDto<'authenticateVodcfsSession', Pick<VodcfsSession, 'id' | 'status' | 'errorReason'>>
     >(AUTHENTICATE_VODCFS_SESSION);
+    const [uploadVideo] = useMutation<GraphqlDto<'uploadVideo', Pick<Video, 'id' | 'vodcfsVideo'>>>(UPLOAD_VIDEO);
 
     useEffect(() => {
         createVodcfsSession();
@@ -62,13 +63,14 @@ export default function VideoUpload() {
     const videoContent = useMemo(() => {
         if (video && video.length > 0) {
             const file = video[0];
-            const progress = uploadProgress && Math.round(uploadProgress / file.size * 100);
+            const progress = uploadProgress && Math.round(uploadProgress / file.size * 10000) / 100;
+            const displayedProgress = Math.round(progress);
             const fileSize = humanFileSize(file.size, true);
 
             let subtitle;
             if (uploadProgress === -1) subtitle = '準備中…';
             else if (uploadProgress === -2) subtitle = '影片處理中，請稍後…';
-            else if (uploadProgress > 0) subtitle = `${progress}% (${humanFileSize(uploadProgress, true)} / ${fileSize})`;
+            else if (uploadProgress > 0) subtitle = `${displayedProgress}% (${humanFileSize(uploadProgress, true)} / ${fileSize})`;
             else subtitle = fileSize;
 
             return (
@@ -127,24 +129,33 @@ export default function VideoUpload() {
             }
 
             // upload video
-            const document = getUploadVideoDocument({
-                title: data.title,
-                file: data.video[0],
-                sessionId: session.id,
+            const uploadResponse = await uploadVideo({
+                variables: {
+                    vodcfsInput: { title: data.title, file: data.video[0], sessionId: session.id },
+                },
+                context: { fetchOptions: { onUploadProgress: handleProgress } },
             });
-            const uploadResponse = await axios.post(
-                document.url,
-                document.body,
-                { ...document.config, onUploadProgress: handleProgress },
-            );
-            console.log(uploadResponse);
+            if (uploadResponse.data?.uploadVideo.vodcfsVideo?.id) {
+                enqueueNotification({
+                    title: '成功上傳影片',
+                    content: '影片上傳後仍須轉檔，請至高醫數理雲確認進度。',
+                    variant: 'success',
+                });
+                reset();
+            } else {
+                enqueueNotification({
+                    title: '無法上傳影片',
+                    content: '未知錯誤，請聯絡系統管理員。',
+                    variant: 'error',
+                });
+            }
         } catch (e) {
             enqueueCommonErrorNotification(e);
+        } finally {
             createVodcfsSession();
             setUploadProgress(undefined);
-            return;
         }
-    }, [authenticateVodcfsSession, createVodcfsSession, enqueueCommonErrorNotification, enqueueNotification, sessionData?.createVodcfsSession]);
+    }, [authenticateVodcfsSession, createVodcfsSession, enqueueCommonErrorNotification, enqueueNotification, reset, sessionData?.createVodcfsSession, uploadVideo]);
 
     return (
         <AppLayout>

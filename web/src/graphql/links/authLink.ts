@@ -8,7 +8,7 @@ import { REFRESH_TOKEN } from "../mutations/auth";
 import { AuthPaylaod } from "../type/AuthPayload";
 import { GraphqlDto } from "../type/type";
 
-export let accessToken: string;
+let accessToken: string;
 const excludedOperations = ['Login', 'Logout', 'RefreshToken', 'InitialGoogleLink', 'InitialCreateAdmin'];
 
 export const authLink = setContext(async (operation) => {
