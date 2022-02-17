@@ -44,6 +44,7 @@
     "googleapis": "^92.0.0",
     "graphql": "^15.8.0",
     "graphql-upload": "^13.0.0",
+    "helmet": "^5.0.2",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
     "ms": "^2.1.3",
