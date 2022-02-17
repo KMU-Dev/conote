@@ -1,11 +1,13 @@
-import { Box, InputLabel, SxProps, Theme, Typography } from "@mui/material";
-import { DragEvent, useState, MouseEvent, useRef } from "react";
-import { useNotification } from "../Notification";
+import { Box, FormHelperText, InputLabel, SxProps, Theme, Typography } from "@mui/material";
+import React, { DragEvent, MouseEvent, ReactNode, useRef, useState } from "react";
+import { UseFormRegisterReturn } from "react-hook-form";
 import { matchAccept } from "../../utils/file";
+import { useNotification } from "../Notification";
 
 
 export default function FileInput(props: FileInputProps) {
-    const { id, image, label, required, accept, multiple, sx } = props;
+    const { id, image, label, required, accept, multiple, error, sx, customContent, register } = props;
+    const { ref, ...restRegister } = register;
 
     const [drag, setDrag] = useState(0);
     const input = useRef<HTMLInputElement>(null);
@@ -89,6 +91,9 @@ export default function FileInput(props: FileInputProps) {
                         bgcolor: 'action.hover',
                         opacity: 0.5,
                     },
+                    error && {
+                        borderColor: 'error.main',
+                    },
                 ]}
                 onClick={handleClick}
                 onDragOver={handleDragOver}
@@ -96,36 +101,51 @@ export default function FileInput(props: FileInputProps) {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
-                <input
-                    id={id}
-                    ref={input}
-                    type="file"
-                    accept={accept}
-                    multiple={multiple} 
-                    autoComplete="off"
-                    tabIndex={-1}
-                    style={{ display: 'none' }}
-                />
-                <img src={image} alt="Select file" width="220px" />
-                <Box display="flex" flexDirection="column" justifyContent="center" p={6}>
-                    <Typography variant="h6" fontWeight="bold">拖曳或選擇檔案</Typography>
-                    <Typography variant="subtitle2" color="textSecondary" mt={2}>
-                        拖曳檔案或點擊這裡從電腦
-                        <Box component="span" color="primary.main" style={{ textDecoration: 'underline' }}>瀏覽</Box>
-                        檔案
-                    </Typography>
-                </Box>
+                {customContent ?
+                    customContent :
+                    <>
+                        <input
+                            id={id}
+                            type="file"
+                            accept={accept}
+                            multiple={multiple} 
+                            autoComplete="off"
+                            tabIndex={-1}
+                            style={{ display: 'none' }}
+                            // onChange={handleInputChange}
+                            {...restRegister}
+                            ref={(e) => {
+                                ref(e);
+                                input.current = e;
+                            }}
+                        />
+                        <img src={image} alt="Select file" width="220px" />
+                        <Box display="flex" flexDirection="column" p={6}>
+                            <Typography variant="h6" fontWeight="bold">拖曳或選擇檔案</Typography>
+                            <Typography variant="subtitle2" color="textSecondary" mt={2}>
+                                拖曳檔案或點擊這裡從電腦
+                                <Box component="span" color="primary.main" style={{ textDecoration: 'underline' }}>瀏覽</Box>
+                                檔案
+                            </Typography>
+                        </Box>
+                    </>
+                }
+                
             </Box>
+            {error && <FormHelperText error sx={{ mt: 1 }}>{error}</FormHelperText>}
         </Box>
     )
 }
 
-interface FileInputProps {
+export interface FileInputProps {
     id: string;
     image: string;
     label?: string;
     required?: boolean;
     accept?: string;
     multiple?: boolean;
+    error?: string;
     sx?: SxProps<Theme>;
+    customContent?: ReactNode;
+    register?: UseFormRegisterReturn;
 }

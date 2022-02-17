@@ -1,5 +1,4 @@
-import { Box, FormHelperText, OutlinedInputProps } from '@mui/material';
-import { FormControl, InputLabel, OutlinedInput } from '@mui/material';
+import { Box, FormControl, FormHelperText, InputLabel, OutlinedInput, OutlinedInputProps } from '@mui/material';
 
 
 export default function TailwindInput(props: TailwindInputProps) {
@@ -29,6 +28,5 @@ export default function TailwindInput(props: TailwindInputProps) {
 export interface TailwindInputProps extends Omit<OutlinedInputProps, 'error'> {
     label: string;
     required?: boolean;
-    fullwidth?: boolean;
     error?: string;
 }
