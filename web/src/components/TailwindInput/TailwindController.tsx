@@ -15,7 +15,7 @@ export default function TailwindController<
             defaultValue={defaultValue}
             render={({ field: { ref, ...fields }}) =>
                 <TailwindInput
-                    error={errors[name] && (errors[name] as FieldError).message}
+                    error={errors && errors[name] && (errors[name] as FieldError).message}
                     {...restProps}
                     {...fields}
                     inputRef={ref}

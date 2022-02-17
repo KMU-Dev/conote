@@ -1,14 +1,13 @@
-import * as yaml from 'js-yaml';
-import * as glob from 'glob';
 import { resolve } from 'app-root-path';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
+import { readFileSync } from 'fs';
+import * as glob from 'glob';
+import * as yaml from 'js-yaml';
 import { InvalidConfigError } from './config.error';
 import { AppConfig } from './schema';
 
-const defaultConfig = join(__dirname, 'default.yaml');
+const defaultConfig = resolve('config/default.yaml');
 
 export default () => {
     const filenames = glob.sync('config/*.yaml');

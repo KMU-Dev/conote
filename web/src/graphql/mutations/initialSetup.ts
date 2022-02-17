@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const INITIAL_GOOGLE_LINK = gql`
     mutation InitialGoogleLink($input: InitialGoogleLinkInput!) {
-        initialGoogleLink(googleLinkInput: $input) {
+        initialGoogleLink(input: $input) {
             name
             email
             studentId
@@ -13,7 +13,7 @@ export const INITIAL_GOOGLE_LINK = gql`
 
 export const INITIAL_CREATE_ADMIN = gql`
     mutation InitialCreateAdmin($input: CreateUserInput!) {
-        initialCreateAdmin(createUserInput: $input) {
+        initialCreateAdmin(input: $input) {
             id
             role
             status

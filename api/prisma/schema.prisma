@@ -11,17 +11,19 @@ generator client {
 }
 
 model User {
-  id              Int         @id @default(autoincrement())
-  name            String
-  email           String?     @unique
-  studentId       String      @unique
-  picture         String?
-  role            UserRole
-  status          UserStatus
-  oauth           OAuth[]
-  refreshTokens   RefreshToken[]
-  createdAt       DateTime
-  updatedAt       DateTime    @updatedAt
+  id                    Int         @id @default(autoincrement())
+  name                  String
+  email                 String?     @unique
+  studentId             String      @unique
+  picture               String?
+  role                  UserRole
+  status                UserStatus
+  oauth                 OAuth[]
+  refreshTokens         RefreshToken[]
+  vodcfsSessions        VodcfsSession[]
+  videos                Video[]
+  createdAt             DateTime
+  updatedAt             DateTime    @updatedAt
 }
 
 enum UserRole {
@@ -54,4 +56,88 @@ model RefreshToken {
   expire      DateTime
   valid       Boolean   @default(true)
   updatedAt   DateTime  @updatedAt
+}
+
+model VodcfsSession {
+  id              String                    @id @default(uuid())
+  user            User                      @relation(fields: [userId], references: [id])
+  userId          Int
+  phpsessid       String
+  locale          String                    @default("zh-tw")
+  loginToken      String
+  timezone        Int?
+  noteFontSize    Int?
+  noteExpand      Int?
+  captcha         String?
+  captchaAnswer   String?
+  errorReason     VodcfsSessionErrorReason?
+  status          VodcfsSessionStatus       @default(CREATING)
+  createdAt       DateTime                  @default(now())
+}
+
+enum VodcfsSessionStatus {
+  CREATING
+  AUTHENTICATED
+  ERROR
+}
+
+enum VodcfsSessionErrorReason {
+  INVALID_CAPTCHA
+  INVALID_ACCOUNT
+  UNKNOWN
+}
+
+model Video {
+  id              Int                 @id @default(autoincrement())
+  title           String
+  thumbnail       String?
+  duration        String?
+  indexes         VideoIndex[]
+  uploadService   VideoUploadService
+  vodcfsVideo     VodcfsVideo?
+  user            User                @relation(fields: [userId], references: [id])
+  userId          Int
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+enum VideoUploadService {
+  VODCFS
+}
+
+model VodcfsVideo {
+  id            Int                       @id
+  title         String
+  duration      String?
+  size          Int
+  streamingId   String?
+  resolutions   VodcfsVideoResolution[]
+  indexes       VideoIndex[]
+  status        VodcfsVideoStatus         @default(CONVERTING)
+  video         Video                     @relation(fields: [videoId], references: [id])
+  videoId       Int
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
+enum VodcfsVideoResolution {
+  SD
+  HD
+  FHD
+  SRC
+}
+
+enum VodcfsVideoStatus {
+  CONVERTING
+  CONVERTED
+}
+
+model VideoIndex {
+  id          Int           @id @default(autoincrement())
+  title       String
+  time        Int
+  video       Video?        @relation(fields: [videoId], references: [id])
+  videoId     Int?
+  vodcfs      VodcfsVideo?  @relation(fields: [vodcfsId], references: [id])
+  vodcfsId    Int?
 }
