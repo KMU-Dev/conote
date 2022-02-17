@@ -1,10 +1,15 @@
-import { Avatar, Box, Paper, Typography } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { MenuSection } from "../../components/Header";
 import NestedList from "../../components/NestedList/NestedList";
+import { SkeletonAvatar } from "../../components/Skeleton";
+import SkeletonTypography from "../../components/Skeleton/SkeletonTypography";
+import { useUIStatus } from "../../graphql/hooks/useUIStatus";
 
 
 export default function AdminMenu(props: AdminMenuProps) {
     const { menu } = props;
+
+    const { user, loading } = useUIStatus();
 
     return (
         <Paper elevation={0} sx={{ width: 260 }}>
@@ -16,10 +21,14 @@ export default function AdminMenu(props: AdminMenuProps) {
                     bgcolor={(theme) => theme.palette.grey[100]}
                     borderRadius={4}
                 >
-                    <Avatar />
+                    <SkeletonAvatar src={user?.picture} loading={loading} />
                     <Box ml={4}>
-                        <Typography variant="subtitle2">趙子賢</Typography>
-                        <Typography variant="body2" color="textSecondary">系統管理員</Typography>
+                        <SkeletonTypography variant="subtitle2" loading={loading} skeletonWidth="3em">
+                            {user?.name}
+                        </SkeletonTypography>
+                        <SkeletonTypography variant="body2" color="textSecondary" loading={loading} skeletonWidth="5em">
+                            系統管理員
+                        </SkeletonTypography>
                     </Box>
                 </Box>
             </Box>

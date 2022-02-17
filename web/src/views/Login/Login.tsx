@@ -1,18 +1,18 @@
-import { Box, Container, Typography, Link, Hidden, Card, CircularProgress, Theme, SxProps } from '@mui/material';
+import { ApolloError, gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import { Box, Card, CircularProgress, Container, Hidden, Link, SxProps, Theme, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import LoginImage from './login_illustration.svg';
-import routes from '../../constant/routes.json';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
-import { useMutation, gql, useQuery, ApolloError } from '@apollo/client';
-import { AuthPaylaod } from '../../graphql/type/AuthPayload';
+import { useNotification } from '../../components/Notification';
+import routes from '../../constant/routes.json';
+import { setAccessToken } from '../../graphql/links/authLink';
 import { LOGIN } from '../../graphql/mutations/auth';
+import { UI_STATUS } from '../../graphql/queries/uiStatus';
+import { AuthPaylaod } from '../../graphql/type/AuthPayload';
 import { GraphqlDto } from '../../graphql/type/type';
 import { UIStatus } from '../../graphql/type/UIStatus';
-import { UI_STATUS } from '../../graphql/queries/uiStatus';
-import { useEffect, useState } from 'react';
-import { setAccessToken } from '../../graphql/links/authLink';
-import { useNotification } from '../../components/Notification';
+import LoginImage from './login_illustration.svg';
 
 
 const iconSx: SxProps<Theme> = {
@@ -24,7 +24,8 @@ export default function Login() {
     const history = useHistory();
     const { enqueueNotification } = useNotification();
 
-    const { data, refetch } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS, { fetchPolicy: 'network-only', nextFetchPolicy: 'network-only' });
+    const client = useApolloClient();
+    const { data, refetch } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
     const [login, { loading }] = useMutation<GraphqlDto<"login", AuthPaylaod>>(LOGIN, {
         update: (cache, { data: { login }}) => {
             cache.writeFragment({
@@ -54,6 +55,7 @@ export default function Login() {
                 setAccessToken(accessToken);
 
                 await refetch();
+                await client.reFetchObservableQueries(true);
 
                 history.push(routes.HOME);
             }

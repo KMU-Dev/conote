@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'reflect-metadata';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Root from './Root';

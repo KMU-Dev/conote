@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsDefined, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDefined, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export class GoogleOAuth2Config {
     @IsNotEmpty()
@@ -62,6 +62,48 @@ export class AuthConfig {
     refreshToken: RefreshTokenConfig;
 }
 
+export class GraphQLUploadConfig {
+    @IsOptional()
+    @IsInt()
+    maxFieldSize?: number;
+
+    @IsOptional()
+    @IsInt()
+    maxFileSize?: number;
+
+    @IsOptional()
+    @IsInt()
+    maxFiles?: number;
+}
+
+export class GraphQLConfig {
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => GraphQLUploadConfig)
+    upload?: GraphQLUploadConfig;
+}
+
+export class VodcfsConfig {
+    @IsNotEmpty()
+    @IsString()
+    account: string;
+
+    @IsNotEmpty()
+    @IsString()
+    password: string;
+
+    @IsNotEmpty()
+    @IsString()
+    folderId: string;
+}
+
+export class VideoConfig {
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => VodcfsConfig)
+    vodcfs: VodcfsConfig;
+}
+
 export class AppConfig {
     @ValidateNested()
     @IsDefined()
@@ -72,4 +114,14 @@ export class AppConfig {
     @IsDefined()
     @Type(() => AuthConfig)
     auth: AuthConfig;
+
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => GraphQLConfig)
+    graphql?: GraphQLConfig;
+
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => VideoConfig)
+    video: VideoConfig;
 }

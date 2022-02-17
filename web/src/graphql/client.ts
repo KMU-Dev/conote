@@ -1,17 +1,19 @@
-import { ApolloClient, from, InMemoryCache } from "@apollo/client";
-import { setAccessToken, authLink } from "./links/authLink";
+import { ApolloClient, ApolloLink, from, InMemoryCache } from "@apollo/client";
+import { authLink, setAccessToken } from "./links/authLink";
 import { errorLink } from "./links/ErrorLink";
-import { httpLink } from "./links/HttpLink";
+import { uploadLink } from "./links/uploadLink";
 
 export const client = new ApolloClient({
-    link: from([errorLink, authLink, httpLink]),
+    link: from([errorLink, authLink, uploadLink as unknown as ApolloLink]),
     cache: new InMemoryCache({
         typePolicies: {
-            /* Query: {
+            Query: {
                 fields: {
-                    user: relayStylePagination(),
+                    user: {
+                        merge: () => undefined,
+                    },
                 },
-            }, */
+            },
             AuthPayload: {
                 keyFields: [],
             },
