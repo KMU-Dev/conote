@@ -13,7 +13,15 @@ export class CaslAbilityFactory {
             if (user.role === 'ADMIN') {
                 can(Action.Manage, 'all');
             } else {
+                // user
                 can(Action.Read, 'User', { id: user.id });
+
+                // vodcfs session
+                can(Action.Create, 'VodcfsSession');
+                can(Action.Update, 'VodcfsSession');
+
+                // video
+                can(Action.Create, 'Video');
             }
         }
 
