@@ -1,19 +1,25 @@
+import { useMutation } from '@apollo/client';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
     Button,
     ButtonTypeMap,
     Card,
     CardContent,
     Grid,
+    Skeleton,
     Typography,
     useMediaQuery,
-    useTheme,
+    useTheme
 } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Box } from '@mui/system';
+import { useEffect } from 'react';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
 import PageHeading from '../../components/PageHeading/PageHeading';
 import TailwindInput from '../../components/TailwindInput/TailwindInput';
-import FolderAdornment from './FolderAdornment';
+import { CREATE_VODCFS_SESSION } from '../../graphql/mutations/vodcfsSession';
+import { GraphqlDto } from '../../graphql/type/type';
+import { VodcfsSession } from '../../graphql/type/vodcfs-session';
 import VideoFiles from './video_files.svg';
 
 
@@ -21,7 +27,16 @@ export default function VideoUpload() {
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
 
+    const [createVodcfsSession, { data: sessionData, loading: sessionLoading }] = useMutation<
+        GraphqlDto<'createVodcfsSession', Pick<VodcfsSession, 'id' | 'captcha'>>
+    >(CREATE_VODCFS_SESSION);
+
+    useEffect(() => {
+        createVodcfsSession();
+    }, [createVodcfsSession]);
+
     const btnAdditionalProps = matchSmUp ? { size: 'large' } as Partial<ButtonTypeMap> : undefined;
+    const captcha = sessionData?.createVodcfsSession.captcha;
 
     return (
         <AppLayout>
@@ -54,10 +69,10 @@ export default function VideoUpload() {
                         </Grid>
                         <Grid item xs={12} md={8}>
                             <Grid container spacing={6}>
-                                <Grid item xs={12} lg={6}>
+                                <Grid item xs={12}>
                                     <TailwindInput id="name" label="名稱" fullWidth required />
                                 </Grid>
-                                <Grid item xs={12} lg={6}>
+                                {/* <Grid item xs={12} lg={6}>
                                     <TailwindInput
                                         id="folder"
                                         label="儲存位置"
@@ -65,7 +80,7 @@ export default function VideoUpload() {
                                         required
                                         endAdornment={<FolderAdornment />}
                                     />
-                                </Grid>
+                                </Grid> */}
                                 <Grid item xs={12}>
                                     <FileInput
                                         id="video"
@@ -74,6 +89,28 @@ export default function VideoUpload() {
                                         image={VideoFiles}
                                         accept=".ecm"
                                     />
+                                </Grid>
+                                <Grid item xs={12} sm={6} lg={5} container spacing={2}>
+                                    <Grid item xs={7} sm={9}>
+                                        <TailwindInput
+                                            id="captcha"
+                                            label="驗證碼"
+                                            required
+                                            fullWidth
+                                        />
+                                    </Grid>
+                                    <Grid item xs={5} sm={3} alignSelf="flex-end">
+                                    {sessionLoading ?
+                                        // Use different height and negative margin to fix Skeleton bug
+                                        <Skeleton width={128} height={60} sx={{ my: -2 }} /> :
+                                        <Box
+                                            component="img"
+                                            src={captcha}
+                                            alt="驗證碼"
+                                            minHeight={36}
+                                        />
+                                    }
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>

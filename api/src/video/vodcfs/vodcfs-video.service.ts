@@ -37,6 +37,7 @@ export class VodcfsVideoService {
 
         const response = await this.axios.post(uploadUrl, formData, {
             headers: { ...formData.getHeaders(), ...{ cookie } },
+            maxBodyLength: 2000000000,
         });
         const uploadedFile = (response.data as VodcfsUploadVideoResponse).files[0];
         const vodcfsVideoId = +uploadedFile.url.split('/')[2];
