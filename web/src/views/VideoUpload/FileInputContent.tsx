@@ -19,9 +19,8 @@ export default function FileInputContent(props: FileInputContentProps) {
                 justifyContent="space-between"
                 flexGrow={1}
                 maxWidth={400}
-                minHeight={104}
-                pl={{ xs: 6, sm: 12 }}
-                pr={6}
+                minHeight={116}
+                px={{ xs: 2, sm: 12 }}
                 mt={{ xs: 6, sm: 0 }}
             >
                 <Box>
@@ -31,8 +30,11 @@ export default function FileInputContent(props: FileInputContentProps) {
                     </Typography>
                 </Box>
                 {progress ? 
-                    <Box >
-                        {progress > 0 ? <LinearProgress variant="determinate" value={progress} /> : <LinearProgress />}
+                    <Box>
+                        {progress > 0 ?
+                            <LinearProgress variant="determinate" value={progress} /> :
+                            <LinearProgress />
+                        }
                     </Box> :
                     ''
                 }

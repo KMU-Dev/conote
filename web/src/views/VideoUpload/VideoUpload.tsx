@@ -165,6 +165,7 @@ export default function VideoUpload() {
                     color="primary"
                     startIcon={<CloudUploadIcon />}
                     onClick={handleSubmit(onSubmit)}
+                    disabled={uploadProgress !== undefined}
                     {...btnAdditionalProps}
                 >
                     上傳
@@ -196,6 +197,7 @@ export default function VideoUpload() {
                                         label="標題"
                                         fullWidth
                                         required
+                                        disabled={uploadProgress !== undefined}
                                         errors={errors}
                                     />
                                 </Grid>
@@ -219,6 +221,7 @@ export default function VideoUpload() {
                                             label="驗證碼"
                                             required
                                             fullWidth
+                                            disabled={uploadProgress !== undefined}
                                             errors={errors}
                                         />
                                     </Grid>
