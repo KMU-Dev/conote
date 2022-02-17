@@ -1,14 +1,14 @@
-import { history } from "../../utils/history";
-import routes from '../../constant/routes.json';
-import { getAccessTokenFromCahce } from "../../utils/auth";
 import { gql } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import routes from '../../constant/routes.json';
+import { getAccessTokenFromCahce } from "../../utils/auth";
+import { history } from "../../utils/history";
 import { client } from "../client";
 import { REFRESH_TOKEN } from "../mutations/auth";
-import { GraphqlDto } from "../type/type";
 import { AuthPaylaod } from "../type/AuthPayload";
+import { GraphqlDto } from "../type/type";
 
-let accessToken: string;
+export let accessToken: string;
 const excludedOperations = ['Login', 'Logout', 'RefreshToken', 'InitialGoogleLink', 'InitialCreateAdmin'];
 
 export const authLink = setContext(async (operation) => {

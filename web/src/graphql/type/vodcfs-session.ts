@@ -6,7 +6,7 @@ export interface VodcfsSession {
     status: VodcfsSessionStatus;
     captcha: string;
     captchaAnswer?: string
-    errorReason?: string
+    errorReason?: VodcfsSessionErrorReason;
     createdAt: number;
 }
 
@@ -14,4 +14,10 @@ export enum VodcfsSessionStatus {
     CREATING = 'CREATING',
     AUTHENTICATED = 'AUTHENTICATED',
     ERROR = 'ERROR',
+}
+
+export enum VodcfsSessionErrorReason {
+    INVALID_CAPTCHA = 'INVALID_CAPTCHA',
+    INVALID_ACCOUNT = 'INVALID_ACCOUNT',
+    UNKNOWN = 'UNKNOWN',
 }

@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client';
+import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
     Button,
@@ -12,24 +13,43 @@ import {
     useTheme
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useEffect } from 'react';
+import axios from 'axios';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
+import { useNotification } from '../../components/Notification';
 import PageHeading from '../../components/PageHeading/PageHeading';
-import TailwindInput from '../../components/TailwindInput/TailwindInput';
-import { CREATE_VODCFS_SESSION } from '../../graphql/mutations/vodcfsSession';
+import { TailwindController } from '../../components/TailwindInput';
+import { getUploadVideoDocument } from '../../graphql/mutations/video';
+import { AUTHENTICATE_VODCFS_SESSION, CREATE_VODCFS_SESSION } from '../../graphql/mutations/vodcfsSession';
 import { GraphqlDto } from '../../graphql/type/type';
-import { VodcfsSession } from '../../graphql/type/vodcfs-session';
+import { VodcfsSession, VodcfsSessionErrorReason, VodcfsSessionStatus } from '../../graphql/type/vodcfs-session';
+import { humanFileSize } from '../../utils/file';
+import FileInputContent from './FileInputContent';
+import { UploadVideoForm } from './UploadVideoForm';
 import VideoFiles from './video_files.svg';
 
 
 export default function VideoUpload() {
+    const [videoError, setVideoError] = useState('');
+    const [uploadProgress, setUploadProgress] = useState<number>(undefined);
+
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
+    const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
+    const { control, register, watch, handleSubmit, formState: { errors } } = useForm<UploadVideoForm>({
+        mode: 'onTouched',
+        defaultValues: { title: '', captchaAnswer: '' },
+        resolver: classValidatorResolver(UploadVideoForm),
+    });
 
     const [createVodcfsSession, { data: sessionData, loading: sessionLoading }] = useMutation<
         GraphqlDto<'createVodcfsSession', Pick<VodcfsSession, 'id' | 'captcha'>>
     >(CREATE_VODCFS_SESSION);
+    const [authenticateVodcfsSession] = useMutation<
+        GraphqlDto<'authenticateVodcfsSession', Pick<VodcfsSession, 'id' | 'status' | 'errorReason'>>
+    >(AUTHENTICATE_VODCFS_SESSION);
 
     useEffect(() => {
         createVodcfsSession();
@@ -37,6 +57,94 @@ export default function VideoUpload() {
 
     const btnAdditionalProps = matchSmUp ? { size: 'large' } as Partial<ButtonTypeMap> : undefined;
     const captcha = sessionData?.createVodcfsSession.captcha;
+    const video = watch('video');
+
+    const videoContent = useMemo(() => {
+        if (video && video.length > 0) {
+            const file = video[0];
+            const progress = uploadProgress && Math.round(uploadProgress / file.size * 100);
+            const fileSize = humanFileSize(file.size, true);
+
+            let subtitle;
+            if (uploadProgress === -1) subtitle = '準備中…';
+            else if (uploadProgress === -2) subtitle = '影片處理中，請稍後…';
+            else if (uploadProgress > 0) subtitle = `${progress}% (${humanFileSize(uploadProgress, true)} / ${fileSize})`;
+            else subtitle = fileSize;
+
+            return (
+                <FileInputContent
+                    title={file.name}
+                    subtitle={subtitle}
+                    progress={progress}
+                />
+            );
+        }
+        return '';
+    }, [video, uploadProgress]);
+
+    const handleProgress = (e: ProgressEvent) => {
+        if (e.loaded === e.total) setUploadProgress(-2);
+        else setUploadProgress(e.loaded);
+    };
+
+    const onSubmit = useCallback<SubmitHandler<UploadVideoForm>>(async (data) => {
+        if (!sessionData?.createVodcfsSession) return;
+
+        // validate video input
+        if (!data.video || data.video.length === 0) {
+            setVideoError('請選擇 EverCam 錄影檔');
+            return;
+        }
+        else setVideoError('');
+
+        try {
+            // authenticate vodcfs session
+            setUploadProgress(-1);
+
+            const response = await authenticateVodcfsSession({
+                variables: {
+                    input: { id: sessionData.createVodcfsSession.id, captchaAnswer: data.captchaAnswer },
+                },
+            });
+            const session = response.data?.authenticateVodcfsSession;
+
+            // handling error
+            if (session.status !== VodcfsSessionStatus.AUTHENTICATED) {
+                let content: string;
+                if (session.errorReason === VodcfsSessionErrorReason.INVALID_CAPTCHA) content = '驗證碼錯誤';
+                else content = '未知錯誤，請聯絡系統管理員。';
+
+                enqueueNotification({
+                    title: '無法上傳影片',
+                    content,
+                    variant: 'error',
+                });
+
+                createVodcfsSession();
+                setUploadProgress(undefined);
+
+                return;
+            }
+
+            // upload video
+            const document = getUploadVideoDocument({
+                title: data.title,
+                file: data.video[0],
+                sessionId: session.id,
+            });
+            const uploadResponse = await axios.post(
+                document.url,
+                document.body,
+                { ...document.config, onUploadProgress: handleProgress },
+            );
+            console.log(uploadResponse);
+        } catch (e) {
+            enqueueCommonErrorNotification(e);
+            createVodcfsSession();
+            setUploadProgress(undefined);
+            return;
+        }
+    }, [authenticateVodcfsSession, createVodcfsSession, enqueueCommonErrorNotification, enqueueNotification, sessionData?.createVodcfsSession]);
 
     return (
         <AppLayout>
@@ -45,6 +153,7 @@ export default function VideoUpload() {
                     variant="contained"
                     color="primary"
                     startIcon={<CloudUploadIcon />}
+                    onClick={handleSubmit(onSubmit)}
                     {...btnAdditionalProps}
                 >
                     上傳
@@ -70,17 +179,15 @@ export default function VideoUpload() {
                         <Grid item xs={12} md={8}>
                             <Grid container spacing={6}>
                                 <Grid item xs={12}>
-                                    <TailwindInput id="name" label="名稱" fullWidth required />
-                                </Grid>
-                                {/* <Grid item xs={12} lg={6}>
-                                    <TailwindInput
-                                        id="folder"
-                                        label="儲存位置"
+                                    <TailwindController
+                                        name="title"
+                                        control={control}
+                                        label="標題"
                                         fullWidth
                                         required
-                                        endAdornment={<FolderAdornment />}
+                                        errors={errors}
                                     />
-                                </Grid> */}
+                                </Grid>
                                 <Grid item xs={12}>
                                     <FileInput
                                         id="video"
@@ -88,15 +195,20 @@ export default function VideoUpload() {
                                         required
                                         image={VideoFiles}
                                         accept=".ecm"
+                                        error={videoError}
+                                        customContent={videoContent}
+                                        register={register('video')}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={5} container spacing={2}>
                                     <Grid item xs={7} sm={9}>
-                                        <TailwindInput
-                                            id="captcha"
+                                        <TailwindController
+                                            name="captchaAnswer"
+                                            control={control}
                                             label="驗證碼"
                                             required
                                             fullWidth
+                                            errors={errors}
                                         />
                                     </Grid>
                                     <Grid item xs={5} sm={3} alignSelf="flex-end">
@@ -108,6 +220,7 @@ export default function VideoUpload() {
                                             src={captcha}
                                             alt="驗證碼"
                                             minHeight={36}
+                                            mb={errors.captchaAnswer && 6}
                                         />
                                     }
                                     </Grid>
