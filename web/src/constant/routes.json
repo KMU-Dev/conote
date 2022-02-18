@@ -4,6 +4,7 @@
     "DASHBOARD": "/dashboard",
     "VIDEOS": "/videos",
     "VIDEO_UPLOAD": "/videos/upload",
+    "ACCOUNT": "/account",
     "ADMIN_ROOT": "/admin",
     "ADMIN_USER_LIST": "/admin/users",
     "INITIAL_SETUP": "/initial-setup"

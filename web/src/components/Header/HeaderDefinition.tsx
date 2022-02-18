@@ -23,10 +23,10 @@ export const getHeaderDef = (uiStatus?: UIStatus): HeaderDefinition => ({
         { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon />, exact: false },
     ],
     account: [
-        { name: '總覽', href: '/account', icon: <PersonOutlineIcon />, exact: true },
+        { name: '個人資料', href: routes.ACCOUNT, icon: <PersonOutlineIcon />, exact: true },
         {
             name: '系統設定',
-            href: '/admin',
+            href: routes.ADMIN_ROOT,
             icon: <SettingsIcon />,
             exact: true,
             hidden: uiStatus?.user?.role !== UserRole.ADMIN,
@@ -43,7 +43,7 @@ export const getHeaderDef = (uiStatus?: UIStatus): HeaderDefinition => ({
                     type: 'collapse',
                     icon: <PeopleIcon />,
                     items: [
-                        { name: '清單', type: 'collapse_item', href: '/admin/users', exact: true },
+                        { name: '清單', type: 'collapse_item', href: routes.ADMIN_USER_LIST, exact: true },
                         { name: '詳細資料', type: 'collapse_item', href: '/admin/users/{:id}', exact: true },
                     ],
                 },

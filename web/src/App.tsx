@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/client';
-import { useTheme, useMediaQuery } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { useEffect } from 'react';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Route, Router, Switch } from 'react-router-dom';
 import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
@@ -64,10 +64,10 @@ function App() {
                     <Header>
                         <Switch>
                             <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1645372800000)} />
+                                <ComingSoon time={new Date(1648224000000)} />
                             </PageRoute>
                             <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1645372800000)} />
+                                <ComingSoon time={new Date(1648224000000)} />
                             </PageRoute>
                             <PageRoute
                                 exact
@@ -75,6 +75,9 @@ function App() {
                                 component={VideoUpload}
                                 title="上傳影片"
                             />
+                            <PageRoute exact path={routes.ACCOUNT} title="個人資料">
+                                <ComingSoon time={new Date(1648224000000)} />
+                            </PageRoute>
                             <Route path={routes.ADMIN_ROOT} component={Admin} />
                             <Route path="*" component={NotFound} />
                         </Switch>
