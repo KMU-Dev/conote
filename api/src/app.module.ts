@@ -1,8 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { RouteInfo } from '@nestjs/common/interfaces';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { graphqlUploadExpress } from 'graphql-upload';
+import helmet from 'helmet';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
@@ -22,6 +24,7 @@ import { VideoModule } from './video/video.module';
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'client'),
+            exclude: ['/graphql'],
             serveStaticOptions: {
                 immutable: true,
                 maxAge: '7d',
@@ -30,12 +33,17 @@ import { VideoModule } from './video/video.module';
                 },
             },
         }),
-        GraphQLModule.forRoot({
-            autoSchemaFile: true,
-            buildSchemaOptions: {
-                dateScalarMode: 'timestamp',
-            },
-            context: ({ req, res }) => ({ req, res }),
+        GraphQLModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                debug: configService.get('graphql.debug'),
+                playground: configService.get('graphql.playground'),
+                autoSchemaFile: true,
+                buildSchemaOptions: {
+                    dateScalarMode: 'timestamp',
+                },
+                context: ({ req, res }) => ({ req, res }),
+            }),
         }),
         PrismaModule,
         AuthModule,
@@ -50,7 +58,24 @@ export class AppModule implements NestModule {
     constructor(private readonly configService: ConfigService) {}
 
     configure(consumer: MiddlewareConsumer) {
-        const config = this.configService.get<GraphQLUploadConfig>('graphql.upload');
-        consumer.apply(graphqlUploadExpress(config)).forRoutes('graphql');
+        // graphql-upload
+        const graphqlUploadConfig = this.configService.get<GraphQLUploadConfig>('graphql.upload');
+        consumer.apply(graphqlUploadExpress(graphqlUploadConfig)).forRoutes('graphql');
+
+        // helmet
+        const playgroundEnabled = this.configService.get<boolean>('graphql.playground');
+        const excludes: RouteInfo[] = [];
+        if (playgroundEnabled) excludes.push({ path: 'graphql', method: RequestMethod.GET });
+
+        consumer
+            .apply(
+                helmet({
+                    contentSecurityPolicy: {
+                        directives: { imgSrc: ["'self'", 'data:', '*.googleusercontent.com'] },
+                    },
+                }),
+            )
+            .exclude(...excludes)
+            .forRoutes('*');
     }
 }

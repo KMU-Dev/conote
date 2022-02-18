@@ -1,0 +1,3 @@
+graphql:
+  debug: false
+  playground: false

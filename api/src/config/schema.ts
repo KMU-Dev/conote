@@ -81,6 +81,14 @@ export class GraphQLConfig {
     @IsOptional()
     @Type(() => GraphQLUploadConfig)
     upload?: GraphQLUploadConfig;
+
+    @IsDefined()
+    @IsBoolean()
+    debug: boolean;
+
+    @IsDefined()
+    @IsBoolean()
+    playground: boolean;
 }
 
 export class VodcfsConfig {
