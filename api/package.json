@@ -32,6 +32,7 @@
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/passport": "^8.1.0",
     "@nestjs/platform-express": "^8.2.6",
+    "@nestjs/serve-static": "^2.2.2",
     "@prisma/client": "^3.9.2",
     "apollo-server-express": "^3.6.2",
     "app-root-path": "^3.0.0",

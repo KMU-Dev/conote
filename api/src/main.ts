@@ -10,7 +10,14 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     // setup middlewares
-    app.use(helmet(), cookieParser());
+    app.use(
+        helmet({
+            contentSecurityPolicy: {
+                directives: { imgSrc: ["'self'", 'data:', '*.googleusercontent.com'] },
+            },
+        }),
+        cookieParser(),
+    );
     app.useGlobalFilters(new AllExceptionsFilter(), new PrismaKnonwRequestErrorFilter());
     app.useGlobalPipes(new DefaultValidationPipe());
 

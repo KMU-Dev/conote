@@ -39,3 +39,6 @@ lerna-debug.log*
 # config
 /config/*.yaml
 !/config/default.yaml
+
+# built client
+client/
