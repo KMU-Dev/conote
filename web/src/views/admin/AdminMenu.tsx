@@ -21,7 +21,7 @@ export default function AdminMenu(props: AdminMenuProps) {
                     bgcolor={(theme) => theme.palette.grey[100]}
                     borderRadius={4}
                 >
-                    <SkeletonAvatar src={user?.picture} loading={loading} />
+                    <SkeletonAvatar src={user?.picture} loading={loading} imgProps={{ crossOrigin: 'anonymous' }} />
                     <Box ml={4}>
                         <SkeletonTypography variant="subtitle2" loading={loading} skeletonWidth="3em">
                             {user?.name}

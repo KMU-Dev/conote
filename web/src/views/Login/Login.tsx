@@ -118,7 +118,7 @@ export default function Login() {
                     </Box>
                     <Typography variant="body2" mb={10} color="text.secondary">
                         當您登入 Conote，即代表你同意遵守我們的條款，包含&ensp;
-                        <Link to="/tos" color="primary" component={RouterLink} underline="hover">使用者服務條款</Link>
+                        <Link to={routes.TERMS_OF_SERVICE} color="primary" component={RouterLink} underline="hover">使用者服務條款</Link>
                         &ensp;及&ensp;
                         <Link to="/privacy" color="primary" component={RouterLink} underline="hover">隱私權政策</Link>
                     </Typography>

@@ -49,7 +49,7 @@ export default function UserList() {
             editable: true,
             renderCell: (params: GridRenderCellParams<string, User>) => (
                 <Box display="flex" alignItems="center">
-                    <Avatar src={params.row.picture}>{!params.row.picture && params.row.name.charAt(0)}</Avatar>
+                    <Avatar src={params.row.picture} imgProps={{ crossOrigin: 'anonymous' }}>{!params.row.picture && params.row.name.charAt(0)}</Avatar>
                     <Typography variant="subtitle1" ml={2}>{params.row.name}</Typography>
                 </Box>
             ),

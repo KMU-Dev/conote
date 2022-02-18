@@ -1,7 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { graphqlUploadExpress } from 'graphql-upload';
+import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { CaslModule } from './casl/casl.module';
 import configuration from './config/configuration';
@@ -17,6 +19,16 @@ import { VideoModule } from './video/video.module';
         ConfigModule.forRoot({
             isGlobal: true,
             load: [configuration],
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'client'),
+            serveStaticOptions: {
+                immutable: true,
+                maxAge: '7d',
+                setHeaders: (res, path) => {
+                    if (path.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+                },
+            },
         }),
         GraphQLModule.forRoot({
             autoSchemaFile: true,

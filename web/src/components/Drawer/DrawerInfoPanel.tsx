@@ -37,7 +37,7 @@ const DrawerInfoPanel = forwardRef<HTMLAnchorElement, DrawerInfoPanelProps>((pro
                             </Box>
                         </Link>
                         <Box display="flex" alignItems="center" mt={6}>
-                            <SkeletonAvatar src={user?.picture} loading={loading} />
+                            <SkeletonAvatar src={user?.picture} loading={loading} imgProps={{ crossOrigin: 'anonymous' }} />
                             <Box ml={4}>
                                 <SkeletonTypography variant="subtitle2" loading={loading} skeletonWidth="3em">
                                     {user?.name}

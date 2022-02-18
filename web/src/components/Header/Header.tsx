@@ -62,7 +62,8 @@ export default function Header(props: HeaderProps) {
     ));
 
     const handleAccountBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
-        setMenuAnchor(e.currentTarget);
+        if (data?.uiStatus?.user) setMenuAnchor(e.currentTarget);
+        else history.push(routes.LOGIN);
     };
 
     const handleAccountMenuClick = async (def: AccountMenuDefinition) => {
