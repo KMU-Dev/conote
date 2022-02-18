@@ -18,7 +18,11 @@ import ComingSoon from './views/ComingSoon/ComingSoon';
 import InitialSetup from './views/InitialSetup/InitialSetup';
 import Login from './views/Login/Login';
 import NotFound from './views/NotFound/NotFound';
+import PrivacyPolicies from './views/PrivacyPolicies/PrivacyPolicies';
+import TermsOfService from './views/TermsOfService/TermsOfService';
 import VideoUpload from './views/VideoUpload/VideoUpload';
+
+const loginExcluded = [routes.LOGIN, routes.TERMS_OF_SERVICE, routes.PRIVACY_POLICIES];
 
 function App() {
     const theme = useTheme();
@@ -30,7 +34,9 @@ function App() {
         if (uiStatus.initialSetup) {
             if (history.location.pathname !== routes.INITIAL_SETUP) history.push(routes.INITIAL_SETUP);
         } else if (!uiStatus.user) {
-            if (!getAccessTokenFromCahce()) history.push(routes.LOGIN);
+            if (!getAccessTokenFromCahce() && !loginExcluded.includes(window.location.pathname)) {
+                history.push(routes.LOGIN);
+            }
         }
     }
 
@@ -77,6 +83,12 @@ function App() {
                             />
                             <PageRoute exact path={routes.ACCOUNT} title="個人資料">
                                 <ComingSoon time={new Date(1648224000000)} />
+                            </PageRoute>
+                            <PageRoute exact path={routes.TERMS_OF_SERVICE} title="使用者服務條款">
+                                <TermsOfService />
+                            </PageRoute>
+                            <PageRoute exact path={routes.PRIVACY_POLICIES} title="隱私權政策">
+                                <PrivacyPolicies />
                             </PageRoute>
                             <Route path={routes.ADMIN_ROOT} component={Admin} />
                             <Route path="*" component={NotFound} />

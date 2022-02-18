@@ -5,6 +5,8 @@
     "VIDEOS": "/videos",
     "VIDEO_UPLOAD": "/videos/upload",
     "ACCOUNT": "/account",
+    "TERMS_OF_SERVICE": "/terms",
+    "PRIVACY_POLICIES": "/privacy",
     "ADMIN_ROOT": "/admin",
     "ADMIN_USER_LIST": "/admin/users",
     "INITIAL_SETUP": "/initial-setup"
