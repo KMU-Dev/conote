@@ -14,6 +14,6 @@ jobs:
       - name: Package helm chart
         run: helm package deploy/charts/conote
       - name: Login to helm registry
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login --username ${{ github.actor }} --password-stdin
+        run: echo ${{ secrets.GITHUB_TOKEN }} | helm registry login --username ${{ github.actor }} --password-stdin
       - name: Push helm chart
         run: helm push $(find conote-*.tgz) oci://ghcr.io/kmu-dev/conote-helm
