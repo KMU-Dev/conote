@@ -112,7 +112,11 @@ export class AuthService {
 
     private async firstOAuthLink(user: User, idToken: GoogleIdToken) {
         const oAuth2User = this.oauth2Service.getOAuth2User(idToken);
+
+        // exclude name field to prevent overridden
+        delete oAuth2User['name'];
         user = await this.userService.updateUser({ id: user.id, ...oAuth2User });
+
         return await this.linkUser(user.id, { provider: 'Google', sub: idToken.sub });
     }
 
