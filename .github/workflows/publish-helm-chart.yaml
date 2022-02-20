@@ -17,5 +17,4 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io --username ${{ github.actor }} --password-stdin
       - name: Push helm chart
         run: |
-          for file in *.tgz; do mv $file ${file//conote/conote-helm}; done
-          helm push $(find conote-helm-*.tgz) oci://ghcr.io/kmu-dev
+          helm push $(find conote-*.tgz) oci://ghcr.io/kmu-dev/helm
