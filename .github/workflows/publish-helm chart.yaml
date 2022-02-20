@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Install helm
         uses: azure/setup-helm@v1
+      - name: Update helm chart dependency
+        run: helm dependency update deploy/charts/conote
       - name: Package helm chart
         run: helm package deploy/charts/conote
       - name: Push helm chart
