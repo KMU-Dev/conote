@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "conote.fullname" . }}
+  labels:
+    {{- include "conote.labels" . | nindent 4 }}
+data:
+  {{- with .Values.conote.config }}
+  production.yaml: |
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

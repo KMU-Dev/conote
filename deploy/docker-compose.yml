@@ -1,0 +1,24 @@
+version: "3.9"
+services:
+  conote:
+    image: ikmu/conote:0.1.0
+    container_name: conote
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    environment:
+      DATABASE_URL: "postgresql://postgres:devpassword@postgres:5432/postgres?schema=public"
+      TZ: "Asia/Taipei"
+    volumes:
+      - "../api/config/dev.yaml:/app/config/dev.yaml"
+    restart: always
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: devpassword
+      TZ: "Asia/Taipei"
+    restart: always
