@@ -17,6 +17,5 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io --username ${{ github.actor }} --password-stdin
       - name: Push helm chart
         run: |
-          sudo apt update && sudo apt install rename -y
-          rename conote conote-helm *.tgz
+          for file in *.tgz; do mv $file ${file//conote/conote-helm}; done
           helm push $(find conote-helm-*.tgz) oci://ghcr.io/kmu-dev
