@@ -1,0 +1,15 @@
+name: Publish helm chart
+on: [push]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install helm
+        uses: azure/setup-helm@v1
+      - name: Package helm chart
+        run: helm package deploy/charts/conote
+      - name: Push helm chart
+        run: helm push $(find conote-*.tgz) oci://ghcr.io/kmu-dev/conote-helm
