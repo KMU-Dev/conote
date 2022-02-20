@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Docker meta
         id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v3
+        uses: docker/metadata-action@v3
         with:
             images: ghcr.io/kmu-dev/conote
             tags: |
@@ -29,3 +29,4 @@ jobs:
         with:
             push: true
             tags: ${{ steps.docker_meta.outputs.tags }}
+            labels: ${{ steps.docker_meta.outputs.labels }}
