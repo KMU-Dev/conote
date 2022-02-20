@@ -16,4 +16,6 @@ jobs:
       - name: Login to helm registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io --username ${{ github.actor }} --password-stdin
       - name: Push helm chart
-        run: helm push $(find conote-*.tgz) oci://ghcr.io/kmu-dev/conote-helm
+        run: |
+          rename conote conote-helm *.tgz
+          helm push $(find conote-helm-*.tgz) oci://ghcr.io/kmu-dev
