@@ -34,7 +34,7 @@
     "@nestjs/platform-express": "^8.2.6",
     "@nestjs/serve-static": "^2.2.2",
     "@prisma/client": "^3.9.2",
-    "apollo-server-express": "^3.6.2",
+    "apollo-server-express": "^3.6.3",
     "app-root-path": "^3.0.0",
     "cheerio": "^1.0.0-rc.10",
     "class-transformer": "^0.5.1",
