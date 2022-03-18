@@ -1,15 +1,15 @@
+import { useMutation } from "@apollo/client";
+import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { Avatar, Box, InputLabel, SxProps, Theme, Typography } from "@mui/material";
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { OAuth2User } from "../../graphql/type/OAuth2User";
-import { StepContentProps } from "./StepContentProps";
-import { useMutation } from "@apollo/client";
-import { INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
-import { User, UserRole } from "../../graphql/type/user";
 import { TailwindController } from "../../components/TailwindInput";
+import { INITIAL_CREATE_ADMIN } from "../../graphql/mutations/initialSetup";
+import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { GraphqlDto } from "../../graphql/type/type";
+import { User, UserRole } from "../../graphql/type/user";
+import { StepContentProps } from "./StepContentProps";
 
 class CreateUserForm {
     @IsNotEmpty({ message: '姓名為必填欄位' })
@@ -57,7 +57,12 @@ export default function CreateUser(props: CreateUserProps) {
             <Box component="form" id="form" my={4}>
                 <Box my={4}>
                     <InputLabel color="primary" sx={{ color: 'text.primary', fontSize: 'body2.fontSize' }}>頭像</InputLabel>
-                    <Avatar alt={user.name} src={user.picture} sx={{ width: 64, height: 64, mt: 2 }} />
+                    <Avatar
+                        alt={user.name}
+                        src={user.picture}
+                        sx={{ width: 64, height: 64, mt: 2 }}
+                        imgProps={{ crossOrigin: 'anonymous' }}
+                    />
                 </Box>
                 <TailwindController
                     name="name"
