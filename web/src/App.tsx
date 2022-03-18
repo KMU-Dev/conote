@@ -70,10 +70,10 @@ function App() {
                     <Header>
                         <Switch>
                             <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1648224000000)} />
+                                <ComingSoon time={new Date(1651334400000)} />
                             </PageRoute>
                             <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1648224000000)} />
+                                <ComingSoon time={new Date(1651334400000)} />
                             </PageRoute>
                             <PageRoute
                                 exact
@@ -82,7 +82,7 @@ function App() {
                                 title="上傳影片"
                             />
                             <PageRoute exact path={routes.ACCOUNT} title="個人資料">
-                                <ComingSoon time={new Date(1648224000000)} />
+                                <ComingSoon time={new Date(1651334400000)} />
                             </PageRoute>
                             <PageRoute exact path={routes.TERMS_OF_SERVICE} title="使用者服務條款">
                                 <TermsOfService />

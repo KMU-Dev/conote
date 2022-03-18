@@ -1,11 +1,11 @@
-import { PrismaService } from '../../../prisma/prisma.service';
-import { ConnectionArgs } from '../connection/argument';
-import { IConnectionService } from './interfaces/connection.service';
-import { IConnectionType, IEdgeType, IPageInfoType } from '../connection/type';
-import { Delegate } from './interfaces/delegate';
-import { CrudTypeMap } from './interfaces/crud-type-map';
 import { Logger, Type } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { ConnectionArgs } from '../connection/argument';
+import { IConnectionType, IEdgeType, IPageInfoType } from '../connection/type';
+import { IConnectionService } from './interfaces/connection.service';
+import { CrudTypeMap } from './interfaces/crud-type-map';
+import { Delegate } from './interfaces/delegate';
 
 export function PrismaConnectionService<
     Model,
@@ -41,6 +41,7 @@ export function PrismaConnectionService<
             });
 
             const hasNext = entities.length === takeLength;
+            const hasPrevious = typeof cursor !== 'undefined';
 
             const edges: IEdgeType<Model>[] = entities
                 .filter((_entity, index) => !(hasNext && index === (args.first ? takeLength - 1 : 0)))
@@ -50,8 +51,8 @@ export function PrismaConnectionService<
                 }));
 
             const pageInfo: IPageInfoType = {
-                hasPreviousPage: typeof cursor !== 'undefined',
-                hasNextPage: hasNext,
+                hasPreviousPage: take > 0 ? hasPrevious : hasNext,
+                hasNextPage: take > 0 ? hasNext : hasPrevious,
                 startCursor: edges.length > 0 && `${edges[0].cursor}`,
                 endCursor: `${edges.length > 0 && edges[edges.length - 1].cursor}`,
             };

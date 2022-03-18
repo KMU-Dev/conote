@@ -54,6 +54,8 @@ export default function Login() {
                 const accessToken = response.data.login.accessToken;
                 setAccessToken(accessToken);
 
+                gtag('event', 'login', { method: 'Google Workspace' });
+
                 await refetch();
                 await client.reFetchObservableQueries(true);
 

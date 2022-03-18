@@ -3,10 +3,11 @@ import React, { DragEvent, MouseEvent, ReactNode, useRef, useState } from "react
 import { UseFormRegisterReturn } from "react-hook-form";
 import { matchAccept } from "../../utils/file";
 import { useNotification } from "../Notification";
+import { FileInputFileDropHandler } from "./type";
 
 
 export default function FileInput(props: FileInputProps) {
-    const { id, image, label, required, accept, multiple, error, sx, customContent, register } = props;
+    const { id, image, label, required, accept, multiple, error, sx, customContent, register, onFileDrop } = props;
     const { ref, ...restRegister } = register;
 
     const [drag, setDrag] = useState(0);
@@ -41,13 +42,13 @@ export default function FileInput(props: FileInputProps) {
                 const accept = input.current.accept;
 
                 if (matchAccept(accept, firstDropedFile)) {
-                    input.current.files = files;
+                    onFileDrop(files);
                 } else {
                     enqueueNotification({
                         variant: 'error',
                         title: '檔案格式錯誤',
                         content: `你只能拖曳符合 ${accept} 的檔案。`,
-                    })
+                    });
                 }
             }
         }
@@ -112,7 +113,6 @@ export default function FileInput(props: FileInputProps) {
                             autoComplete="off"
                             tabIndex={-1}
                             style={{ display: 'none' }}
-                            // onChange={handleInputChange}
                             {...restRegister}
                             ref={(e) => {
                                 ref(e);
@@ -148,4 +148,5 @@ export interface FileInputProps {
     sx?: SxProps<Theme>;
     customContent?: ReactNode;
     register?: UseFormRegisterReturn;
+    onFileDrop?: FileInputFileDropHandler;
 }

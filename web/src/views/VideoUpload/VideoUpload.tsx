@@ -38,7 +38,7 @@ export default function VideoUpload() {
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
     const { enqueueNotification, enqueueCommonErrorNotification } = useNotification();
-    const { control, register, reset, watch, handleSubmit, formState: { errors } } = useForm<UploadVideoForm>({
+    const { control, register, reset, watch, handleSubmit, formState: { errors }, setValue } = useForm<UploadVideoForm>({
         mode: 'onTouched',
         defaultValues: { title: '', captchaAnswer: '' },
         resolver: classValidatorResolver(UploadVideoForm),
@@ -83,6 +83,11 @@ export default function VideoUpload() {
         }
         return '';
     }, [video, uploadProgress]);
+
+    // handle FileInput file drop event and set value for react-hook-form
+    const handleVideoFileDrop = useCallback((file: FileList) => {
+        setValue('video', file);
+    }, [setValue]);
 
     const handleProgress = (e: ProgressEvent) => {
         if (e.loaded === e.total) setUploadProgress(-2);
@@ -211,6 +216,7 @@ export default function VideoUpload() {
                                         error={videoError}
                                         customContent={videoContent}
                                         register={register('video')}
+                                        onFileDrop={handleVideoFileDrop}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={5} container spacing={2}>
