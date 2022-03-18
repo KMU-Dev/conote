@@ -1,5 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
-import { ThemeProvider, Theme, StyledEngineProvider } from "@mui/material";
+import { StyledEngineProvider, Theme, ThemeProvider } from "@mui/material";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { client } from "./graphql/client";

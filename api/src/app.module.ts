@@ -71,7 +71,15 @@ export class AppModule implements NestModule {
             .apply(
                 helmet({
                     contentSecurityPolicy: {
-                        directives: { imgSrc: ["'self'", 'data:', '*.googleusercontent.com'] },
+                        directives: {
+                            connectSrc: ["'self'", 'https://www.google-analytics.com'],
+                            imgSrc: ["'self'", 'data:', '*.googleusercontent.com'],
+                            scriptSrc: [
+                                "'self'",
+                                "'sha256-3aXsHfTxKVinj0aTZEjIMCE1HLzHBZF3yUSSDt54BDg='",
+                                'https://www.googletagmanager.com',
+                            ],
+                        },
                     },
                 }),
             )
