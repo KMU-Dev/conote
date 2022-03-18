@@ -67,10 +67,11 @@ export class VodcfsVideoService {
         const response = await this.axios.get(url, { headers: { cookie } });
 
         const $ = load(response.data);
-        const script = $('script:last-of-type').html();
+        const script = $('script:nth-last-of-type(3)').html();
 
-        const uploaderFunc = script.split('\n')[2];
-        const json = uploaderFunc.slice(26, uploaderFunc.lastIndexOf('}'));
+        const linesOfScript = script.split('\n');
+        const uploadProperty = linesOfScript[linesOfScript.length - 5];
+        const json = uploadProperty.slice(12, uploadProperty.length - 1);
         const data = JSON.parse(json);
         return `http://vodcfs.kmu.edu.tw${data.ecm.url}`;
     }
