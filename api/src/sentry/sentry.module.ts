@@ -11,6 +11,7 @@ import { ModuleAsyncOptions } from '../utils/module/module.intrefaces';
 import { SENTRY_OPTIONS } from './constant';
 import { SentryGraphQLInterceptor } from './sentry-graphql.interceptor';
 import { SentryRequestMiddleware } from './sentry-request.middleware';
+import { SentryTracingMiddleware } from './sentry-tracing.middleware';
 import { SentryInterceptor } from './sentry.interceptor';
 import { SentryModuleOptions } from './sentry.interfaces';
 import { SentryService } from './sentry.service';
@@ -41,15 +42,24 @@ export class SentryModule implements NestModule {
         };
     }
 
-    constructor(@Inject(SENTRY_OPTIONS) private readonly optoins: SentryModuleOptions) {}
+    constructor(@Inject(SENTRY_OPTIONS) private readonly options: SentryModuleOptions) {}
 
     configure(consumer: MiddlewareConsumer) {
         // configure request handler if enabled
-        if (this.optoins.requestHandler.enabled) consumer.apply(SentryRequestMiddleware).forRoutes('*');
+        if (this.options.requestHandler.enabled) consumer.apply(SentryRequestMiddleware).forRoutes('*');
+
+        // configure tracing handler if tracing enabled
+        if (this.options.tracing.enabled) consumer.apply(SentryTracingMiddleware).forRoutes('*');
     }
 
     private static buildStaticProviders(): Provider[] {
-        return [SentryService, SentryInterceptor, SentryGraphQLInterceptor, SentryRequestMiddleware];
+        return [
+            SentryService,
+            SentryInterceptor,
+            SentryGraphQLInterceptor,
+            SentryRequestMiddleware,
+            SentryTracingMiddleware,
+        ];
     }
 
     private static buildStaticExports(): ModuleMetadata['exports'] {
