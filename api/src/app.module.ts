@@ -12,6 +12,7 @@ import configuration from './config/configuration';
 import { GraphQLUploadConfig } from './config/schema';
 import { InitModule } from './init/init.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SentryModule } from './sentry/sentry.module';
 import { UiModule } from './ui/ui.module';
 import { UserModule } from './user/user.module';
 import { VideoModule } from './video/video.module';
@@ -49,6 +50,10 @@ import { VideoModule } from './video/video.module';
                 },
                 context: ({ req, res }) => ({ req, res }),
             }),
+        }),
+        SentryModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => configService.get('sentry'),
         }),
         PrismaModule,
         AuthModule,
