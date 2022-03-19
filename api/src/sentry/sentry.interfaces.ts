@@ -4,7 +4,12 @@ export interface SentryModuleRequestHandlerOptions extends Handlers.RequestHandl
     enabled: boolean;
 }
 
+export interface SentryModuleTracingOptions {
+    enabled: boolean;
+}
+
 export interface SentryModuleOptions {
     init?: NodeOptions;
     requestHandler?: SentryModuleRequestHandlerOptions;
+    tracing?: SentryModuleTracingOptions;
 }

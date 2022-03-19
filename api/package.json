@@ -35,6 +35,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@prisma/client": "^3.11.0",
     "@sentry/node": "^6.18.2",
+    "@sentry/tracing": "^6.18.2",
     "apollo-server-express": "^3.6.4",
     "app-root-path": "^3.0.0",
     "cheerio": "^1.0.0-rc.10",

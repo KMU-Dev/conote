@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
+import * as SentryTracing from '@sentry/tracing';
 import { SENTRY_OPTIONS } from './constant';
 import { SentryModuleOptions } from './sentry.interfaces';
 
@@ -8,6 +9,13 @@ export class SentryService implements OnApplicationShutdown {
     private readonly logger = new Logger(SentryService.name);
 
     constructor(@Inject(SENTRY_OPTIONS) private readonly options: SentryModuleOptions) {
+        // If tracing enabled, add http integrations
+        if (options.tracing?.enabled) {
+            options.init.integrations = [
+                new Sentry.Integrations.Http({ tracing: true }),
+                new SentryTracing.Integrations.Express(),
+            ];
+        }
         Sentry.init(options.init);
     }
 

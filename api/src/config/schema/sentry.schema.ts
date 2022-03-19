@@ -158,6 +158,12 @@ export class SentryRequestHandlerConfig {
     flushTimeout?: number;
 }
 
+export class SentryTracingConfig {
+    @IsBoolean()
+    @IsDefined()
+    enabled: boolean;
+}
+
 export class SentryConfig {
     @ValidateNested()
     @IsOptional()
@@ -168,4 +174,9 @@ export class SentryConfig {
     @IsOptional()
     @Type(() => SentryRequestHandlerConfig)
     requestHandler?: SentryRequestHandlerConfig;
+
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => SentryTracingConfig)
+    tracing: SentryTracingConfig;
 }
