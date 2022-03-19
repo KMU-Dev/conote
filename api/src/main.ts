@@ -13,6 +13,8 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionsFilter(), new PrismaKnonwRequestErrorFilter());
     app.useGlobalPipes(new DefaultValidationPipe());
 
+    app.enableShutdownHooks();
+
     await app.listen(8080);
 }
 bootstrap();
