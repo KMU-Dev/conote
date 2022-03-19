@@ -9,7 +9,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.8",
+    "@apollo/client": "^3.5.9",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@hookform/resolvers": "^2.8.8",
