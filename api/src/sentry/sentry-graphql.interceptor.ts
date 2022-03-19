@@ -1,6 +1,8 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
-import { Handlers, Scope } from '@sentry/node';
+import { captureException, Scope } from '@sentry/node';
+import { GraphQLResolveInfo } from 'graphql';
+import { Path } from 'graphql/jsutils/Path';
 import { SentryInterceptor } from './sentry.interceptor';
 
 @Injectable()
@@ -15,26 +17,49 @@ export class SentryGraphQLInterceptor extends SentryInterceptor {
     }
 
     private captureGraphQLException(gqlContext: GqlExecutionContext, scope: Scope, error: any) {
-        const info = gqlContext.getInfo();
         const context = gqlContext.getContext();
+        const info: GraphQLResolveInfo = gqlContext.getInfo();
         const args = gqlContext.getArgs();
-        const root = gqlContext.getRoot();
-        const clas = gqlContext.getClass();
+        const resolver = gqlContext.getClass();
         const handler = gqlContext.getHandler();
 
-        console.log('info');
-        console.log(info);
-        console.log('context');
-        console.log(context);
-        console.log('args');
-        console.log(args);
-        console.log('root');
-        console.log(root);
-        console.log('class');
-        console.log(clas);
-        console.log('handler');
-        console.log(handler);
+        super.setBasicScope(scope, context.res);
 
-        const data = Handlers.parseRequest({}, context.req, {});
+        // set transaction name
+        const operatoinType = info.operation.operation;
+        const operationName = info.fieldNodes[0].name.value;
+        const transactioName = `${operatoinType.charAt(0).toUpperCase()}${operatoinType.slice(1)} ${operationName}`;
+        scope.setTransactionName(transactioName);
+
+        // set operation related data
+        scope.setTag('type', operatoinType);
+        scope.setContext('operation', {
+            name: context.req.body.operationName,
+            query: context.req.body.query,
+            variables: context.req.body.variables,
+        });
+
+        // set resolver related data
+        scope.setTag('resolver', resolver.name);
+        scope.setTag('handler', handler.name);
+        scope.setContext('resolver', {
+            name: resolver.name,
+            handler: handler.name,
+            path: this.buildReadablePath(info.path),
+            args: args,
+        });
+
+        // capture event
+        const eventId = captureException(error);
+        context.res.sentry = eventId;
+    }
+
+    private buildReadablePath(path: Path) {
+        const keys: Array<string | number> = [];
+        while (path) {
+            keys.push(path.key);
+            path = path.prev;
+        }
+        return keys.reverse().join('.');
     }
 }
