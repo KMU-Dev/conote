@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpException, Injectable, NestInterceptor } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { isAutoSessionTrackingEnabled } from '@sentry/node/dist/sdk';
 import { Scope, Span } from '@sentry/types';
@@ -19,6 +19,10 @@ export class SentryInterceptor implements NestInterceptor {
                 },
             }),
         );
+    }
+
+    protected shouldReport(error: any) {
+        return !(error instanceof HttpException);
     }
 
     protected captureException(context: ExecutionContext, scope: Sentry.Scope, error: any) {
@@ -51,9 +55,5 @@ export class SentryInterceptor implements NestInterceptor {
                 }
             }
         }
-    }
-
-    private shouldReport(exception: any) {
-        return true;
     }
 }

@@ -1,12 +1,18 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { captureException, Scope } from '@sentry/node';
+import { ApolloError } from 'apollo-server-express';
 import { GraphQLResolveInfo } from 'graphql';
 import { Path } from 'graphql/jsutils/Path';
 import { SentryInterceptor } from './sentry.interceptor';
 
 @Injectable()
 export class SentryGraphQLInterceptor extends SentryInterceptor {
+    protected shouldReport(error: any): boolean {
+        if (super.shouldReport(error)) return !(error instanceof ApolloError);
+        return false;
+    }
+
     protected captureException(context: ExecutionContext, scope: Scope, error: any) {
         if (context.getType<GqlContextType>() === 'graphql') {
             const gqlContext = GqlExecutionContext.create(context);
