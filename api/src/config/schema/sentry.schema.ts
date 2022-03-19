@@ -1,7 +1,11 @@
 import { NodeOptions } from '@sentry/node';
 import { CaptureContext } from '@sentry/types';
+import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsBoolean,
+    IsDefined,
+    IsIn,
     IsInt,
     IsObject,
     IsOptional,
@@ -11,9 +15,11 @@ import {
     IsUrl,
     Max,
     Min,
+    ValidateIf,
+    ValidateNested,
 } from 'class-validator';
 
-export class SentryConfig
+export class SentryInitConfig
     implements
         Omit<
             NodeOptions,
@@ -108,4 +114,58 @@ export class SentryConfig
     @Max(1)
     @IsOptional()
     tracesSampleRate?: number;
+}
+
+export type TransactionNamingScheme = 'path' | 'methodPath' | 'handler';
+
+export class SentryRequestHandlerConfig {
+    @IsBoolean()
+    @IsDefined()
+    enabled: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    ip?: boolean;
+
+    @ValidateIf((_o, v) => typeof v !== 'boolean')
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    request?: boolean | string[];
+
+    @IsBoolean()
+    @IsOptional()
+    serverName?: boolean;
+
+    @ValidateIf((_o, v) => typeof v !== 'boolean')
+    @IsIn(['path', 'methodPath', 'handler'])
+    @IsOptional()
+    transaction?: boolean | TransactionNamingScheme;
+
+    @ValidateIf((_o, v) => typeof v !== 'boolean')
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    user?: boolean | string[];
+
+    @IsBoolean()
+    @IsOptional()
+    version?: boolean;
+
+    @IsInt()
+    @Min(0)
+    @IsOptional()
+    flushTimeout?: number;
+}
+
+export class SentryConfig {
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => SentryInitConfig)
+    init?: SentryInitConfig;
+
+    @ValidateNested()
+    @IsOptional()
+    @Type(() => SentryRequestHandlerConfig)
+    requestHandler?: SentryRequestHandlerConfig;
 }
