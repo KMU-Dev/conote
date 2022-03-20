@@ -1,15 +1,12 @@
 import { Handlers, NodeOptions } from '@sentry/node';
 
-export interface SentryModuleRequestHandlerOptions extends Handlers.RequestHandlerOptions {
-    enabled: boolean;
-}
-
 export interface SentryModuleTracingOptions {
     enabled: boolean;
 }
 
 export interface SentryModuleOptions {
+    enabled?: boolean;
     init?: NodeOptions;
-    requestHandler?: SentryModuleRequestHandlerOptions;
+    requestHandler?: Handlers.RequestHandlerOptions;
     tracing?: SentryModuleTracingOptions;
 }
