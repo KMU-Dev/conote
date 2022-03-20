@@ -38,6 +38,7 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/kmu-dev/cache:conote,mode=max
   sentry-release:
     needs: docker-image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
