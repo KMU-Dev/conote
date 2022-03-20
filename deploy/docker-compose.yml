@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   conote:
-    image: ikmu/conote:0.1.0
+    image: ikmu/conote:dev
     container_name: conote
     depends_on:
       - postgres
@@ -15,7 +15,7 @@ services:
     restart: always
   postgres:
     image: postgres:alpine
-    container_name: postgres
+    container_name: postgres_conote
     ports:
       - 5432:5432
     environment:

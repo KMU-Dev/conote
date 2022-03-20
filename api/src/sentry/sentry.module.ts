@@ -18,7 +18,7 @@ import { SentryService } from './sentry.service';
 
 @Module({})
 export class SentryModule implements NestModule {
-    static forRoot(options: SentryModuleOptions): DynamicModule {
+    static forRoot(options?: SentryModuleOptions): DynamicModule {
         return {
             module: SentryModule,
             providers: [{ provide: SENTRY_OPTIONS, useValue: options }, ...this.buildStaticProviders()],
@@ -26,7 +26,7 @@ export class SentryModule implements NestModule {
         };
     }
 
-    static forRootAsync(options: ModuleAsyncOptions<SentryModuleOptions>): DynamicModule {
+    static forRootAsync(options: ModuleAsyncOptions<SentryModuleOptions | void>): DynamicModule {
         return {
             module: SentryModule,
             imports: options.imports,
@@ -42,14 +42,16 @@ export class SentryModule implements NestModule {
         };
     }
 
-    constructor(@Inject(SENTRY_OPTIONS) private readonly options: SentryModuleOptions) {}
+    constructor(@Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {}
 
     configure(consumer: MiddlewareConsumer) {
-        // configure request handler if enabled
-        if (this.options.requestHandler.enabled) consumer.apply(SentryRequestMiddleware).forRoutes('*');
+        if (this.options?.enabled) {
+            // configure request handler if enabled
+            consumer.apply(SentryRequestMiddleware).forRoutes('*');
 
-        // configure tracing handler if tracing enabled
-        if (this.options.tracing.enabled) consumer.apply(SentryTracingMiddleware).forRoutes('*');
+            // configure tracing handler if tracing enabled
+            if (this.options.tracing?.enabled) consumer.apply(SentryTracingMiddleware).forRoutes('*');
+        }
     }
 
     private static buildStaticProviders(): Provider[] {

@@ -118,10 +118,6 @@ export type TransactionNamingScheme = 'path' | 'methodPath' | 'handler';
 
 export class SentryRequestHandlerConfig {
     @IsBoolean()
-    @IsDefined()
-    enabled: boolean;
-
-    @IsBoolean()
     @IsOptional()
     ip?: boolean;
 
@@ -163,6 +159,10 @@ export class SentryTracingConfig {
 }
 
 export class SentryConfig {
+    @IsBoolean()
+    @IsOptional()
+    enabled?: boolean;
+
     @ValidateNested()
     @IsOptional()
     @Type(() => SentryInitConfig)

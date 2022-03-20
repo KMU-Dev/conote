@@ -9,26 +9,28 @@ import { SentryModuleOptions } from './sentry.interfaces';
 export class SentryService implements OnApplicationShutdown {
     private readonly logger = new Logger(SentryService.name);
 
-    constructor(@Inject(SENTRY_OPTIONS) private readonly options: SentryModuleOptions) {
-        this.logger.debug(global.__rootdir__);
+    constructor(@Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {
+        if (options?.enabled) {
+            if (options.init) {
+                // rewrite frames to get sourcemap
+                options.init.integrations = [
+                    new SentryIntegrations.RewriteFrames({
+                        root: global.__rootdir__,
+                    }),
+                ];
 
-        // rewrite frames to get sourcemap
-        options.init.integrations = [
-            new SentryIntegrations.RewriteFrames({
-                root: global.__rootdir__,
-            }),
-        ];
+                // If tracing enabled, add http integrations
+                if (options.tracing?.enabled) {
+                    options.init.integrations = [
+                        ...options.init.integrations,
+                        new Sentry.Integrations.Http({ tracing: true }),
+                        new SentryTracing.Integrations.Express(),
+                    ];
+                }
+            }
 
-        // If tracing enabled, add http integrations
-        if (options.tracing?.enabled) {
-            options.init.integrations = [
-                ...options.init.integrations,
-                new Sentry.Integrations.Http({ tracing: true }),
-                new SentryTracing.Integrations.Express(),
-            ];
+            Sentry.init(options.init);
         }
-
-        Sentry.init(options.init);
     }
 
     async onApplicationShutdown() {
