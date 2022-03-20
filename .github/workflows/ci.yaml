@@ -34,5 +34,5 @@ jobs:
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/kmu-dev/cache:conote
+          cache-to: type=registry,ref=ghcr.io/kmu-dev/cache:conote,mode=max
