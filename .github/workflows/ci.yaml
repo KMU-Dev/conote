@@ -36,3 +36,32 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-from: type=registry,ref=ghcr.io/kmu-dev/cache:conote
           cache-to: type=registry,ref=ghcr.io/kmu-dev/cache:conote,mode=max
+  sentry-release:
+    needs: docker-image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          cache-dependency-path: api/yarn.lock
+      - name: Install dependencies
+        run: yarn install
+      - name: Generate prisma client
+        run: yarn prisma generate
+      - name: Build
+        run: yarn build
+      - name: Create sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          finalize: false
+          sourcemaps: './api/dist'
