@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnApplicationShutdown, Optional } from '@nestjs/common';
 import * as SentryIntegrations from '@sentry/integrations';
 import * as Sentry from '@sentry/node';
 import * as SentryTracing from '@sentry/tracing';
@@ -9,7 +9,7 @@ import { SentryModuleOptions } from './sentry.interfaces';
 export class SentryService implements OnApplicationShutdown {
     private readonly logger = new Logger(SentryService.name);
 
-    constructor(@Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {
+    constructor(@Optional() @Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {
         if (options?.enabled) {
             if (options.init) {
                 // rewrite frames to get sourcemap

@@ -5,6 +5,7 @@ import {
     Module,
     ModuleMetadata,
     NestModule,
+    Optional,
     Provider,
 } from '@nestjs/common';
 import { ModuleAsyncOptions } from '../utils/module/module.intrefaces';
@@ -42,7 +43,7 @@ export class SentryModule implements NestModule {
         };
     }
 
-    constructor(@Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {}
+    constructor(@Optional() @Inject(SENTRY_OPTIONS) private readonly options?: SentryModuleOptions) {}
 
     configure(consumer: MiddlewareConsumer) {
         if (this.options?.enabled) {
