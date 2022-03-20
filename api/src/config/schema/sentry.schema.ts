@@ -10,7 +10,6 @@ import {
     IsObject,
     IsOptional,
     IsPositive,
-    IsSemVer,
     IsString,
     IsUrl,
     Max,
@@ -44,7 +43,6 @@ export class SentryInitConfig
     debug?: boolean;
 
     @IsString()
-    @IsSemVer()
     @IsOptional()
     release?: string;
 

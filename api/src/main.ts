@@ -19,4 +19,8 @@ async function bootstrap() {
 
     await app.listen(8080);
 }
+
+// Get app root path
+global.__rootdir__ = __dirname || process.cwd();
+
 bootstrap();
