@@ -49,6 +49,8 @@ jobs:
         uses: actions/setup-node@v2
       - name: Install dependencies
         run: yarn install
+      - name: Generate prisma client
+        run: yarn prisma generate
       - name: Build
         run: yarn build
       - name: Create sentry release
@@ -59,4 +61,4 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           finalize: false
-          sourcemaps: './dist'
+          sourcemaps: './api/dist'
