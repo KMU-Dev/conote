@@ -50,8 +50,10 @@ export class SentryModule implements NestModule {
             // configure request handler if enabled
             consumer.apply(SentryRequestMiddleware).forRoutes('*');
 
-            // configure tracing handler if tracing enabled
-            if (this.options.tracing?.enabled) consumer.apply(SentryTracingMiddleware).forRoutes('*');
+            // configure tracing handler if tracing options is set
+            if (this.options.init?.tracesSampleRate || this.options.init?.tracesSampler) {
+                consumer.apply(SentryTracingMiddleware).forRoutes('*');
+            }
         }
     }
 

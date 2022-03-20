@@ -1,10 +1,10 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Handlers } from '@sentry/node';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class SentryTracingMiddleware implements NestMiddleware {
     use(req: any, res: any, next: (error?: any) => void) {
-        const tracingHandler = Handlers.tracingHandler();
+        const tracingHandler = Sentry.Handlers.tracingHandler();
         tracingHandler(req, res, next);
     }
 }

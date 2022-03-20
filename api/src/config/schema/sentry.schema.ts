@@ -4,7 +4,6 @@ import { Type } from 'class-transformer';
 import {
     IsArray,
     IsBoolean,
-    IsDefined,
     IsIn,
     IsInt,
     IsObject,
@@ -152,12 +151,6 @@ export class SentryRequestHandlerConfig {
     flushTimeout?: number;
 }
 
-export class SentryTracingConfig {
-    @IsBoolean()
-    @IsDefined()
-    enabled: boolean;
-}
-
 export class SentryConfig {
     @IsBoolean()
     @IsOptional()
@@ -172,9 +165,4 @@ export class SentryConfig {
     @IsOptional()
     @Type(() => SentryRequestHandlerConfig)
     requestHandler?: SentryRequestHandlerConfig;
-
-    @ValidateNested()
-    @IsOptional()
-    @Type(() => SentryTracingConfig)
-    tracing: SentryTracingConfig;
 }
