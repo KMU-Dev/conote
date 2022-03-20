@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import * as glob from 'glob';
 import * as yaml from 'js-yaml';
 import { InvalidConfigError } from './config.error';
-import { AppConfig } from './schema';
+import { AppConfig } from './schema/app.schema';
 
 const defaultConfig = resolve('config/default.yaml');
 
