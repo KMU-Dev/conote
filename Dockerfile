@@ -20,7 +20,7 @@ FROM node:lts-alpine AS apiBuilder
 
 WORKDIR /app
 
-COPY api/package.json api/yarn.lock api/tsconfig.json api/nest-cli.json api/tsconfig.build.json api/prisma/ /app/
+COPY api/package.json api/yarn.lock api/tsconfig.json api/nest-cli.json api/tsconfig.build.json api/tsconfig.production.json api/prisma/ /app/
 
 RUN yarn --version && yarn
 
