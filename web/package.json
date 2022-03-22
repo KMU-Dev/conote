@@ -9,9 +9,9 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.8",
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.6.0",
+    "@apollo/client": "^3.5.10",
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
     "@hookform/resolvers": "^2.8.8",
     "@lifeomic/axios-fetch": "^3.0.0",
     "@mui/icons-material": "^5.5.1",

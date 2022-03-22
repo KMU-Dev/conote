@@ -1,0 +1,1 @@
+export const SENTRY_OPTIONS = 'SENTRY_OPTIONS';

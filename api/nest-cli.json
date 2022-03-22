@@ -9,7 +9,7 @@
       }
     }],
     "assets": [
-      {"include": "../config/*.yaml", "outDir": "./dist/config"}
+      {"include": "../config/*.yaml", "outDir": "./dist/config" }
     ]
   }
 }
