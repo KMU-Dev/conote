@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
-    "@emotion/react": "^11.8.1",
+    "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.6.0",
     "@hookform/resolvers": "^2.8.8",
     "@lifeomic/axios-fetch": "^3.0.0",
