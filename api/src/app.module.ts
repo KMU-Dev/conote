@@ -12,6 +12,7 @@ import configuration from './config/configuration';
 import { GraphQLUploadConfig } from './config/schema';
 import { InitModule } from './init/init.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SentryModule } from './sentry/sentry.module';
 import { UiModule } from './ui/ui.module';
 import { UserModule } from './user/user.module';
 import { VideoModule } from './video/video.module';
@@ -22,16 +23,21 @@ import { VideoModule } from './video/video.module';
             isGlobal: true,
             load: [configuration],
         }),
-        ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'client'),
-            exclude: ['/graphql'],
-            serveStaticOptions: {
-                immutable: true,
-                maxAge: '7d',
-                setHeaders: (res, path) => {
-                    if (path.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+        ServeStaticModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => [
+                {
+                    rootPath: join(__dirname, '..', 'client'),
+                    exclude: configService.get('graphql.playground') ? ['/graphql'] : [],
+                    serveStaticOptions: {
+                        immutable: true,
+                        maxAge: '7d',
+                        setHeaders: (res, path) => {
+                            if (path.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+                        },
+                    },
                 },
-            },
+            ],
         }),
         GraphQLModule.forRootAsync({
             inject: [ConfigService],
@@ -44,6 +50,10 @@ import { VideoModule } from './video/video.module';
                 },
                 context: ({ req, res }) => ({ req, res }),
             }),
+        }),
+        SentryModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => configService.get('sentry'),
         }),
         PrismaModule,
         AuthModule,
