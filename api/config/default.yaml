@@ -1,3 +1,18 @@
+auth:
+  refreshToken:
+    expiresIn: 90d
+    secure: true
 graphql:
   debug: false
   playground: false
+  upload:
+    maxFileSize: 2000000000 # 2GB
+sentry:
+  init:
+    normalizeDepth: 5
+  requestHandler:
+    transaction: false
+    user:
+      - id
+      - studentId
+      - email
