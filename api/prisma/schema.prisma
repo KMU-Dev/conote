@@ -113,6 +113,7 @@ model VodcfsVideo {
   streamingId   String?
   resolutions   VodcfsVideoResolution[]
   indexes       VideoIndex[]
+  errorReason   VodcfsVideoErrorReason?
   status        VodcfsVideoStatus         @default(CONVERTING)
   video         Video                     @relation(fields: [videoId], references: [id])
   videoId       Int
@@ -127,9 +128,14 @@ enum VodcfsVideoResolution {
   SRC
 }
 
+enum VodcfsVideoErrorReason {
+  MALFORMED_EVERCAM
+}
+
 enum VodcfsVideoStatus {
   CONVERTING
   CONVERTED
+  ERROR
 }
 
 model VideoIndex {

@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { VodcfsVideoResolution } from '@prisma/client';
+import { VodcfsVideoErrorReason, VodcfsVideoResolution, VodcfsVideoStatus } from '@prisma/client';
 import { load } from 'cheerio';
 import FormData from 'form-data';
 import { FileUpload } from 'graphql-upload';
@@ -25,6 +25,7 @@ export class VodcfsVideoService {
     }
 
     async uploadVideo(videoId: number, title: string, file: Promise<FileUpload>, sessionId: string) {
+        // build upload video request
         const session = await this.vodcfsSessionService.findSessionById(sessionId);
         const cookie = this.vodcfsSessionService.buildCookieFrom(session);
 
@@ -39,11 +40,22 @@ export class VodcfsVideoService {
             headers: { ...formData.getHeaders(), ...{ cookie } },
             maxBodyLength: 2000000000,
         });
-        const uploadedFile = (response.data as VodcfsUploadVideoResponse).files[0];
+        let data = response.data;
+        let errorReason: VodcfsVideoErrorReason;
+
+        // handle malformed Evercam upload
+        if (typeof data === 'string' && data.startsWith('generate FSP file fail!')) {
+            data = JSON.parse(data.substring(23));
+            errorReason = VodcfsVideoErrorReason.MALFORMED_EVERCAM;
+        }
+
+        // handle response and parse video information
+        const uploadedFile = (data as VodcfsUploadVideoResponse).files[0];
         const vodcfsVideoId = +uploadedFile.url.split('/')[2];
 
         const videoInfo = await this.parseVideoInfo(vodcfsVideoId, cookie);
 
+        // save vodcfs video information to database
         const vodcfsVideo = await this.prisma.vodcfsVideo.create({
             data: {
                 id: vodcfsVideoId,
@@ -51,8 +63,13 @@ export class VodcfsVideoService {
                 size: uploadedFile.size,
                 video: { connect: { id: videoId } },
                 ...videoInfo,
+                ...(errorReason && {
+                    status: VodcfsVideoStatus.ERROR,
+                    errorReason,
+                }),
             },
         });
+
         return vodcfsVideo;
     }
 
@@ -83,7 +100,12 @@ export class VodcfsVideoService {
 
         // parse duration
         const fsHint = $('#titlePanel > .fs-hint').text();
-        const splitDuration = fsHint.split(',')[0].split(':');
+        const rawDuration = fsHint.split(',')[0];
+
+        // handle malformed video (cannot get duraion information)
+        if (rawDuration.length === 0) return { duration: undefined, streamingId: undefined, resolutions: [] };
+
+        const splitDuration = rawDuration.split(':');
         const hour = splitDuration.length > 2 ? +splitDuration[0] : 0;
         const minute = +splitDuration[splitDuration.length - 2];
         const second = +splitDuration[splitDuration.length - 1];
