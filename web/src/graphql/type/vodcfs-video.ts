@@ -8,18 +8,24 @@ export interface VodcfsVideo {
     streamingId?: string;
     resolutions: VodcfsVideoResolution[];
     indexes: VideoIndex[];
+    errorReason?: VodcfsVideoErrorReason;
     status: VodcfsVideoStatus;
     createdAt: number;
 }
 
-enum VodcfsVideoResolution {
+export enum VodcfsVideoResolution {
     SD = 'SD',
     HD = 'HD',
     FHD = 'FHD',
     SRC = 'SRC',
 }
 
-enum VodcfsVideoStatus {
+export enum VodcfsVideoErrorReason {
+    MALFORMED_EVERCAM = 'MALFORMED_EVERCAM',
+}
+
+export enum VodcfsVideoStatus {
     CONVERTING = 'CONVERTING',
     CONVERTED = 'CONVERTED',
+    ERROR = 'ERROR',
 }

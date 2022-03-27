@@ -25,6 +25,7 @@ import { AUTHENTICATE_VODCFS_SESSION, CREATE_VODCFS_SESSION } from '../../graphq
 import { GraphqlDto } from '../../graphql/type/type';
 import { Video } from '../../graphql/type/video';
 import { VodcfsSession, VodcfsSessionErrorReason, VodcfsSessionStatus } from '../../graphql/type/vodcfs-session';
+import { VodcfsVideoErrorReason, VodcfsVideoStatus } from '../../graphql/type/vodcfs-video';
 import { humanFileSize } from '../../utils/file';
 import FileInputContent from './FileInputContent';
 import { UploadVideoForm } from './UploadVideoForm';
@@ -140,13 +141,23 @@ export default function VideoUpload() {
                 },
                 context: { fetchOptions: { onUploadProgress: handleProgress } },
             });
-            if (uploadResponse.data?.uploadVideo.vodcfsVideo?.id) {
+
+            
+            const vodcfsVideo = uploadResponse.data?.uploadVideo.vodcfsVideo;
+            if (vodcfsVideo?.status === VodcfsVideoStatus.CONVERTING && vodcfsVideo?.id) {
                 enqueueNotification({
                     title: '成功上傳影片',
                     content: '影片上傳後仍須轉檔，請至高醫數理雲確認進度。',
                     variant: 'success',
                 });
                 reset();
+            } else if (vodcfsVideo?.status === VodcfsVideoStatus.ERROR && vodcfsVideo.errorReason === VodcfsVideoErrorReason.MALFORMED_EVERCAM) {
+                // handle MALFORMED_EVERCAM error
+                enqueueNotification({
+                    title: 'Evercam 格式錯誤',
+                    content: '請確認錄影是否有正確存檔，並再次上傳。',
+                    variant: 'error',
+                });
             } else {
                 enqueueNotification({
                     title: '無法上傳影片',
