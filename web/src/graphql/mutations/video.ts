@@ -6,6 +6,8 @@ export const UPLOAD_VIDEO = gql`
             id
             vodcfsVideo {
                 id
+                status
+                errorReason
             }
         }
     }
