@@ -12,7 +12,7 @@ export default function PrivacyPolicies() {
                     <PoliciesCardTitle>隱私權政策</PoliciesCardTitle>
                     <PoliciesCardSubtitle>
                         生效日： 
-                        <strong>2022年2月21日</strong>
+                        <strong>2022年4月6日</strong>
                     </PoliciesCardSubtitle>
                 </PoliciesCardHeader>
                 <PoliciesCardContent>
@@ -28,7 +28,8 @@ export default function PrivacyPolicies() {
                         <ul>
                             <li>當您造訪本網站或使用本網站所提供之功能服務時，我們將視該服務功能性質，請您提供必要的個人資料，並在該特定目的範圍內處理及利用您的個人資料；非經您書面同意，本網站不會將個人資料用於其他用途。</li>
                             <li>本網站在您使用服務信箱、問卷調查等互動性功能時，會保留您所提供的姓名、電子郵件地址、聯絡方式及使用時間等。</li>
-                            <li>於一般瀏覽時，伺服器會自行記錄相關行徑，包括您使用連線設備的 IP 位址、使用時間、使用的瀏覽器、瀏覽及點選資料記錄等，做為我們增進網站服務的參考依據，此記錄為內部應用，決不對外公佈。</li>
+                            <li>於一般瀏覽時，伺服器會自行記錄相關行徑，包括您使用連線設備的 IP 位址、使用時間、使用的瀏覽器、瀏覽及點選資料記錄等，做為我們增進網站服務的參考依據，此記錄僅為分析用途向 <Link underline="hover" href="https://marketingplatform.google.com/about/analytics/" target="_blank" rel="noopener noreferrer">Google Analytics</Link> 提供，決不對其餘第三方單位公佈。</li>
+                            <li>瀏覽網站時如出現錯誤，伺服器亦會記錄相關行徑，包括您使用連線設備的 IP 位址、使用時間、使用的瀏覽器、瀏覽及點選資料記錄等，做為修正錯誤的依據，此記錄僅為除錯用途向 <Link underline="hover" href="https://sentry.io" target="_blank" rel="noopener noreferrer">Sentry</Link> 提供，決不對其餘第三方單位公佈。</li>
                             <li>為提供精確的服務，我們會將收集的問卷調查內容進行統計與分析，分析結果之統計數據或說明文字呈現，除供內部研究外，我們會視需要公佈統計數據及說明文字，但不涉及特定個人之資料。</li>
                             <li>您可以隨時向我們提出請求，以更正或刪除本網站所蒐集您錯誤或不完整的個人資料，請見最下方聯繫管道。</li>
                         </ul>
@@ -41,7 +42,7 @@ export default function PrivacyPolicies() {
                         <p>本網站的網頁提供其他網站的網路連結，您也可經由本網站所提供的連結，點選進入其他網站。但該連結網站不適用本網站的隱私權保護政策，您必須參考該連結網站中的隱私權保護政策。</p>
                         <h6>五、與第三人共用個人資料之政策</h6>
                         <p style={{ marginBottom: '16px' }}>
-                            本網站絕不會提供、交換、出租或出售任何您的個人資料給其他個人、團體、私人企業或公務機關，但有法律依據或合約義務者，不在此限。
+                            本網站除了分析用圖向 Google Analytics 分享去識別化的互動資料外，絕不會提供、交換、出租或出售任何您的個人資料給其他個人、團體、私人企業或公務機關，但有法律依據或合約義務者，不在此限。
                             <br /><br />
                             前項但書之情形包括不限於：
                         </p>
