@@ -38,7 +38,11 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      gtag('config', 'G-NNFKVH47K9');
+      <% if (process.env.NODE_ENV === 'production') { %>
+        gtag('config', 'G-NNFKVH47K9');
+      <% } else { %>
+        gtag('config', 'G-NNFKVH47K9', { 'debug_mode': true });
+      <% } %>
     </script>
     <title>Conote</title>
   </head>
