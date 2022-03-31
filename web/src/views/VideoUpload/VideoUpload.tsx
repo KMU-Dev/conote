@@ -51,7 +51,7 @@ export default function VideoUpload() {
     const [authenticateVodcfsSession] = useMutation<
         GraphqlDto<'authenticateVodcfsSession', Pick<VodcfsSession, 'id' | 'status' | 'errorReason'>>
     >(AUTHENTICATE_VODCFS_SESSION);
-    const [uploadVideo] = useMutation<GraphqlDto<'uploadVideo', Pick<Video, 'id' | 'vodcfsVideo'>>>(UPLOAD_VIDEO);
+    const [uploadVideo] = useMutation<GraphqlDto<'uploadVideo', Pick<Video, 'id' | 'title' | 'vodcfsVideo'>>>(UPLOAD_VIDEO);
 
     useEffect(() => {
         createVodcfsSession();
@@ -142,8 +142,8 @@ export default function VideoUpload() {
                 context: { fetchOptions: { onUploadProgress: handleProgress } },
             });
 
-            
-            const vodcfsVideo = uploadResponse.data?.uploadVideo.vodcfsVideo;
+            const video = uploadResponse.data?.uploadVideo;
+            const vodcfsVideo = video.vodcfsVideo;
             if (vodcfsVideo?.status === VodcfsVideoStatus.CONVERTING && vodcfsVideo?.id) {
                 enqueueNotification({
                     title: '成功上傳影片',
@@ -151,6 +151,13 @@ export default function VideoUpload() {
                     variant: 'success',
                 });
                 reset();
+
+                // Google Analytics
+                gtag('event', 'upload', {
+                    'event_category': 'video',
+                    'event_label': video.title,
+                    'value': video.id,
+                });
             } else if (vodcfsVideo?.status === VodcfsVideoStatus.ERROR && vodcfsVideo.errorReason === VodcfsVideoErrorReason.MALFORMED_EVERCAM) {
                 // handle MALFORMED_EVERCAM error
                 enqueueNotification({
