@@ -2,6 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Postgresql values
+postgresql:
+  primary:
+    extraEnvVars:
+      - name: TZ
+        value: "Asia/Taipei"
+
 replicaCount: 1
 
 image:
