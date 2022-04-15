@@ -1,3 +1,4 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { RouteInfo } from '@nestjs/common/interfaces';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -39,7 +40,8 @@ import { VideoModule } from './video/video.module';
                 },
             ],
         }),
-        GraphQLModule.forRootAsync({
+        GraphQLModule.forRootAsync<ApolloDriverConfig>({
+            driver: ApolloDriver,
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({
                 debug: configService.get('graphql.debug'),
