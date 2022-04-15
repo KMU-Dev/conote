@@ -38,7 +38,7 @@ export class SentryInterceptor implements NestInterceptor {
         }
 
         const client = Sentry.getCurrentHub().getClient<Sentry.NodeClient>();
-        if (client && isAutoSessionTrackingEnabled(client)) {
+        if (client && isAutoSessionTrackingEnabled(client as any)) {
             // Check if the `SessionFlusher` is instantiated on the client to go into this branch that marks the
             // `requestSession.status` as `Crashed`, and this check is necessary because the `SessionFlusher` is only
             // instantiated when the the`requestHandler` middleware is initialised, which indicates that we should be
