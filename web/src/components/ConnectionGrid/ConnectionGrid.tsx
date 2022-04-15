@@ -50,7 +50,7 @@ export default function ConnectionGrid<TData, TOrderField extends string>(props:
     }), [search, sortModel, sortModelToOrder]);
 
     // custom refetch function
-    const customRefetch = useCallback(async (variables?) => {
+    const customRefetch = useCallback(async (variables?: ConnectionArgs<TOrderField>) => {
         const args: ConnectionArgs<TOrderField> = variables ?
             { ...baseVariable, ...variables } : { ...baseVariable, ...{ first: pageSize } };
         setPage(0);

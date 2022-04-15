@@ -9,9 +9,11 @@ export default function PageRoute(props: PageRouteProps) {
 
     return (
         <Route {...props} component={undefined}>
-            {titleElement}
-            {component ? createElement(component) : ''}
-            {children}
+            <>
+                {titleElement}
+                {component ? createElement(component) : ''}
+                {children}
+            </>
         </Route>
     );
 }
