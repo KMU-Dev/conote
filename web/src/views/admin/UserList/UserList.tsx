@@ -106,7 +106,7 @@ export default function UserList() {
         </>
     );
 
-    const handleRefetchReady = useCallback((newRefetch) => {
+    const handleRefetchReady = useCallback((newRefetch: RefetchFunction<UserOrderField>) => {
         refetch.current = newRefetch;
     }, []);
 
@@ -139,7 +139,7 @@ export default function UserList() {
         return true;
     }, [deleteMultipleUsers, enqueueNotification]);
 
-    const handleCellEditCommit = useCallback(async (params: GridCellEditCommitParams, _event, details: GridCallbackDetails) => {
+    const handleCellEditCommit = useCallback(async (params: GridCellEditCommitParams, _event: any, details: GridCallbackDetails) => {
         try {
             const response = await updateUser({
                 variables: { input: { id: params.id, [params.field]: params.value } },
