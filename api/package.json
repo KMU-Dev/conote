@@ -38,7 +38,7 @@
     "@sentry/integrations": "^6.19.6",
     "@sentry/node": "^6.19.6",
     "@sentry/tracing": "^6.19.6",
-    "apollo-server-express": "^3.6.4",
+    "apollo-server-express": "^3.6.7",
     "app-root-path": "^3.0.0",
     "cheerio": "^1.0.0-rc.10",
     "class-transformer": "^0.5.1",
