@@ -13,7 +13,7 @@ import {
     useTheme
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AppLayout from '../../components/AppLayout/AppLayout';
 import FileInput from '../../components/FileInput/FileInput';
@@ -35,6 +35,7 @@ import VideoFiles from './video_files.svg';
 export default function VideoUpload() {
     const [videoError, setVideoError] = useState('');
     const [uploadProgress, setUploadProgress] = useState<number>(undefined);
+    const didEffectRun = useRef(false);
 
     const theme = useTheme();
     const matchSmUp = useMediaQuery(theme.breakpoints.up('sm'));
@@ -54,7 +55,11 @@ export default function VideoUpload() {
     const [uploadVideo] = useMutation<GraphqlDto<'uploadVideo', Pick<Video, 'id' | 'title' | 'vodcfsVideo'>>>(UPLOAD_VIDEO);
 
     useEffect(() => {
-        createVodcfsSession();
+        if (didEffectRun.current === false) {
+            didEffectRun.current = true;
+
+            createVodcfsSession();
+        }
     }, [createVodcfsSession]);
 
     const btnAdditionalProps = matchSmUp ? { size: 'large' } as Partial<ButtonTypeMap> : undefined;
