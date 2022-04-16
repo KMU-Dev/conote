@@ -1,26 +1,22 @@
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
-    Box,
+    alpha, Box,
     Collapse,
     List,
     ListItem,
-    ListItemIcon,
-    ListItemText,
+    ListItemIcon, ListItemIconProps, ListItemText,
     ListSubheader,
     styled,
     SxProps,
     Theme,
-    useTheme,
-    ListItemIconProps,
-    alpha
+    useTheme
 } from "@mui/material";
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Fragment, useState } from "react";
-import { useCallback } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { isMatch } from "../../utils/routes";
-import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header";
 import { csx } from "../../utils/style";
+import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header";
 
 
 const listItemSx: SxProps<Theme> = {
@@ -87,13 +83,13 @@ export default function NestedList(props: NestedListProps) {
                         bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
                     },
                 },
-                isMatch(item.href, item.exact) && listItemMatchSx,
+                isMatch(item.href) && listItemMatchSx,
             )}
         >
             <ListItemText
                 primary={item.name}
                 primaryTypographyProps={{
-                    sx: csx(listItemTextSx, isMatch(item.href, item.exact) !== null && listItemTextMatchSx),
+                    sx: csx(listItemTextSx, isMatch(item.href) !== null && listItemTextMatchSx),
                 }}
             />
         </ListItem>
@@ -124,13 +120,13 @@ export default function NestedList(props: NestedListProps) {
                 <ListItem
                     component={Link}
                     to={item.href}
-                    sx={csx(listItemSx, isMatch(item.href, item.exact) !== null && listItemMatchSx)}
+                    sx={csx(listItemSx, isMatch(item.href) !== null && listItemMatchSx)}
                 >
                     <StyledListItemIcon>{item.icon}</StyledListItemIcon>
                     <ListItemText
                         primary={item.name}
                         primaryTypographyProps={{
-                            sx: csx(listItemTextSx, isMatch(item.href, item.exact) !== null && listItemTextMatchSx),
+                            sx: csx(listItemTextSx, isMatch(item.href) !== null && listItemTextMatchSx),
                         }}
                     />
                 </ListItem>

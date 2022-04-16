@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { navigate } from "../../components/Router";
 import routes from '../../constant/routes.json';
 import { getAccessTokenFromCahce } from "../../utils/auth";
-import { history } from "../../utils/history";
 import { client } from "../client";
 import { REFRESH_TOKEN } from "../mutations/auth";
 import { AuthPaylaod } from "../type/AuthPayload";
@@ -29,7 +29,7 @@ export const authLink = setContext(async (operation) => {
             accessToken = await refreshAccessToken();
         } catch (e) {
             // Cannot migrate to navigate since useNavigate() is a react hook
-            if (operation.operationName !== 'UIStatus') history.push(routes.LOGIN);
+            if (operation.operationName !== 'UIStatus') navigate(routes.LOGIN);
         }
     }
 

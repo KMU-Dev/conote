@@ -5,7 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
 import { MouseEvent, useMemo, useRef, useState } from "react";
-import { Outlet, useNavigate } from 'react-router-dom-v5-compat';
+import { Outlet, useNavigate } from 'react-router-dom';
 import routes from '../../constant/routes.json';
 import { client } from '../../graphql/client';
 import { LOGOUT } from '../../graphql/mutations/auth';
@@ -50,7 +50,7 @@ export default function Header() {
                             color: 'text.primary',
                         },
                     },
-                    isMatch(def.href, def.exact) !== null && {
+                    isMatch(def.href) !== null && {
                         borderBottom: 2,
                         borderColor: 'primary.main',
                         color: 'text.primary'

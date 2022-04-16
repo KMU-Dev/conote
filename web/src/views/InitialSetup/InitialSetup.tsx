@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { Box, Button, Container, Step, StepLabel, Stepper, Typography } from "@mui/material";
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { useLocation, useNavigate } from "react-router-dom";
 import routes from '../../constant/routes.json';
 import { UI_STATUS } from "../../graphql/queries/uiStatus";
 import { OAuth2User } from "../../graphql/type/OAuth2User";

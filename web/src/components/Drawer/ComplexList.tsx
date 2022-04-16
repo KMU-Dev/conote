@@ -1,3 +1,5 @@
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
     alpha,
     Collapse,
@@ -8,16 +10,13 @@ import {
     ListSubheader,
     SxProps,
     Theme,
-    useTheme,
+    useTheme
 } from "@mui/material";
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Fragment, useState } from "react";
-import { useCallback } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { isMatch } from "../../utils/routes";
-import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header/MenuDefinition";
 import { csx } from "../../utils/style";
+import { MenuCollapseItemDefinition, MenuItemDefinition, MenuSection } from "../Header/MenuDefinition";
 
 
 const listItemSx: SxProps<Theme> = {
@@ -61,12 +60,12 @@ export default function ComplexList(props: ComplexListProps) {
                     color: (theme) => theme.palette.grey[700],
                     borderRadius: 16,
                 },
-                isMatch(item.href, item.exact) !== null && listItemMatchSx,
+                isMatch(item.href) !== null && listItemMatchSx,
             )}
         >
             <ListItemText
                 primary={item.name}
-                sx={isMatch(item.href, item.exact) !== null && listItemTextMatchSx}
+                sx={isMatch(item.href) !== null && listItemTextMatchSx}
             />
         </ListItem>
     )), []);
@@ -92,12 +91,12 @@ export default function ComplexList(props: ComplexListProps) {
                 <ListItem
                     component={Link}
                     to={item.href}
-                    sx={csx(listItemSx, isMatch(item.href, item.exact) !== null && listItemMatchSx)}
+                    sx={csx(listItemSx, isMatch(item.href) !== null && listItemMatchSx)}
                 >
                     {item.icon ? <ListItemIcon>{item.icon}</ListItemIcon> : ''}
                     <ListItemText
                         primary={item.name}
-                        sx={isMatch(item.href, item.exact) !== null && listItemTextMatchSx}
+                        sx={isMatch(item.href) !== null && listItemTextMatchSx}
                     />
                 </ListItem>
             }

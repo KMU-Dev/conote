@@ -64,7 +64,7 @@ export default function AccountDropdown(props: AccountDropdownProps) {
     )
 }
 
-export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href' | 'exact'> {
+export interface AccountMenuDefinition extends PartialBy<MenuDefinition, 'href'> {
     hidden?: boolean;
 }
 

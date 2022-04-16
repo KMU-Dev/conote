@@ -1,6 +1,6 @@
 import { Box, Hidden } from '@mui/material';
 import { useMemo } from 'react';
-import { Outlet } from 'react-router-dom-v5-compat';
+import { Outlet } from 'react-router-dom';
 import { getHeaderDef } from '../../components/Header';
 import AdminMenu from './AdminMenu';
 

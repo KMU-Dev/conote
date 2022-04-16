@@ -1,6 +1,6 @@
 import { Box, SxProps, Theme, Typography } from "@mui/material";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom-v5-compat";
+import { useNavigate } from "react-router-dom";
 import routes from "../../constant/routes.json";
 import LaunchingImage from "./launching.svg";
 import { StepContentProps } from "./StepContentProps";

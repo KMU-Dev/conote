@@ -1,4 +1,4 @@
-import { Route, RouteProps } from "react-router-dom-v5-compat";
+import { Route, RouteProps } from "react-router-dom";
 import { getTitleElement } from "../../utils/title";
 
 export default function PageRoute(props: PageRouteProps) {

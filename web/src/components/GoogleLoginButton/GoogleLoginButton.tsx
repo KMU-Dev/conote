@@ -1,6 +1,6 @@
 import { Box, Button, ButtonProps } from "@mui/material";
 import { useCallback, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import { useLocation, useNavigate } from "react-router-dom";
 import oauth2 from "../../constant/oauth2.json";
 import { generateAuthUrl } from "../../utils/oauth2/google";
 import { ReactComponent as Google } from './google.svg';

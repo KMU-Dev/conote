@@ -2,8 +2,7 @@ import { ApolloError, gql, useApolloClient, useMutation, useQuery } from '@apoll
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { Box, Card, CircularProgress, Container, Hidden, Link, SxProps, Theme, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
 import { useNotification } from '../../components/Notification';
 import routes from '../../constant/routes.json';

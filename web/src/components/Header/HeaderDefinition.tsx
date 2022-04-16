@@ -19,16 +19,15 @@ export interface HeaderDefinition {
 
 export const getHeaderDef = (uiStatus?: UIStatus): HeaderDefinition => ({
     navigation: [
-        { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />, exact: true  },
-        { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon />, exact: false },
+        { name: '總覽', href: routes.DASHBOARD, icon: <DashboardIcon />  },
+        { name: '影片', href: routes.VIDEO_UPLOAD, icon: <VideocamIcon /> },
     ],
     account: [
-        { name: '個人資料', href: routes.ACCOUNT, icon: <PersonOutlineIcon />, exact: true },
+        { name: '個人資料', href: routes.ACCOUNT, icon: <PersonOutlineIcon /> },
         {
             name: '系統設定',
             href: routes.ADMIN_ROOT,
             icon: <SettingsIcon />,
-            exact: true,
             hidden: uiStatus?.user?.role !== UserRole.ADMIN,
         },
         { name: '登出', icon: <ExitToAppIcon /> },
@@ -43,8 +42,8 @@ export const getHeaderDef = (uiStatus?: UIStatus): HeaderDefinition => ({
                     type: 'collapse',
                     icon: <PeopleIcon />,
                     items: [
-                        { name: '清單', type: 'collapse_item', href: routes.ADMIN_USER_LIST, exact: true },
-                        { name: '詳細資料', type: 'collapse_item', href: '/admin/users/{:id}', exact: true },
+                        { name: '清單', type: 'collapse_item', href: routes.ADMIN_USER_LIST },
+                        { name: '詳細資料', type: 'collapse_item', href: '/admin/users/:id' },
                     ],
                 },
                 {
@@ -52,8 +51,8 @@ export const getHeaderDef = (uiStatus?: UIStatus): HeaderDefinition => ({
                     type: 'collapse',
                     icon: <ClassIcon />,
                     items: [
-                        { name: '清單', type: 'collapse_item', href: '/admin/class', exact: true },
-                        { name: '詳細資料', type: 'collapse_item', href: '/admin/class/{id}', exact: true },
+                        { name: '清單', type: 'collapse_item', href: '/admin/class' },
+                        { name: '詳細資料', type: 'collapse_item', href: '/admin/class/:id' },
                     ],
                 }
             ],

@@ -4,7 +4,6 @@ export interface MenuDefinition {
     name: string;
     href: string;
     icon: ReactChild;
-    exact: boolean;
 }
 
 export interface MenuSection {
@@ -25,7 +24,6 @@ interface IMenuItemDefinition {
 interface ILinkMenuItemDefinition extends IMenuItemDefinition {
     type: 'collapse_item' | 'item';
     href: string;
-    exact: boolean;
 }
 export interface MenuDefaultItemDefinition extends ILinkMenuItemDefinition {
     type: 'item';
