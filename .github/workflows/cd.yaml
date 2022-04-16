@@ -54,3 +54,44 @@ jobs:
       - name: Push helm chart
         run: |
           helm push $(find conote-*.tgz) oci://ghcr.io/kmu-dev/helm
+  
+  sentry-release:
+    name: Sentry release
+    runs-on: ubuntu-latest
+    needs: publish-helm-chart
+    defaults:
+      run:
+        working-directory: api
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          cache-dependency-path: api/yarn.lock
+      - name: Install dependencies
+        run: yarn install
+      - name: Generate prisma client
+        run: yarn prisma generate
+      - name: Build
+        run: yarn build
+      - name: Generate Sentry release version
+        id: generate-version
+        uses: actions/github-script@v6
+        env:
+          VERSION: ${{ github.ref_name }}
+        with:
+          result-encoding: string
+          script: |
+            const { VERSION } = process.env;
+            return VERSION.startsWith('v') ? VERSION.substring(1) : VERSION;
+      - name: Create sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          version: ${{ steps.generate-version.outputs.result }}
+          sourcemaps: './api/dist'
