@@ -3,6 +3,7 @@ import { useMediaQuery, useTheme } from '@mui/material';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { useEffect } from 'react';
 import { Route, Router, Switch } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
@@ -64,37 +65,39 @@ function App() {
         <SnackbarProvider {...snackbarConfig}>
             <NotificationConfigurator />
             <Router history={history}>
-                <Switch>
-                    <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />
-                    <PageRoute exact path={routes.LOGIN} component={Login} title="登入" />
-                    <Header>
-                        <Switch>
-                            <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute
-                                exact
-                                path={routes.VIDEO_UPLOAD}
-                                component={VideoUpload}
-                                title="上傳影片"
-                            />
-                            <PageRoute exact path={routes.ACCOUNT} title="個人資料">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute exact path={routes.TERMS_OF_SERVICE} title="使用者服務條款">
-                                <TermsOfService />
-                            </PageRoute>
-                            <PageRoute exact path={routes.PRIVACY_POLICIES} title="隱私權政策">
-                                <PrivacyPolicies />
-                            </PageRoute>
-                            <Route path={routes.ADMIN_ROOT} component={Admin} />
-                            <Route path="*" component={NotFound} />
-                        </Switch>
-                    </Header>
-                </Switch>
+                <CompatRouter>
+                    <Switch>
+                        <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />
+                        <PageRoute exact path={routes.LOGIN} component={Login} title="登入" />
+                        <Header>
+                            <Switch>
+                                <PageRoute exact path={routes.HOME} title="首頁">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </PageRoute>
+                                <PageRoute exact path={routes.DASHBOARD} title="總覽">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </PageRoute>
+                                <PageRoute
+                                    exact
+                                    path={routes.VIDEO_UPLOAD}
+                                    component={VideoUpload}
+                                    title="上傳影片"
+                                />
+                                <PageRoute exact path={routes.ACCOUNT} title="個人資料">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </PageRoute>
+                                <PageRoute exact path={routes.TERMS_OF_SERVICE} title="使用者服務條款">
+                                    <TermsOfService />
+                                </PageRoute>
+                                <PageRoute exact path={routes.PRIVACY_POLICIES} title="隱私權政策">
+                                    <PrivacyPolicies />
+                                </PageRoute>
+                                <Route path={routes.ADMIN_ROOT} component={Admin} />
+                                <Route path="*" component={NotFound} />
+                            </Switch>
+                        </Header>
+                    </Switch>
+                </CompatRouter>
             </Router>
         </SnackbarProvider>
     );
