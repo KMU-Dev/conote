@@ -2,8 +2,8 @@ import { useQuery } from '@apollo/client';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { useEffect } from 'react';
-import { Route, Router, Switch } from 'react-router-dom';
-import { CompatRouter } from 'react-router-dom-v5-compat';
+import { Router, Switch } from 'react-router-dom';
+import { CompatRoute, CompatRouter } from 'react-router-dom-v5-compat';
 import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
 import PageRoute from './components/Page/PageRoute';
@@ -92,8 +92,8 @@ function App() {
                                 <PageRoute exact path={routes.PRIVACY_POLICIES} title="隱私權政策">
                                     <PrivacyPolicies />
                                 </PageRoute>
-                                <Route path={routes.ADMIN_ROOT} component={Admin} />
-                                <Route path="*" component={NotFound} />
+                                <CompatRoute path={routes.ADMIN_ROOT} component={Admin} />
+                                <CompatRoute path="*" component={NotFound} />
                             </Switch>
                         </Header>
                     </Switch>

@@ -1,5 +1,5 @@
 import { ComponentProps, createElement } from "react";
-import { Route } from "react-router-dom";
+import { CompatRoute } from "react-router-dom-v5-compat";
 import { getTitleElement } from "../../utils/title";
 
 export default function PageRoute(props: PageRouteProps) {
@@ -8,16 +8,16 @@ export default function PageRoute(props: PageRouteProps) {
     const titleElement = getTitleElement(title);
 
     return (
-        <Route {...props} component={undefined}>
+        <CompatRoute {...props} component={undefined}>
             <>
                 {titleElement}
                 {component ? createElement(component) : ''}
                 {children}
             </>
-        </Route>
+        </CompatRoute>
     );
 }
 
-interface PageRouteProps extends ComponentProps<typeof Route> {
+interface PageRouteProps extends ComponentProps<typeof CompatRoute> {
     title: string;
 }

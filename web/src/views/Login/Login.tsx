@@ -2,7 +2,8 @@ import { ApolloError, gql, useApolloClient, useMutation, useQuery } from '@apoll
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import { Box, Card, CircularProgress, Container, Hidden, Link, SxProps, Theme, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
 import { useNotification } from '../../components/Notification';
 import routes from '../../constant/routes.json';
@@ -21,7 +22,7 @@ const iconSx: SxProps<Theme> = {
 
 export default function Login() {
     const [realLoading, setRealLoading] = useState(false);
-    const history = useHistory();
+    const navigate = useNavigate();
     const { enqueueNotification } = useNotification();
 
     const client = useApolloClient();
@@ -40,8 +41,8 @@ export default function Login() {
     });
 
     useEffect(() => {
-        if (data && data.uiStatus.user) history.push(routes.HOME);
-    }, [data, history]);
+        if (data && data.uiStatus.user) navigate(routes.HOME);
+    }, [data, navigate]);
 
     useEffect(() => {
         if (loading) setRealLoading(loading);
@@ -59,7 +60,7 @@ export default function Login() {
                 await refetch();
                 await client.reFetchObservableQueries(true);
 
-                history.push(routes.HOME);
+                navigate(routes.HOME);
             }
         } catch (e) {
             if (e instanceof ApolloError) {

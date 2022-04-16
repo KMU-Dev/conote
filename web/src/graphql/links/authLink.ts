@@ -28,6 +28,7 @@ export const authLink = setContext(async (operation) => {
         try {
             accessToken = await refreshAccessToken();
         } catch (e) {
+            // Cannot migrate to navigate since useNavigate() is a react hook
             if (operation.operationName !== 'UIStatus') history.push(routes.LOGIN);
         }
     }

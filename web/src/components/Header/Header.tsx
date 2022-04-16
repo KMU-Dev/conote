@@ -5,13 +5,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
 import { MouseEvent, ReactNode, useMemo, useRef, useState } from "react";
+import { useNavigate } from 'react-router-dom-v5-compat';
 import routes from '../../constant/routes.json';
 import { client } from '../../graphql/client';
 import { LOGOUT } from '../../graphql/mutations/auth';
 import { UI_STATUS } from "../../graphql/queries/uiStatus";
 import { GraphqlDto } from '../../graphql/type/type';
 import { UIStatus } from "../../graphql/type/UIStatus";
-import { history } from '../../utils/history';
 import { isMatch, useRenderLink } from '../../utils/routes';
 import { Drawer } from '../Drawer';
 import ListItemLink from '../ListItemLink/ListItemLink';
@@ -20,6 +20,7 @@ import AccountDropdown, { AccountMenuDefinition } from './AccountDropdown';
 import { getHeaderDef, HeaderDefinition } from "./HeaderDefinition";
 
 export default function Header(props: HeaderProps) {
+    const navigate = useNavigate();
     const renderLink = useRenderLink(routes.HOME);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -63,7 +64,7 @@ export default function Header(props: HeaderProps) {
 
     const handleAccountBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
         if (data?.uiStatus?.user) setMenuAnchor(e.currentTarget);
-        else history.push(routes.LOGIN);
+        else navigate(routes.LOGIN);
     };
 
     const handleAccountMenuClick = async (def: AccountMenuDefinition) => {
@@ -73,7 +74,7 @@ export default function Header(props: HeaderProps) {
                 if (result.data.logout) {
                     window.localStorage.setItem('logout', `${Date.now()}`);
                     await client.resetStore();
-                    history.push(routes.LOGIN);
+                    navigate(routes.LOGIN);
                 } else {
                     enqueueNotification({
                         title: '無法登出',

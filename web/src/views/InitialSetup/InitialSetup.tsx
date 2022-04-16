@@ -1,37 +1,37 @@
-import { Container, Typography, Stepper, Step, StepLabel, Box, Button } from "@mui/material";
-import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
-import { createElement, useCallback, useEffect, useMemo } from "react";
-import { useState } from "react";
-import { StepDefinition } from "./StepDefinition";
-import Introduction from "./Introduction";
-import LinkGoogle, { LinkGoogleProps } from "./LinkGoogle";
-import CreateUser, { CreateUserProps } from "./CreateUser";
-import Finish from "./Finish";
-import { useHistory } from "react-router-dom";
-import { useLayoutEffect } from "react";
-import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { useQuery } from "@apollo/client";
+import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
+import { Box, Button, Container, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom-v5-compat";
+import routes from '../../constant/routes.json';
 import { UI_STATUS } from "../../graphql/queries/uiStatus";
+import { OAuth2User } from "../../graphql/type/OAuth2User";
 import { GraphqlDto } from "../../graphql/type/type";
 import { UIStatus } from "../../graphql/type/UIStatus";
-import routes from '../../constant/routes.json';
+import CreateUser, { CreateUserProps } from "./CreateUser";
+import Finish from "./Finish";
+import Introduction from "./Introduction";
+import LinkGoogle, { LinkGoogleProps } from "./LinkGoogle";
+import { StepDefinition } from "./StepDefinition";
 
 
 export default function InitialSetup() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [activeStep, setActiveStep] = useState(0);
     const [nextClicked, setNextClicked] = useState(-1);
     const [oauthUser, setOauthUser] = useState<OAuth2User | null>(null);
-    const history = useHistory();
 
     const { data } = useQuery<GraphqlDto<'uiStatus', UIStatus>>(UI_STATUS);
 
     useLayoutEffect(() => {
-        if (history.location.search) setActiveStep(1);
-    }, [history]);
+        if (location.search) setActiveStep(1);
+    }, [location]);
 
     useEffect(() => {
-        if (data && !data.uiStatus.initialSetup) history.push(routes.HOME);
-    }, [history, data]);
+        if (data && !data.uiStatus.initialSetup) navigate(routes.HOME);
+    }, [navigate, data]);
     
     const steps = useMemo((): StepDefinition<LinkGoogleProps & CreateUserProps>[] => [
         { title: '介紹', nextButton: '繼續', content: Introduction },
