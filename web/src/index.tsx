@@ -1,16 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import 'reflect-metadata';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import Root from './Root';
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root'));
+
+// Opt out StrictMode since @apollo/client doesn't support react v18
+/* root.render(
     <React.StrictMode>
         <Root />
     </React.StrictMode>,
-    document.getElementById('root')
-);
+); */
+root.render(<Root />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
