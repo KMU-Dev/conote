@@ -20,6 +20,8 @@
 - 使用嶄新的前端 ([React](https://reactjs.org/)) 和後端 ([NestJS](https://nestjs.com/)) 技術，並使用 [GraphQL](https://graphql.org/) 作為 API 通訊標準。
 - 使用者管理介面，輕鬆設定系統使用者
 - 上傳影片至高醫數理雲
+- 使用 [Google Analytics](https://marketingplatform.google.com/about/analytics/) 提供最先進的分析工具
+- 整合 [Sentry](https://sentry.io/) 回報應用程式錯誤資訊
 
 ## Bug 回報
 
