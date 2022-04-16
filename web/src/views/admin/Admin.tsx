@@ -1,11 +1,8 @@
 import { Box, Hidden } from '@mui/material';
 import { useMemo } from 'react';
-import { Switch } from 'react-router-dom';
+import { Outlet } from 'react-router-dom-v5-compat';
 import { getHeaderDef } from '../../components/Header';
-import PageRoute from '../../components/Page/PageRoute';
-import routes from '../../constant/routes.json';
 import AdminMenu from './AdminMenu';
-import UserList from './UserList/UserList';
 
 
 export default function Admin() {
@@ -17,9 +14,7 @@ export default function Admin() {
                 <AdminMenu menu={headerDef.admin} />
             </Hidden>
             <Box flexGrow={1} maxWidth={{ xs: 1, md: 'calc(100% - 260px)' }}>
-                <Switch>
-                    <PageRoute exact path={routes.ADMIN_USER_LIST} component={UserList} title="使用者清單" />
-                </Switch>
+                <Outlet />
             </Box>
         </Box>
     );

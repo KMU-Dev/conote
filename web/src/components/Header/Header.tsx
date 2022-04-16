@@ -4,8 +4,8 @@ import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
-import { MouseEvent, ReactNode, useMemo, useRef, useState } from "react";
-import { useNavigate } from 'react-router-dom-v5-compat';
+import { MouseEvent, useMemo, useRef, useState } from "react";
+import { Outlet, useNavigate } from 'react-router-dom-v5-compat';
 import routes from '../../constant/routes.json';
 import { client } from '../../graphql/client';
 import { LOGOUT } from '../../graphql/mutations/auth';
@@ -19,7 +19,7 @@ import { useNotification } from '../Notification';
 import AccountDropdown, { AccountMenuDefinition } from './AccountDropdown';
 import { getHeaderDef, HeaderDefinition } from "./HeaderDefinition";
 
-export default function Header(props: HeaderProps) {
+export default function Header() {
     const navigate = useNavigate();
     const renderLink = useRenderLink(routes.HOME);
 
@@ -156,7 +156,7 @@ export default function Header(props: HeaderProps) {
             </Toolbar>
             <Divider />
             <Box component="main" flexGrow={1} bgcolor='background.default'>
-                {props.children}
+                <Outlet />
             </Box>
             <AccountDropdown
                 id={accountDrowpdownId.current}
@@ -170,8 +170,4 @@ export default function Header(props: HeaderProps) {
             <Drawer open={drawerOpen} toggleDrawer={setDrawerOpen} menu={headerDef} />
         </Box>
     );
-}
-
-interface HeaderProps {
-    children: ReactNode;
 }
