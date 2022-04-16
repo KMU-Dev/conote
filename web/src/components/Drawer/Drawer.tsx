@@ -1,21 +1,18 @@
 import { alpha, Box, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { MenuDefinition } from "../Header/MenuDefinition";
 import { isMatch } from "../../utils/routes";
-import { useState } from "react";
-import { useRef } from "react";
-import { DrawerVariant } from "./types";
-import DrawerInfoPanel from "./DrawerInfoPanel";
-import { useEffect } from "react";
-import { useCallback } from "react";
 import { HeaderDefinition } from "../Header/HeaderDefinition";
+import { MenuDefinition } from "../Header/MenuDefinition";
 import NestedList from "../NestedList/NestedList";
+import DrawerInfoPanel from "./DrawerInfoPanel";
+import { DrawerVariant } from "./types";
 
 
 export default function Drawer(props: DrawerProps) {
     const { open, toggleDrawer, menu } = props;
 
-    const getVariant = useCallback(() => isMatch('/admin', false) ? 'admin' : 'default', []);
+    const getVariant = useCallback(() => isMatch('/admin/*') ? 'admin' : 'default', []);
     const [variant, setVariant] = useState<DrawerVariant>(getVariant());
     const location = useLocation();
     const goBackLink = useRef<HTMLAnchorElement | null>(null);
@@ -34,7 +31,7 @@ export default function Drawer(props: DrawerProps) {
             to={def.href}
             sx={[
                 { color: 'action.active' },
-                isMatch(def.href, def.exact) !== null && {
+                isMatch(def.href) !== null && {
                     color: 'primary.main',
                     bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
                 },

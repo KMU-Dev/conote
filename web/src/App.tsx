@@ -2,18 +2,19 @@ import { useQuery } from '@apollo/client';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { useEffect } from 'react';
-import { Route, Router, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Header } from './components/Header';
 import { NotificationConfigurator } from './components/Notification';
-import PageRoute from './components/Page/PageRoute';
+import Page from './components/Page/Page';
+import { navigate, RouterConfigurator } from './components/Router';
 import routes from './constant/routes.json';
 import { client } from './graphql/client';
 import { UI_STATUS } from './graphql/queries/uiStatus';
 import { GraphqlDto } from './graphql/type/type';
 import { UIStatus } from './graphql/type/UIStatus';
 import { getAccessTokenFromCahce } from './utils/auth';
-import { history } from './utils/history';
 import Admin from './views/admin/Admin';
+import UserList from './views/admin/UserList/UserList';
 import ComingSoon from './views/ComingSoon/ComingSoon';
 import InitialSetup from './views/InitialSetup/InitialSetup';
 import Login from './views/Login/Login';
@@ -32,10 +33,10 @@ function App() {
     const onUIStatusFetched = (data: GraphqlDto<'uiStatus', UIStatus>) => {
         const uiStatus = data.uiStatus;
         if (uiStatus.initialSetup) {
-            if (history.location.pathname !== routes.INITIAL_SETUP) history.push(routes.INITIAL_SETUP);
+            if (window.location.pathname !== routes.INITIAL_SETUP) navigate(routes.INITIAL_SETUP);
         } else if (!uiStatus.user) {
             if (!getAccessTokenFromCahce() && !loginExcluded.includes(window.location.pathname)) {
-                history.push(routes.LOGIN);
+                navigate(routes.LOGIN);
             }
         }
     }
@@ -47,9 +48,9 @@ function App() {
         window.addEventListener('storage', (e) => {
             if (e.key === 'logout') {
                 client.resetStore();
-                history.push(routes.LOGIN);
+                navigate(routes.LOGIN);
             }
-        })
+        });
     }, []);
 
     const snackbarConfig: Partial<SnackbarProviderProps> = {
@@ -63,39 +64,58 @@ function App() {
     return (
         <SnackbarProvider {...snackbarConfig}>
             <NotificationConfigurator />
-            <Router history={history}>
-                <Switch>
-                    <PageRoute exact path={routes.INITIAL_SETUP} component={InitialSetup} title="初始設定" />
-                    <PageRoute exact path={routes.LOGIN} component={Login} title="登入" />
-                    <Header>
-                        <Switch>
-                            <PageRoute exact path={routes.HOME} title="首頁">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute exact path={routes.DASHBOARD} title="總覽">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute
-                                exact
-                                path={routes.VIDEO_UPLOAD}
-                                component={VideoUpload}
-                                title="上傳影片"
+            <BrowserRouter>
+                <RouterConfigurator />
+                <Routes>
+                    <Route path={routes.INITIAL_SETUP} element={<Page title="初始設定" component={InitialSetup} />} />
+                    <Route path={routes.LOGIN} element={<Page title="登入" component={Login} />} />
+                    <Route path={routes.HOME} element={<Header />}>
+                        <Route
+                            index
+                            element={
+                                <Page title="首頁">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </Page>
+                            }
+                        />
+                        <Route
+                            path={routes.DASHBOARD}
+                            element={
+                                <Page title="總覽">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </Page>
+                            }
+                        />
+                        <Route
+                            path={routes.VIDEO_UPLOAD}
+                            element={<Page title="上傳影片" component={VideoUpload} />}
+                        />
+                        <Route
+                            path={routes.ACCOUNT}
+                            element={
+                                <Page title="個人資料">
+                                    <ComingSoon time={new Date(1651334400000)} />
+                                </Page>
+                            }
+                        />
+                        <Route
+                            path={routes.TERMS_OF_SERVICE}
+                            element={<Page title="使用者服務條款" component={TermsOfService} />}
+                        />
+                        <Route
+                            path={routes.PRIVACY_POLICIES}
+                            element={<Page title="隱私權政策" component={PrivacyPolicies} />}
+                        />
+                        <Route path={routes.ADMIN_ROOT} element={<Admin />}>
+                            <Route
+                                path={routes.ADMIN_USER_LIST}
+                                element={<Page title="使用者清單" component={UserList} />}
                             />
-                            <PageRoute exact path={routes.ACCOUNT} title="個人資料">
-                                <ComingSoon time={new Date(1651334400000)} />
-                            </PageRoute>
-                            <PageRoute exact path={routes.TERMS_OF_SERVICE} title="使用者服務條款">
-                                <TermsOfService />
-                            </PageRoute>
-                            <PageRoute exact path={routes.PRIVACY_POLICIES} title="隱私權政策">
-                                <PrivacyPolicies />
-                            </PageRoute>
-                            <Route path={routes.ADMIN_ROOT} component={Admin} />
-                            <Route path="*" component={NotFound} />
-                        </Switch>
-                    </Header>
-                </Switch>
-            </Router>
+                        </Route>
+                        <Route path="*" element={<NotFound />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
         </SnackbarProvider>
     );
 }

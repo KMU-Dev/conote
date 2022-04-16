@@ -1,9 +1,9 @@
 import { Box, SxProps, Theme, Typography } from "@mui/material";
-import { useHistory } from "react-router";
 import { useEffect } from "react";
-import { StepContentProps } from "./StepContentProps";
-import LaunchingImage from "./launching.svg";
+import { useNavigate } from "react-router-dom";
 import routes from "../../constant/routes.json";
+import LaunchingImage from "./launching.svg";
+import { StepContentProps } from "./StepContentProps";
 
 
 const textSx: SxProps<Theme> = {
@@ -14,11 +14,11 @@ const textSx: SxProps<Theme> = {
 export default function Finish(props: StepContentProps) {
     const { nextClicked } = props;
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (nextClicked) history.replace(routes.LOGIN);
-    }, [nextClicked, history]);
+        if (nextClicked) navigate(routes.LOGIN, { replace: true });
+    }, [nextClicked, navigate]);
 
     return (
         <Box px={6} py={2}>

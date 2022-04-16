@@ -4,14 +4,14 @@ import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { Box, Divider, Hidden, IconButton, List, ListItemText, Toolbar, Typography } from "@mui/material";
-import { MouseEvent, ReactNode, useMemo, useRef, useState } from "react";
+import { MouseEvent, useMemo, useRef, useState } from "react";
+import { Outlet, useNavigate } from 'react-router-dom';
 import routes from '../../constant/routes.json';
 import { client } from '../../graphql/client';
 import { LOGOUT } from '../../graphql/mutations/auth';
 import { UI_STATUS } from "../../graphql/queries/uiStatus";
 import { GraphqlDto } from '../../graphql/type/type';
 import { UIStatus } from "../../graphql/type/UIStatus";
-import { history } from '../../utils/history';
 import { isMatch, useRenderLink } from '../../utils/routes';
 import { Drawer } from '../Drawer';
 import ListItemLink from '../ListItemLink/ListItemLink';
@@ -19,7 +19,8 @@ import { useNotification } from '../Notification';
 import AccountDropdown, { AccountMenuDefinition } from './AccountDropdown';
 import { getHeaderDef, HeaderDefinition } from "./HeaderDefinition";
 
-export default function Header(props: HeaderProps) {
+export default function Header() {
+    const navigate = useNavigate();
     const renderLink = useRenderLink(routes.HOME);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function Header(props: HeaderProps) {
                             color: 'text.primary',
                         },
                     },
-                    isMatch(def.href, def.exact) !== null && {
+                    isMatch(def.href) !== null && {
                         borderBottom: 2,
                         borderColor: 'primary.main',
                         color: 'text.primary'
@@ -63,7 +64,7 @@ export default function Header(props: HeaderProps) {
 
     const handleAccountBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
         if (data?.uiStatus?.user) setMenuAnchor(e.currentTarget);
-        else history.push(routes.LOGIN);
+        else navigate(routes.LOGIN);
     };
 
     const handleAccountMenuClick = async (def: AccountMenuDefinition) => {
@@ -73,7 +74,7 @@ export default function Header(props: HeaderProps) {
                 if (result.data.logout) {
                     window.localStorage.setItem('logout', `${Date.now()}`);
                     await client.resetStore();
-                    history.push(routes.LOGIN);
+                    navigate(routes.LOGIN);
                 } else {
                     enqueueNotification({
                         title: '無法登出',
@@ -155,7 +156,7 @@ export default function Header(props: HeaderProps) {
             </Toolbar>
             <Divider />
             <Box component="main" flexGrow={1} bgcolor='background.default'>
-                {props.children}
+                <Outlet />
             </Box>
             <AccountDropdown
                 id={accountDrowpdownId.current}
@@ -169,8 +170,4 @@ export default function Header(props: HeaderProps) {
             <Drawer open={drawerOpen} toggleDrawer={setDrawerOpen} menu={headerDef} />
         </Box>
     );
-}
-
-interface HeaderProps {
-    children: ReactNode;
 }

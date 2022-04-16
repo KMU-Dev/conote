@@ -1,30 +1,30 @@
 import { Box, Button, ButtonProps } from "@mui/material";
-import { useEffect } from "react";
-import { useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { useCallback, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import oauth2 from "../../constant/oauth2.json";
 import { generateAuthUrl } from "../../utils/oauth2/google";
 import { ReactComponent as Google } from './google.svg';
-import oauth2 from "../../constant/oauth2.json";
 
 export default function GoogleLoginButton(props: LoginButtonProps) {
     const { onCodeRetrieve, onError, sx, ...restProps } = props;
 
-    const history = useHistory();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (history.location.search) {
-            const params = new URLSearchParams(history.location.search);
+        if (location.search) {
+            const params = new URLSearchParams(location.search);
             const hd = params.get('hd');
             const code = params.get('code');
 
-            history.replace(history.location.pathname);
+            navigate(location.pathname, { replace: true });
             if (hd === oauth2.google.hd && code) {
                 onCodeRetrieve(code);
             } else {
                 if (onError) onError();
             }
         }
-    }, [history, onCodeRetrieve, onError])
+    }, [location, navigate, onCodeRetrieve, onError])
 
     const handleLoginClick = useCallback(() => {
         const url = generateAuthUrl({

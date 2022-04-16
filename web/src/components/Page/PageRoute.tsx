@@ -1,23 +1,34 @@
-import { ComponentProps, createElement } from "react";
-import { Route } from "react-router-dom";
+import { Route, RouteProps } from "react-router-dom";
 import { getTitleElement } from "../../utils/title";
 
 export default function PageRoute(props: PageRouteProps) {
-    const { title, component, children } = props;
+    const { title, element, children } = props;
 
     const titleElement = getTitleElement(title);
 
     return (
-        <Route {...props} component={undefined}>
-            <>
-                {titleElement}
-                {component ? createElement(component) : ''}
-                {children}
-            </>
+        <Route
+            {...props}
+            element={
+                element ?
+                    <>
+                        {titleElement}
+                        {element}
+                    </> :
+                    undefined
+            }
+        >
+            {children ?
+                <>
+                    {titleElement}
+                    {children}
+                </> :
+                undefined
+            }
         </Route>
     );
 }
 
-interface PageRouteProps extends ComponentProps<typeof Route> {
+interface PageRouteProps extends RouteProps {
     title: string;
 }
