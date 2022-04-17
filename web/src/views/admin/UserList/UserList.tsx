@@ -12,6 +12,7 @@ import { USER_CONNECTION } from "../../../graphql/queries/user";
 import { BatchPayload } from "../../../graphql/type/BatchPayload";
 import { GraphqlDto, OrderDirection } from "../../../graphql/type/type";
 import { User, UserOrder, UserOrderField, UserRole, UserStatus } from "../../../graphql/type/user";
+import { getDisplayedRole } from "../../../utils/display/user";
 import { matchAccept } from "../../../utils/file";
 import { validate } from "./validation";
 
@@ -65,14 +66,7 @@ export default function UserList() {
             minWidth: 100,
             editable: true,
             valueOptions: Object.values(UserRole),
-            valueFormatter: (params: GridValueFormatterParams) => {
-                switch (params.value) {
-                    case UserRole.ADMIN:
-                        return '系統管理員';
-                    case UserRole.USER:
-                        return '使用者';
-                }
-            },
+            valueFormatter: (params: GridValueFormatterParams) => getDisplayedRole(params.value),
         },
         {
             field: 'status',

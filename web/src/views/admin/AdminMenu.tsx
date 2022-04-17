@@ -4,6 +4,7 @@ import NestedList from "../../components/NestedList/NestedList";
 import { SkeletonAvatar } from "../../components/Skeleton";
 import SkeletonTypography from "../../components/Skeleton/SkeletonTypography";
 import { useUIStatus } from "../../graphql/hooks/useUIStatus";
+import { getDisplayedRole } from "../../utils/display/user";
 
 
 export default function AdminMenu(props: AdminMenuProps) {
@@ -27,7 +28,7 @@ export default function AdminMenu(props: AdminMenuProps) {
                             {user?.name}
                         </SkeletonTypography>
                         <SkeletonTypography variant="body2" color="textSecondary" loading={loading} skeletonWidth="5em">
-                            系統管理員
+                            {getDisplayedRole(user?.role)}
                         </SkeletonTypography>
                     </Box>
                 </Box>
