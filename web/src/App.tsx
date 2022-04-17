@@ -100,11 +100,11 @@ function App() {
                         />
                         <Route
                             path={routes.TERMS_OF_SERVICE}
-                            element={<Page title="使用者服務條款" component={TermsOfService} />}
+                            element={<Page title="使用者服務條款" component={TermsOfService} scrollToTop />}
                         />
                         <Route
                             path={routes.PRIVACY_POLICIES}
-                            element={<Page title="隱私權政策" component={PrivacyPolicies} />}
+                            element={<Page title="隱私權政策" component={PrivacyPolicies} scrollToTop />}
                         />
                         <Route path={routes.ADMIN_ROOT} element={<Admin />}>
                             <Route
