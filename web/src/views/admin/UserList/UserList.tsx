@@ -151,7 +151,7 @@ export default function UserList() {
             enqueueNotification({
                 variant: 'success',
                 title: '使用者資料已更新',
-                content: `已將${name}的 ${params.field} 更新成 ${updatedValue}。`,
+                content: `已將 ${name} 的 ${params.field} 更新成 ${updatedValue}。`,
             });
         } catch (e) {
             enqueueCommonErrorNotification(e);

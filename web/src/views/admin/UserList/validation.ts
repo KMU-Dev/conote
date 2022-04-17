@@ -1,6 +1,6 @@
 import { GridPreProcessEditCellProps } from "@mui/x-data-grid";
 import { plainToClass } from "class-transformer";
-import { IsEmail, IsEnum, IsNotEmpty, IsUrl, MaxLength, validateSync } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsUrl, MaxLength, ValidateIf, validateSync } from "class-validator";
 import { UserRole, UserStatus } from "../../../graphql/type/user";
 
 class EditedUser {
@@ -11,13 +11,16 @@ class EditedUser {
     @MaxLength(256)
     name: string;
 
+    @ValidateIf(user => user.status !== UserStatus.UNVERIFIED)
     @IsEmail(undefined)
     email?: string;
 
+    @ValidateIf(user => user.status !== UserStatus.UNVERIFIED)
     @IsNotEmpty()
     @MaxLength(64)
     studentId: string;
 
+    @ValidateIf(user => user.status !== UserStatus.UNVERIFIED)
     @IsUrl()
     picture?: string;
 
