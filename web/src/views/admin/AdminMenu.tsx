@@ -1,4 +1,5 @@
-import { Box, Paper } from "@mui/material";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
 import { MenuSection } from "../../components/Header";
 import NestedList from "../../components/NestedList/NestedList";
 import { SkeletonAvatar } from "../../components/Skeleton";

@@ -1,4 +1,8 @@
-import { Box, FormControl, FormHelperText, InputLabel, OutlinedInput, OutlinedInputProps } from '@mui/material';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput, { OutlinedInputProps } from '@mui/material/OutlinedInput';
 
 
 export default function TailwindInput(props: TailwindInputProps) {

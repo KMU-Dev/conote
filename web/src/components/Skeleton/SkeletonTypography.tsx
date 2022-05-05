@@ -1,4 +1,5 @@
-import { Skeleton, Typography, TypographyProps } from "@mui/material";
+import Skeleton from "@mui/material/Skeleton";
+import Typography, { TypographyProps } from "@mui/material/Typography";
 import { extractSkeletonProps } from "./props";
 import { SkeletonSpecificProps } from "./type";
 

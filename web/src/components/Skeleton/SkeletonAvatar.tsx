@@ -1,4 +1,5 @@
-import { Avatar, AvatarProps, Skeleton } from "@mui/material";
+import Avatar, { AvatarProps } from "@mui/material/Avatar";
+import Skeleton from "@mui/material/Skeleton";
 import { extractSkeletonProps } from "./props";
 import { SkeletonSpecificProps } from "./type";
 

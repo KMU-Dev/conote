@@ -1,15 +1,10 @@
 import { ApolloProvider } from "@apollo/client";
-import { StyledEngineProvider, Theme, ThemeProvider } from "@mui/material";
+import StyledEngineProvider from "@mui/material/StyledEngineProvider";
+import { ThemeProvider } from "@mui/material/styles";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { client } from "./graphql/client";
 import defaultTheme from "./theme";
-
-
-declare module '@mui/material/styles' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 
 export default function Root() {

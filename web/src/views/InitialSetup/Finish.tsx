@@ -1,4 +1,6 @@
-import { Box, SxProps, Theme, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import { SxProps, Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import routes from "../../constant/routes.json";

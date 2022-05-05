@@ -1,7 +1,9 @@
-import { Typography, Box, SxProps, Theme } from "@mui/material";
+import Box from "@mui/material/Box";
+import { SxProps, Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
-import { StepContentProps } from "./StepContentProps";
 import AppreciationSecondaryImage from "./appreciation_secondary.svg";
+import { StepContentProps } from "./StepContentProps";
 
 
 const textSx: SxProps<Theme> = {

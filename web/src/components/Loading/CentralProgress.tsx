@@ -1,4 +1,5 @@
-import { CircularProgress, Grid } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
 
 export default function CentralProgress() {
     return (

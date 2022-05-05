@@ -1,4 +1,4 @@
-import { Skeleton } from "@mui/material";
+import Skeleton from "@mui/material/Skeleton";
 import { ImgHTMLAttributes } from "react";
 import { extractSkeletonProps } from "./props";
 import { SkeletonSpecificProps } from "./type";

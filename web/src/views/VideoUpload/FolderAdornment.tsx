@@ -1,5 +1,6 @@
-import { IconButton, InputAdornment } from "@mui/material";
 import FolderIcon from '@mui/icons-material/Folder';
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 
 export default function FolderAdornment() {
     return (

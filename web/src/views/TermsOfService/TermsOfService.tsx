@@ -1,4 +1,4 @@
-import { Link } from "@mui/material";
+import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import ContentLayout from "../../components/ContentLayout/ContentLayout";
 import { PoliciesCard, PoliciesCardContact, PoliciesCardContent, PoliciesCardHeader, PoliciesCardSubtitle, PoliciesCardTerms, PoliciesCardTitle } from "../../components/Polices";

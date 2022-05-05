@@ -1,4 +1,5 @@
-import { Box, Button, ButtonProps } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button, { ButtonProps } from "@mui/material/Button";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import oauth2 from "../../constant/oauth2.json";

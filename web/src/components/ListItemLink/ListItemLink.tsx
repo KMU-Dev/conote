@@ -1,5 +1,5 @@
-import { SxProps, Theme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
+import { SxProps, Theme } from '@mui/material/styles';
 import React from 'react';
 import { useRenderLink } from '../../utils/routes';
 

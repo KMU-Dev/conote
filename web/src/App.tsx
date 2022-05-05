@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
-import { useMediaQuery, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import { lazy, useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';

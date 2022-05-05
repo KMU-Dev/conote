@@ -1,13 +1,16 @@
-import { Card, CardContent, Box, Typography, IconButton, useTheme, Theme, SxProps } from "@mui/material";
-import { SnackbarContent, SnackbarKey, useSnackbar } from "notistack";
-import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
+import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { forwardRef, ReactChild, ReactElement } from "react";
-import { useCallback } from "react";
-import { useMemo } from "react";
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import IconButton from "@mui/material/IconButton";
+import { SxProps, Theme, useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { SnackbarContent, SnackbarKey, useSnackbar } from "notistack";
+import { forwardRef, ReactChild, ReactElement, useCallback, useMemo } from "react";
 
 
 const getImageBox = (theme: Theme, variant?: NotificationVariant, image?: ReactChild, sx?: SxProps<Theme>) => {

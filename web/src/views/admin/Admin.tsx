@@ -1,4 +1,5 @@
-import { Box, Hidden } from '@mui/material';
+import Box from '@mui/material/Box';
+import Hidden from '@mui/material/Hidden';
 import { useLayoutEffect, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { getHeaderDef } from '../../components/Header';
