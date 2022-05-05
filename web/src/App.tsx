@@ -16,15 +16,15 @@ import { UIStatus } from './graphql/type/UIStatus';
 import { getAccessTokenFromCahce } from './utils/auth';
 
 // React lazy import
-const Admin = lazy(() => import('./views/admin/Admin'));
-const UserList = lazy(() => import('./views/admin/UserList/UserList'));
-const ComingSoon = lazy(() => import('./views/ComingSoon/ComingSoon'));
-const InitialSetup = lazy(() => import('./views/InitialSetup/InitialSetup'));
-const Login = lazy(() => import('./views/Login/Login'));
-const NotFound = lazy(() => import('./views/NotFound/NotFound'));
-const PrivacyPolicies = lazy(() => import('./views/PrivacyPolicies/PrivacyPolicies'));
-const TermsOfService = lazy(() => import('./views/TermsOfService/TermsOfService'));
-const VideoUpload = lazy(() => import('./views/VideoUpload/VideoUpload'));
+const ComingSoon = lazy(() => import(/* webpackPrefetch: true */ './views/ComingSoon/ComingSoon'));
+const Login = lazy(() => import(/* webpackPrefetch: true */ './views/Login/Login'));
+const VideoUpload = lazy(() => import(/* webpackPrefetch: true */ './views/VideoUpload/VideoUpload'));
+const PrivacyPolicies = lazy(() => import(/* webpackPrefetch: true */ './views/PrivacyPolicies/PrivacyPolicies'));
+const TermsOfService = lazy(() => import(/* webpackPrefetch: true */ './views/TermsOfService/TermsOfService'));
+const Admin = lazy(() => import(/* webpackPrefetch: true */ './views/admin/Admin'));
+const UserList = lazy(() => import(/* webpackPrefetch: true */ './views/admin/UserList/UserList'));
+const NotFound = lazy(() => import(/* webpackPrefetch: true */ './views/NotFound/NotFound'));
+const InitialSetup = lazy(() => import(/* webpackPrefetch: true */ './views/InitialSetup/InitialSetup'));
 
 const loginExcluded = [routes.LOGIN, routes.TERMS_OF_SERVICE, routes.PRIVACY_POLICIES];
 
