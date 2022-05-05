@@ -1,9 +1,10 @@
-import { createElement, useEffect } from 'react';
+import { ReactNode } from 'react';
+import { createElement, Suspense, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getTitleElement } from '../../utils/title';
 
 export default function Page(props: PageProps) {
-    const { title, component, children, scrollToTop } = props;
+    const { title, component, children, scrollToTop, fallback } = props;
 
     const { pathname } = useLocation();
 
@@ -18,7 +19,9 @@ export default function Page(props: PageProps) {
     return (
         <>
             {titleElement}
-            {component ? createElement(component) : children}
+            <Suspense fallback={fallback}>
+                {component ? createElement(component) : children}
+            </Suspense>
         </>
     );
 }
@@ -28,4 +31,7 @@ interface PageProps {
     component?: React.ComponentType<any>;
     children?: React.ReactNode;
     scrollToTop?: boolean;
+
+    // suspense
+    fallback?: ReactNode;
 }
