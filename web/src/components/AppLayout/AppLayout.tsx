@@ -1,4 +1,4 @@
-import { Box, BoxProps } from "@mui/material";
+import Box, { BoxProps } from '@mui/material/Box';
 
 
 export default function AppLayout(props: AppLayoutProps) {

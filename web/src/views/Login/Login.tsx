@@ -1,6 +1,13 @@
 import { ApolloError, gql, useApolloClient, useMutation, useQuery } from '@apollo/client';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
-import { Box, Card, CircularProgress, Container, Hidden, Link, SxProps, Theme, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Hidden from '@mui/material/Hidden';
+import Link from '@mui/material/Link';
+import { SxProps, Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';

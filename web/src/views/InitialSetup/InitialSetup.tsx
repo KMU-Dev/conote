@@ -1,6 +1,12 @@
 import { useQuery } from "@apollo/client";
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
-import { Box, Button, Container, Step, StepLabel, Stepper, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+import Typography from "@mui/material/Typography";
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import routes from '../../constant/routes.json';

@@ -1,6 +1,9 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LocalLibraryOutlinedIcon from '@mui/icons-material/LocalLibraryOutlined';
-import { Box, Divider, Link, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
 import { forwardRef, MouseEvent } from "react";
 import { useUIStatus } from "../../graphql/hooks/useUIStatus";
 import { SkeletonAvatar } from '../Skeleton';

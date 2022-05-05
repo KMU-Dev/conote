@@ -1,5 +1,7 @@
-import { Breadcrumbs, Link, SxProps, Theme } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
+import { SxProps, Theme } from "@mui/material/styles";
 import { Link as RouterLink } from 'react-router-dom';
 import { BreadcrumbDefinition } from "./BreadcrumbDefinition";
 import { parseBreadcrumbPath } from "./parser";

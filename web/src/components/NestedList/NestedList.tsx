@@ -1,17 +1,13 @@
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import {
-    alpha, Box,
-    Collapse,
-    List,
-    ListItem,
-    ListItemIcon, ListItemIconProps, ListItemText,
-    ListSubheader,
-    styled,
-    SxProps,
-    Theme,
-    useTheme
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon, { ListItemIconProps } from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import ListSubheader from "@mui/material/ListSubheader";
+import { alpha, styled, SxProps, Theme, useTheme } from "@mui/material/styles";
 import { Fragment, useCallback, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isMatch } from "../../utils/routes";

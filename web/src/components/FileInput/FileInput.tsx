@@ -1,5 +1,9 @@
-import { Box, FormHelperText, InputLabel, SxProps, Theme, Typography } from "@mui/material";
-import React, { DragEvent, MouseEvent, ReactNode, useRef, useState } from "react";
+import Box from "@mui/material/Box";
+import FormHelperText from "@mui/material/FormHelperText";
+import InputLabel from "@mui/material/InputLabel";
+import { SxProps, Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { DragEvent, MouseEvent, ReactNode, useRef, useState } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 import { matchAccept } from "../../utils/file";
 import { useNotification } from "../Notification";

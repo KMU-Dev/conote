@@ -1,4 +1,4 @@
-import { SxProps, Theme } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 
 export function csx<T extends Theme>(...sxes: SxProps<T>[]): SxProps<T> {
     let sx: any[] = [];

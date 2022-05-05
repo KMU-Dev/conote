@@ -1,18 +1,15 @@
 import { useMutation } from '@apollo/client';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import {
-    Button,
-    ButtonTypeMap,
-    Card,
-    CardContent,
-    Grid,
-    Skeleton,
-    Typography,
-    useMediaQuery,
-    useTheme
-} from '@mui/material';
-import { Box } from '@mui/system';
+import Box from '@mui/material/Box';
+import Button, { ButtonTypeMap } from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import AppLayout from '../../components/AppLayout/AppLayout';

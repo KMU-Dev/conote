@@ -1,6 +1,5 @@
-import { Box } from "@mui/material";
-import { useEffect } from "react";
-import { useState } from "react";
+import Box from "@mui/material/Box";
+import { useEffect, useState } from "react";
 import { DateUnit, getTimeDiff } from "../../utils/date";
 import CountDownUnit from "./CountDownUnit";
 

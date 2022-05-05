@@ -1,6 +1,10 @@
 import { useMutation } from "@apollo/client";
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { Avatar, Box, InputLabel, SxProps, Theme, Typography } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import { SxProps, Theme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 import { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";

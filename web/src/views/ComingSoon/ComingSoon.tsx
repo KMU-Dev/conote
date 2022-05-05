@@ -1,4 +1,6 @@
-import { Box, Button, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import SplitImageLayout from "../../components/SplitImageLayout/SplitImageLayout";
 import UnderConstruction from './under_construction.svg';

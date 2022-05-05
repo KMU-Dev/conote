@@ -1,5 +1,10 @@
 import { useQuery } from '@apollo/client';
-import { Box, ListItemIcon, ListItemText, Menu, MenuItem, MenuProps, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { UI_STATUS } from '../../graphql/queries/uiStatus';

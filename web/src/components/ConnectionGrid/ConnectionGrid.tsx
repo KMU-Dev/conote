@@ -1,5 +1,8 @@
 import { TypedDocumentNode, useQuery } from "@apollo/client";
-import { alpha, Button, Dialog, DialogActions } from "@mui/material";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import { alpha } from "@mui/material/styles";
 import { DataGrid, DataGridProps, GridInputSelectionModel, GridRowId, GridSortModel } from "@mui/x-data-grid";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Connection, ConnectionArgs, ConnectionOrder, GraphqlDto } from "../../graphql/type/type";

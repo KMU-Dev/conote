@@ -1,8 +1,9 @@
-import { Button, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import SplitImageLayout from "../../components/SplitImageLayout/SplitImageLayout";
-import PageNotFound from './page_not_found.svg';
 import routes from '../../constant/routes.json';
+import PageNotFound from './page_not_found.svg';
 
 export default function NotFound() {
     return (

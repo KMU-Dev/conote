@@ -1,4 +1,4 @@
-import { SkeletonProps } from "@mui/material";
+import { SkeletonProps } from "@mui/material/Skeleton";
 
 export interface SkeletonSpecificProps {
     loading?: boolean;

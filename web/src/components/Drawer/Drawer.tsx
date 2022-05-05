@@ -1,4 +1,10 @@
-import { alpha, Box, List, ListItem, ListItemIcon, ListItemText, SwipeableDrawer } from "@mui/material";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { alpha } from "@mui/material/styles";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isMatch } from "../../utils/routes";
