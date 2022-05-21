@@ -39,8 +39,43 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
           cache-from: type=registry,ref=ghcr.io/kmu-dev/cache:conote
           cache-to: type=registry,ref=ghcr.io/kmu-dev/cache:conote,mode=max
+
+  lint-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          cache-dependency-path: api/yarn.lock
+      - name: Install dependencies
+        run: yarn install
+      - name: Lint
+        run: yarn lint
+  
+  lint-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          cache-dependency-path: web/yarn.lock
+      - name: Install dependencies
+        run: yarn install
+      - name: Lint
+        run: yarn lint
+  
   sentry-release:
-    needs: docker-image
+    needs: [docker-image, lint-api, lint-web]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
     runs-on: ubuntu-latest
     defaults:

@@ -25,6 +25,7 @@ export class SentryInterceptor implements NestInterceptor {
         return !(error instanceof HttpException);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected captureException(context: ExecutionContext, scope: Sentry.Scope, error: any) {
         // stub
     }
