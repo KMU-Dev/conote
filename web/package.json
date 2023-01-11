@@ -22,7 +22,7 @@
     "apollo-upload-client": "^17.0.0",
     "axios": "^0.27.2",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "clsx": "^1.1.1",
     "graphql": "^16.5.0",
     "notistack": "^2.0.5",
